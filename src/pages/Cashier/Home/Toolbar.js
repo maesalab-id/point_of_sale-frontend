@@ -22,7 +22,7 @@ export const Toolbar = () => {
 
         setCategories([{
           label: "All Item",
-          value: undefined
+          value: ''
         }, ...res.data.map((category) => {
           return {
             label: _get(category, "name"),

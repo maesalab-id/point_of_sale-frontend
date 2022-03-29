@@ -9,11 +9,16 @@ export const Item = ({
   return (
     <Card
       style={{ padding: 0 }}
-      interactive={true}
-      onClick={onClick}
+      interactive={data["quantity"] > 0 ? true : false}
+      onClick={data["quantity"] > 0 ? onClick : () => { }}
     >
       <AspectRatio ratio="4:3">
-        <Box sx={{ px: 2, py: 3, height: "100%" }}>
+        <Box sx={{
+          px: 2,
+          py: 3,
+          height: "100%",
+          opacity: data["quantity"] > 0 ? 1 : 0.25
+        }}>
           <Flex sx={{ flexDirection: "column", flexGrow: 1, height: "100%" }}>
             <Box sx={{
               fontSize: 2,

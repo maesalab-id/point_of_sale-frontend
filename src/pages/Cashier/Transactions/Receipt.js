@@ -1,9 +1,10 @@
-import { Classes, NonIdealState, Spinner, Text } from "@blueprintjs/core";
+import { Button, Classes, NonIdealState, Spinner, Text } from "@blueprintjs/core";
 import { Box, Divider, Flex, useClient } from "components"
 import { toaster } from "components/toaster";
 import { useEffect, useMemo, useState } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
+import { Print } from "./Print";
 
 export const Receipt = ({
   data
@@ -94,7 +95,7 @@ export const Receipt = ({
           ))}
         </Box>
         <Box sx={{ px: 3, pt: 2 }}>
-          <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 4, }}>
+          <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 3, }}>
             <Flex sx={{ px: 2, mb: 2 }}>
               <Box sx={{ flexGrow: 1 }}>Subtotal</Box>
               <Box>{currency(_get(meta, "price"), { symbol: "Rp. ", precision: 0 }).format()}</Box>
@@ -109,24 +110,28 @@ export const Receipt = ({
               <Box>{currency(_get(meta, "total"), { symbol: "Rp. ", precision: 0 }).format()}</Box>
             </Flex>
           </Box>
-          {/* <Box sx={{ mb: 4 }}>
-            <Button
-              large={true}
-              fill={true}
-              intent="primary"
-              text="Refund"
-              onClick={() => {
-                toaster.show({
-                  intent: "none",
-                  message: "Checking out"
-                });
-                toaster.show({
-                  intent: "success",
-                  message: "Successfull Check out"
-                });
-              }}
+          <Box sx={{ mb: 4 }}>
+            <Print
+              company_name="Sample Company Ltd"
+              company_address="35 Kingsland Road London AK E2 8AA"
+              receipt_no={data["id"]}
+              items={items}
+              title={`Receipt #${data["id"]}`}
+              date={data["created_at"]}
+              subtotal={_get(meta, "price")}
+              tax={_get(meta, "tax")}
+              total={_get(meta, "total")}
+              trigger={() => (
+                <Button
+                  disabled={items === null}
+                  outlined={true}
+                  large={true}
+                  fill={true}
+                  intent="primary"
+                  text="Print Invoice" />
+              )}
             />
-          </Box> */}
+          </Box>
         </Box>
       </>}
     </Flex>

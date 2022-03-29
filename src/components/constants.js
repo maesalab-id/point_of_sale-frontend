@@ -1,0 +1,1 @@
+export const CURRENCY_OPTIONS = { symbol: "Rp. ", precision: 0 };

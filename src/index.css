@@ -17,3 +17,9 @@ body {
 textarea.bp3-input {
   min-height: 100px;
 }
+
+@media print {
+  @page {
+    size: 165mm 210mm;
+  }
+}
