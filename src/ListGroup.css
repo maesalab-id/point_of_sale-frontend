@@ -1,0 +1,9 @@
+.list-group {
+  border-radius: 8px;
+  border: 1px solid rgba(16, 22, 26, 0.15);
+}
+
+.list-group-item {
+  padding: 16px;
+  border-bottom: 1px solid rgba(16, 22, 26, 0.15);
+}
