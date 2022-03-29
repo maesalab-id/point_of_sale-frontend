@@ -30,7 +30,7 @@ export const DialogRemove = ({
         }}
         onSubmit={async (values, { setErrors, setSubmitting }) => {
           try {
-            const res = await client["users"].remove(data);
+            const res = await client["items"].remove(data);
             onClose();
             onSubmitted(res);
           } catch (err) {

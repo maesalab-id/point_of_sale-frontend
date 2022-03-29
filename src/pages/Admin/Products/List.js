@@ -17,6 +17,7 @@ const List = () => {
       setItems(null);
       try {
         const query = {
+          $distinct: true,
           $limit: 25,
           "category_id": filter["category_id"] || undefined,
           "name": filter["name"] ? {
@@ -150,7 +151,7 @@ const List = () => {
                 label: "Category",
                 props: "category.name",
               }].map(({ label, props }) => (
-                <Box sx={{ width: `${100 / 5}%` }}>
+                <Box key={label} sx={{ width: `${100 / 5}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>

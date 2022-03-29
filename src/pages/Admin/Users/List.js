@@ -17,6 +17,7 @@ const List = () => {
       setItems(null);
       try {
         const query = {
+          $distinct: true,
           $limit: 25,
           "type": filter["type"] || undefined,
           "name": filter["username"] ? {
@@ -130,7 +131,7 @@ const List = () => {
                 label: "Role",
                 props: "type",
               }].map(({ label, props }) => (
-                <Box sx={{ width: `${100 / 3}%` }}>
+                <Box key={label} sx={{ width: `${100 / 3}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>

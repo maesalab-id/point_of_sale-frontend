@@ -3,6 +3,7 @@ import { Box, Container, Flex, ListGroup, useClient, useList } from "components"
 import { Pagination } from "components/Pagination";
 import { useEffect } from "react";
 import _get from "lodash.get";
+import currency from "currency.js";
 
 const List = () => {
   const client = useClient();
@@ -13,6 +14,7 @@ const List = () => {
       setItems(null);
       try {
         const query = {
+          $distinct: true,
           $limit: 25,
           "order_number": filter["order_number"] || undefined,
           $select: ["id", "order_number", "tax"],
@@ -130,12 +132,12 @@ const List = () => {
                 value: `#${_get(item, "order_number")}`,
               }, {
                 label: "Total Price",
-                value: `${_get(item, "price")}`,
+                value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
               }, {
                 label: "Quantity",
                 value: `${_get(item, "quantity")}`,
               }].map(({ label, value }) => (
-                <Box sx={{ width: `${100 / 3}%` }}>
+                <Box key={label} sx={{ width: `${100 / 3}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>

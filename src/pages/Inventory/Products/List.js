@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { DialogRemove } from "./Dialog.Remove";
 import _get from "lodash.get";
 import { DialogEdit } from "./Dialog.Edit";
+import currency from "currency.js";
 
 const List = () => {
   const client = useClient();
@@ -17,6 +18,7 @@ const List = () => {
       setItems(null);
       try {
         const query = {
+          $distinct: true,
           $limit: 25,
           "category_id": filter["category_id"] || undefined,
           "name": filter["name"] ? {
@@ -136,26 +138,26 @@ const List = () => {
               </Box>
               {[{
                 label: "Code",
-                props: "code",
+                value: `${_get(item, "code")}`,
               }, {
                 label: "Name",
-                props: "name",
+                value: _get(item, "name"),
               }, {
                 label: "Price",
-                props: "price",
+                value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
               }, {
                 label: "Quantity",
-                props: "quantity",
+                value: _get(item, "quantity"),
               }, {
                 label: "Category",
-                props: "category.name",
-              }].map(({ label, props }) => (
-                <Box sx={{ width: `${100 / 5}%` }}>
+                value: _get(item, "category.name"),
+              }].map(({ label, value }) => (
+                <Box key={label} sx={{ width: `${100 / 5}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>
                   <Box>
-                    {_get(item, props)}
+                    {value}
                   </Box>
                 </Box>
               ))}

@@ -15,6 +15,7 @@ const List = () => {
       setItems(null);
       try {
         const query = {
+          $distinct: true,
           $limit: 25,
           "name": filter["name"] ? {
             $iLike: `%${filter["name"]}%`
