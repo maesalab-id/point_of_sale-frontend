@@ -3,7 +3,7 @@ import ListProvider from "components/list"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useMemo } from "react";
 
-export const filterField = ["category_id"];
+export const filterField = ["name", "category_id"];
 
 export const Home = () => {
   const location = useLocation();

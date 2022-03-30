@@ -34,7 +34,7 @@ const Login = () => {
             fontSize: 4,
             fontWeight: "lighter"
           }}>
-            Masuk ke Aplikasi
+            Login to Points of Sale
           </Box>
         </Box>
         <Box sx={{

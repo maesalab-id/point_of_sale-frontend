@@ -26,6 +26,9 @@ export const Item = ({
             }}>
               {data["name"]}
             </Box>
+            <Box sx={{ color: "gray.4" }}>
+              {data["code"]}
+            </Box>
             <Box sx={{ flexGrow: 1, color: "gray.5" }}>
               {data["quantity"]} unit left
             </Box>

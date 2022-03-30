@@ -1,4 +1,4 @@
-import { NonIdealState } from "@blueprintjs/core";
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import { Box, Flex, Pagination, useClient, useList } from "components";
 import { useEffect } from "react";
 import { Item } from "./Item";
@@ -46,6 +46,10 @@ export const List = ({
   return (
     <>
       <Flex sx={{ flexGrow: 1, flexWrap: "wrap", px: 2, mb: 2 }}>
+        {items === null &&
+          <Box sx={{ flexGrow: 1, height: "100%" }}>
+            <Spinner />
+          </Box>}
         {items && (items.length === 0) &&
           <NonIdealState
             title="No Items"

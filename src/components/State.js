@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const State = ({ children }) => {
-  const state = useState(null);
+export const State = ({ initialValue = null, children }) => {
+  const state = useState(initialValue);
   return children(state);
 }
