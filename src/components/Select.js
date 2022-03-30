@@ -16,6 +16,7 @@ export const Select = ({
   disabled,
   filterable,
   allowCreateItem,
+  createItemTitle = () => { },
   options,
   optionRenderer,
   onCreateNew = () => { },
@@ -39,11 +40,12 @@ export const Select = ({
   }, [value, items]);
 
   const createNewItemRenderer = (query, active) => {
+    const title = createItemTitle(query);
     return (
       <MenuItem
         active={active}
         icon="add"
-        text={`Add new group "${query}"`}
+        text={title || `Add "${query}"`}
         onClick={(e) => {
           onCreateNew(query);
         }}
@@ -96,6 +98,7 @@ export const Select = ({
           }
         }
       }}
+
       popoverProps={{
         onOpening: onOpening,
         minimal: true,

@@ -1,16 +1,23 @@
 import { Button, Classes, NonIdealState, Spinner, Text } from "@blueprintjs/core";
 import { Box, Divider, Flex, useClient } from "components"
 import { toaster } from "components/toaster";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
 import { Print } from "./Print";
+import { useReactToPrint } from "react-to-print";
 
 export const Receipt = ({
   data
 }) => {
   const client = useClient();
   const [items, setItems] = useState(null);
+  const printArea = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => printArea.current,
+    documentTitle: `Print receipt`,
+    removeAfterPrint: true,
+  });
 
   const meta = useMemo(() => {
     let quantity = 0;
@@ -111,7 +118,19 @@ export const Receipt = ({
             </Flex>
           </Box>
           <Box sx={{ mb: 4 }}>
+            <Button
+              disabled={items === null}
+              outlined={true}
+              large={true}
+              fill={true}
+              intent="primary"
+              text="Print Invoice"
+              onClick={() => {
+                handlePrint();
+              }}
+            />
             <Print
+              ref={printArea}
               company_name="Sample Company Ltd"
               company_address="35 Kingsland Road London AK E2 8AA"
               receipt_no={data["id"]}
@@ -121,15 +140,6 @@ export const Receipt = ({
               subtotal={_get(meta, "price")}
               tax={_get(meta, "tax")}
               total={_get(meta, "total")}
-              trigger={() => (
-                <Button
-                  disabled={items === null}
-                  outlined={true}
-                  large={true}
-                  fill={true}
-                  intent="primary"
-                  text="Print Invoice" />
-              )}
             />
           </Box>
         </Box>

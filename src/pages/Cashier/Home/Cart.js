@@ -1,10 +1,13 @@
 import { Button, Classes, Text } from "@blueprintjs/core";
-import { Box, Divider, Flex, State, useClient } from "components";
+import { Box, Divider, Flex, useClient } from "components";
 import { toaster } from "components/toaster";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import currency from "currency.js";
-import { Print } from "../Transactions/Print";
 import _get from "lodash.get";
+import { DialogCheckout } from "./Dialog.Checkout";
+import { CURRENCY_OPTIONS } from "components/constants";
+import { Print } from "../Transactions/Print";
+import { useReactToPrint } from "react-to-print";
 
 export const Cart = ({
   cart,
@@ -14,6 +17,11 @@ export const Cart = ({
   onSubmitted = () => { }
 }) => {
   const client = useClient();
+  const printArea = useRef(null);
+
+  const [submitted, setSubmitted] = useState(null);
+
+  const [dialogOpen, setDialogOpen] = useState(null);
 
   const price = useMemo(() => {
     let total = 0;
@@ -31,6 +39,14 @@ export const Cart = ({
     }
   }, [cart]);
 
+  const handlePrint = useReactToPrint({
+    content: () => printArea.current,
+    documentTitle: `Print receipt`,
+    removeAfterPrint: true,
+    onAfterPrint: () => {
+      setSubmitted(null);
+    }
+  });
 
   const onSubmit = useCallback(async (values) => {
     const toast = toaster.show({
@@ -38,30 +54,26 @@ export const Cart = ({
       message: "Checking out"
     });
     try {
-      const res = await client["receipts"].create(values.map((item) => {
-        return {
-          item_id: item["id"],
-          quantity: item["count"],
-          price: item["price"]
-        }
-      }));
+      const res = await client["receipts"].create(values);
+      toaster.dismiss(toast);
       toaster.show({
         intent: "success",
-        message: "Successfull Check out"
+        message: `Successfull Check out #${res["receipt_number"]}`
       });
+
       onClear();
       onSubmitted(res);
       return res;
     } catch (err) {
       console.error(err);
+      toaster.dismiss(toast);
       toaster.show({
         intent: "danger",
         message: err.message
       });
     }
-    toaster.dismiss(toast);
     return null;
-  }, [client]);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client, cart]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Flex sx={{ backgroundColor: "gray.1", flexDirection: "column", flexShrink: 0, width: "30%" }}>
@@ -113,16 +125,16 @@ export const Cart = ({
         <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 3, }}>
           <Flex sx={{ px: 2, mb: 2 }}>
             <Box sx={{ flexGrow: 1 }}>Subtotal</Box>
-            <Box>{currency(price["subtotal"], { symbol: "Rp. ", precision: 0 }).format()}</Box>
+            <Box>{currency(price["subtotal"], CURRENCY_OPTIONS).format()}</Box>
           </Flex>
           <Flex sx={{ px: 2 }}>
             <Box sx={{ flexGrow: 1 }}>Tax (10%)</Box>
-            <Box>{currency(price["tax"], { symbol: "Rp. ", precision: 0 }).format()}</Box>
+            <Box>{currency(price["tax"], CURRENCY_OPTIONS).format()}</Box>
           </Flex>
           <Divider />
           <Flex sx={{ px: 2, fontSize: 2, fontWeight: "bold" }}>
             <Box sx={{ flexGrow: 1 }}>Total</Box>
-            <Box>{currency(price["total"], { symbol: "Rp. ", precision: 0 }).format()}</Box>
+            <Box>{currency(price["total"], CURRENCY_OPTIONS).format()}</Box>
           </Flex>
         </Box>
         <Box sx={{ mb: 2 }}>
@@ -133,52 +145,90 @@ export const Cart = ({
             intent="primary"
             text="Checkout"
             onClick={() => {
-              onSubmit(cart);
+              setDialogOpen("checkout");
+            }}
+          />
+          <DialogCheckout
+            isOpen={dialogOpen === "checkout"}
+            price={price}
+            onClose={() => {
+              setDialogOpen(null);
+            }}
+            onSubmitted={async (values) => {
+              await onSubmit(values);
+            }}
+            initialValue={{
+              items: cart.map((item) => {
+                return {
+                  item_id: item["id"],
+                  quantity: item["count"],
+                  price: item["price"]
+                }
+              })
             }}
           />
         </Box>
-        <State>
-          {([data, setData]) => (<>
-            <Box sx={{ mb: 4 }}>
-              <Print
-                company_name="Sample Company Ltd"
-                company_address="35 Kingsland Road London AK E2 8AA"
-                receipt_no={data && data["id"]}
-                items={data && data["cart"].map((item) => {
+        <Box sx={{ mb: 4 }}>
+          <Button
+            outlined={true}
+            disabled={cart.length === 0}
+            small={true}
+            fill={true}
+            intent="primary"
+            text="Checkout and Print Invoice"
+            onClick={() => {
+              setDialogOpen("checkout-print");
+            }}
+          />
+          <DialogCheckout
+            isOpen={dialogOpen === "checkout-print"}
+            price={price}
+            onClose={() => {
+              setDialogOpen(null);
+            }}
+            onSubmitted={async (values) => {
+              const res = await onSubmit(values);
+              await setSubmitted({
+                ...res,
+                meta: price,
+                items: cart.map((item) => {
                   return {
-                    ...item,
-                    item: {
-                      name: item["name"]
-                    }
+                    name: item["name"],
+                    item_id: item["id"],
+                    quantity: item["count"],
+                    price: item["price"]
                   }
-                })}
-                title={`Receipt #${data && data["id"]}`}
-                date={data && data["created_at"]}
-                subtotal={_get(data, "meta.subtotal")}
-                tax={_get(data, "meta.tax")}
-                total={_get(data, "meta.total")}
-                onBeforeGetContent={async () => {
-                  await setData({
-                    meta: price,
-                    cart: cart
-                  })
-                  let r = await onSubmit(cart);
-                  setData(d => ({ ...d, ...r }));
-                }}
-                trigger={() => (
-                  <Button
-                    outlined={true}
-                    disabled={cart.length === 0}
-                    small={true}
-                    fill={true}
-                    intent="primary"
-                    text="Checkout and Print Invoice"
-                  />
-                )}
-              />
-            </Box>
-          </>)}
-        </State>
+                })
+              });
+              await handlePrint();
+            }}
+            initialValue={{
+              items: cart.map((item) => {
+                return {
+                  item_id: item["id"],
+                  quantity: item["count"],
+                  price: item["price"]
+                }
+              })
+            }}
+          />
+        </Box>
+        <Print
+          ref={printArea}
+          company_name="Sample Company Ltd"
+          company_address="35 Kingsland Road London AK E2 8AA"
+          receipt_no={_get(submitted, "receipt_number")}
+          items={_get(submitted, "items") && _get(submitted, "items").map((item) => ({
+            ...item,
+            item: {
+              name: item["name"]
+            }
+          }))}
+          date={_get(submitted, "created_at")}
+          subtotal={_get(submitted, "meta.subtotal")}
+          tax={_get(submitted, "meta.tax")}
+          total={_get(submitted, "meta.total")}
+        />
       </Box>
     </Flex>
   )
