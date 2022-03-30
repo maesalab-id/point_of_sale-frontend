@@ -1,11 +1,16 @@
 import { Button, ControlGroup, InputGroup, Tag, Icon } from "@blueprintjs/core";
 import { Box, DateRangePicker, Flex, useList } from "components";
-import { filterField } from ".";
+import { useState } from "react";
 import _get from "lodash.get";
 import moment from "moment";
+import { filterField } from ".";
+import { DialogAdd } from "./Dialog.Add";
+import { toaster } from "components/toaster";
 
 export const Toolbar = () => {
-  const { filter, setFilter } = useList();
+  const { filter, setFilter } = useList()
+  const [dialogOpen, setDialogOpen] = useState(null);
+
   return (
     <Flex>
       <Flex sx={{ flexGrow: 1, alignItems: "center" }}>
@@ -62,6 +67,26 @@ export const Toolbar = () => {
             />}
         </Box>
       </Flex>
+      <Box>
+        <Button
+          intent="primary"
+          text="Make Order"
+          onClick={() => {
+            setDialogOpen("add");
+          }}
+        />
+        <DialogAdd
+          isOpen={dialogOpen === "add"}
+          onClose={() => { setDialogOpen(null) }}
+          onSubmitted={() => {
+            setFilter(f => ({ ...f, type: undefined }));
+            toaster.show({
+              intent: "success",
+              message: "Order has been created"
+            });
+          }}
+        />
+      </Box>
     </Flex>
   )
 }

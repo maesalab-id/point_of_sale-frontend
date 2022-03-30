@@ -1,59 +1,43 @@
-import { Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
-import { Box, Container, Flex, ListGroup, useClient, useList } from "components";
+import { Button, Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
+import { Box, Container, Flex, ListGroup, State, useClient, useList } from "components";
 import { Pagination } from "components/Pagination";
-import { useEffect } from "react";
+import { toaster } from "components/toaster";
+import { useEffect, useState } from "react";
+import { DialogEdit } from "./Dialog.Edit";
+import { DialogRemove } from "./Dialog.Remove";
 import _get from "lodash.get";
-import currency from "currency.js";
-import moment from "moment";
 
 const List = () => {
   const client = useClient();
-  const { filter, items, setItems, status, paging, setPaging, selectedItem, dispatchSelectedItem } = useList();
+  const { filter, setFilter, items, setItems, status, paging, setPaging, selectedItem, dispatchSelectedItem } = useList();
+  const [dialogOpen, setDialogOpen] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
       setItems(null);
-      const startDate = moment(filter["start"], "DD-MM-YYYY");
-      const endDate = moment(filter["end"], "DD-MM-YYYY");
       try {
         const query = {
           $distinct: true,
           $limit: 25,
-          "order_number": filter["order_number"] || undefined,
-          "created_at": (startDate.isValid() && endDate.isValid()) ? {
-            $gte: startDate.isValid() ? startDate.toISOString() : undefined,
-            $lte: endDate.isValid() ? endDate.toISOString() : undefined
+          $or: filter["search"] ? {
+            "name": filter["search"] ? {
+              $iLike: `%${filter["search"]}%`
+            } : undefined,
+            "address": filter["search"] ? {
+              $iLike: `%${filter["search"]}%`
+            } : undefined,
+            "phone_number": filter["search"] ? {
+              $iLike: `%${filter["search"]}%`
+            } : undefined,
           } : undefined,
-          $select: ["id", "order_number", "tax", "vendor_id"],
+          $select: ["id", "name", "phone_number", "address"],
           $skip: paging.skip,
           $sort: {
             id: -1
-          },
-          $include: [{
-            model: "order_list",
-            $select: ["price", "quantity"],
-            $include: [{
-              model: "items",
-              $select: ["id"]
-            }],
-          }, {
-            model: "vendors",
-            $select: ["name"]
-          }]
-        };
-        const res = await client["orders"].find({ query });
-        setItems(res.data.map((item) => {
-          let quantity = 0;
-          let price = _get(item, "order_lists").reduce((p, c) => {
-            quantity += c.quantity;
-            return p + (parseInt(c.price) * c.quantity);
-          }, 0);
-          return {
-            ...item,
-            price,
-            quantity,
           }
-        }));
+        };
+        const res = await client["vendors"].find({ query });
+        setItems(res.data);
         setPaging({
           total: res.total,
           limit: res.limit,
@@ -92,10 +76,27 @@ const List = () => {
               />
             </Box>
             {selectedItem.length > 0 &&
-              <Box sx={{ ml: 2 }}>
-                {selectedItem.length} selected
+              <Box>
+                <Button
+                  minimal={true}
+                  intent="danger"
+                  text={`Delete ${selectedItem.length} selected`}
+                  onClick={() => setDialogOpen("delete")}
+                />
               </Box>
             }
+            <DialogRemove
+              data={selectedItem}
+              isOpen={dialogOpen === "delete"}
+              onClose={() => { setDialogOpen(null) }}
+              onSubmitted={() => {
+                setFilter(f => ({ ...f, type: undefined }));
+                toaster.show({
+                  intent: "success",
+                  message: `Vendor deleted`
+                });
+              }}
+            />
           </Flex>
         </ListGroup.Header>
         {items === null &&
@@ -138,30 +139,53 @@ const List = () => {
                 />
               </Box>
               {[{
-                label: "Order Number",
-                value: `#${_get(item, "order_number")}`,
+                label: "Name",
+                props: "name",
               }, {
-                label: "Total Price",
-                value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
+                label: "Phone Number",
+                props: "phone_number",
               }, {
-                label: "Quantity",
-                value: `${_get(item, "quantity")}`,
-              }, {
-                label: "Vendor",
-                value: `${_get(item, "vendor.name")}`,
-              }, {
-                label: "Date",
-                value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
-              }].map(({ label, value }) => (
-                <Box key={label} sx={{ width: `${100 / 4}%` }}>
+                label: "Address",
+                props: "address",
+              }].map(({ label, props }) => (
+                <Box key={label} sx={{ width: `${100 / 3}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>
                   <Box>
-                    {value}
+                    {_get(item, props)}
                   </Box>
                 </Box>
               ))}
+              <Box
+                className="action-button"
+                sx={{ width: 30 }}
+              >
+                <State>
+                  {([isOpen, setOpen]) => (
+                    <>
+                      <Button
+                        minimal={true}
+                        icon="edit"
+                        onClick={() => {
+                          setOpen(true);
+                        }}
+                      />
+                      <DialogEdit
+                        data={item}
+                        isOpen={isOpen}
+                        onClose={() => { setOpen(false) }}
+                        onSubmitted={() => {
+                          setFilter(f => ({ ...f, type: undefined }));
+                          toaster.show({
+                            intent: "success",
+                            message: "Vendor updated"
+                          });
+                        }}
+                      />
+                    </>)}
+                </State>
+              </Box>
             </Flex>
           </ListGroup.Item>))}
       </ListGroup>
