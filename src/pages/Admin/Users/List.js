@@ -105,7 +105,17 @@ const List = () => {
           </Box>
         )}
         {items && items.map((item) => (
-          <ListGroup.Item key={item["id"]}>
+          <ListGroup.Item
+            key={item["id"]}
+            sx={{
+              "& .action-button": {
+                opacity: 0
+              },
+              "&:hover .action-button": {
+                opacity: 1
+              }
+            }}
+          >
             <Flex>
               <Box sx={{ width: 40, flexShrink: 0 }}>
                 <Checkbox

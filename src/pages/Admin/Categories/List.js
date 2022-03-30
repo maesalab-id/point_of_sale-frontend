@@ -1,8 +1,9 @@
 import { Button, Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
-import { Box, Container, Flex, ListGroup, useClient, useList } from "components";
+import { Box, Container, Flex, ListGroup, State, useClient, useList } from "components";
 import { Pagination } from "components/Pagination";
 import { toaster } from "components/toaster";
 import { useEffect, useState } from "react";
+import { DialogEdit } from "./Dialog.Edit";
 import { DialogRemove } from "./Dialog.Remove";
 
 const List = () => {
@@ -102,7 +103,17 @@ const List = () => {
           </Box>
         )}
         {items && items.map((item) => (
-          <ListGroup.Item key={item["id"]}>
+          <ListGroup.Item
+            key={item["id"]}
+            sx={{
+              "& .action-button": {
+                opacity: 0
+              },
+              "&:hover .action-button": {
+                opacity: 1
+              }
+            }}
+          >
             <Flex>
               <Box sx={{ width: 40, flexShrink: 0 }}>
                 <Checkbox
@@ -125,6 +136,35 @@ const List = () => {
                 <Box>
                   {item["name"]}
                 </Box>
+              </Box>
+              <Box
+                className="action-button"
+                sx={{ width: 30 }}
+              >
+                <State>
+                  {([isOpen, setOpen]) => (
+                    <>
+                      <Button
+                        minimal={true}
+                        icon="edit"
+                        onClick={() => {
+                          setOpen(true);
+                        }}
+                      />
+                      <DialogEdit
+                        data={item}
+                        isOpen={isOpen}
+                        onClose={() => { setOpen(false) }}
+                        onSubmitted={() => {
+                          setFilter(f => ({ ...f, type: undefined }));
+                          toaster.show({
+                            intent: "success",
+                            message: "Category was updated"
+                          });
+                        }}
+                      />
+                    </>)}
+                </State>
               </Box>
             </Flex>
           </ListGroup.Item>))}
