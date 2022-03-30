@@ -1,10 +1,11 @@
-import { Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
-import { Box, Container, Flex, ListGroup, useClient, useList } from "components";
+import { Button, Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
+import { Box, Container, Flex, ListGroup, State, useClient, useList } from "components";
 import { Pagination } from "components/Pagination";
 import { useEffect } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
 import moment from "moment";
+import { DialogDetails } from "pages/Admin/Orders/Dialog.Details";
 
 const List = () => {
   const client = useClient();
@@ -19,6 +20,7 @@ const List = () => {
         const query = {
           $distinct: true,
           $limit: 25,
+          "vendor_id": filter["vendor_id"] || undefined,
           "order_number": filter["order_number"] || undefined,
           "created_at": (startDate.isValid() && endDate.isValid()) ? {
             $gte: startDate.isValid() ? startDate.toISOString() : undefined,
@@ -137,31 +139,55 @@ const List = () => {
                   }}
                 />
               </Box>
-              {[{
-                label: "Order Number",
-                value: `#${_get(item, "order_number")}`,
-              }, {
-                label: "Total Price",
-                value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
-              }, {
-                label: "Quantity",
-                value: `${_get(item, "quantity")}`,
-              }, {
-                label: "Vendor",
-                value: `${_get(item, "vendor.name")}`,
-              }, {
-                label: "Date",
-                value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
-              }].map(({ label, value }) => (
-                <Box key={label} sx={{ width: `${100 / 4}%` }}>
-                  <Box sx={{ color: "gray.5" }}>
-                    {label}
+              <Flex sx={{ flexGrow: 1 }}>
+                {[{
+                  label: "Order Number",
+                  value: `#${_get(item, "order_number")}`,
+                }, {
+                  label: "Total Price",
+                  value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
+                }, {
+                  label: "Quantity",
+                  value: `${_get(item, "quantity")}`,
+                }, {
+                  label: "Date",
+                  value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
+                }, {
+                  label: "Vendor",
+                  value: `${_get(item, "vendor.name")}`,
+                }].map(({ label, value }) => (
+                  <Box key={label} sx={{ width: `${100 / 4}%` }}>
+                    <Box sx={{ color: "gray.5" }}>
+                      {label}
+                    </Box>
+                    <Box>
+                      {value}
+                    </Box>
                   </Box>
-                  <Box>
-                    {value}
-                  </Box>
-                </Box>
-              ))}
+                ))}
+              </Flex>
+              <Box
+                className="action-button"
+                sx={{ width: 30 }}
+              >
+                <State>
+                  {([isOpen, setOpen]) => (
+                    <>
+                      <Button
+                        minimal={true}
+                        icon="info-sign"
+                        onClick={() => {
+                          setOpen(true);
+                        }}
+                      />
+                      <DialogDetails
+                        id={_get(item, "id")}
+                        isOpen={isOpen}
+                        onClose={() => { setOpen(false) }}
+                      />
+                    </>)}
+                </State>
+              </Box>
             </Flex>
           </ListGroup.Item>))}
       </ListGroup>

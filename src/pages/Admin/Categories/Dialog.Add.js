@@ -14,6 +14,7 @@ const initialValues = {
 }
 
 export const DialogAdd = ({
+  initialValue = initialValues,
   isOpen,
   onClose = () => { },
   onSubmitted = () => { }
@@ -29,7 +30,10 @@ export const DialogAdd = ({
     >
       <Formik
         validationSchema={Schema}
-        initialValues={initialValues}
+        initialValues={{
+          ...initialValues,
+          ...initialValue,
+        }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const res = await client["categories"].create(values);

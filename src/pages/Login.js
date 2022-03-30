@@ -30,11 +30,20 @@ const Login = () => {
         pt: 4,
       }}>
         <Box sx={{ textAlign: "center", py: 3 }}>
+          <Box
+            as="img"
+            src="logo192.png"
+            sx={{
+              width: 75
+            }}
+          />
           <Box as="h1" sx={{
+            mt: 3,
+            mb: 3,
             fontSize: 4,
             fontWeight: "lighter"
           }}>
-            Login to Points of Sale
+            Points of Sale
           </Box>
         </Box>
         <Box sx={{

@@ -1,5 +1,5 @@
 import { Button, ControlGroup, Icon, InputGroup, Tag } from "@blueprintjs/core"
-import { Box, Flex, useList, DateRangePicker } from "components"
+import { Box, Flex, useList, DateRangePicker, Divider } from "components"
 import { filterField } from ".";
 import moment from "moment";
 import _get from "lodash.get";
@@ -8,7 +8,7 @@ export const Toolbar = () => {
   const { filter, setFilter } = useList();
   return (
     <Flex>
-      <Flex sx={{ flexGrow: 1, alignItems: "center" }}>
+      <Flex sx={{ flexGrow: 1 }}>
         <Box sx={{ mr: 2 }}>
           <ControlGroup>
             <InputGroup
@@ -21,7 +21,9 @@ export const Toolbar = () => {
             />
           </ControlGroup>
         </Box>
-        <Box sx={{ mr: 2 }}>
+        <Divider sx={{ mr: 2 }} />
+        <Flex sx={{ mr: 2, alignItems: "center" }}>
+          <Box sx={{ mr: 2 }}>Date Range:</Box>
           <DateRangePicker
             value={[
               _get(filter, "start"),
@@ -43,7 +45,7 @@ export const Toolbar = () => {
               <Tag>{filter["end"] ? moment(_get(filter, "end"), "DD-MM-YYYY").format("dddd, LL") : "not set"}</Tag>
             </Box>
           </DateRangePicker>
-        </Box>
+        </Flex>
         <Box>
           {filterField.map(f => !!filter[f]).indexOf(true) !== -1
             && <Button

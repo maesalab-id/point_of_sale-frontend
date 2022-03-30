@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { DialogRemove } from "./Dialog.Remove";
 import _get from "lodash.get";
 import { DialogEdit } from "./Dialog.Edit";
+import currency from "currency.js";
+import { CURRENCY_OPTIONS } from "components/constants";
 
 const List = () => {
   const client = useClient();
@@ -137,26 +139,26 @@ const List = () => {
               </Box>
               {[{
                 label: "Code",
-                props: "code",
+                value: `${_get(item, "code")}`,
               }, {
                 label: "Name",
-                props: "name",
+                value: `${_get(item, "name")}`,
               }, {
                 label: "Price",
-                props: "price",
+                value: `${currency(_get(item, "price"), CURRENCY_OPTIONS).format()} /unit`,
               }, {
-                label: "Quantity",
-                props: "quantity",
+                label: "Stock",
+                value: `${_get(item, "quantity")} unit`,
               }, {
                 label: "Category",
-                props: "category.name",
-              }].map(({ label, props }) => (
+                value: `${_get(item, "category.name")}`,
+              }].map(({ label, value }) => (
                 <Box key={label} sx={{ width: `${100 / 5}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>
                   <Box>
-                    {_get(item, props)}
+                    {value}
                   </Box>
                 </Box>
               ))}
@@ -182,7 +184,7 @@ const List = () => {
                           setFilter(f => ({ ...f, type: undefined }));
                           toaster.show({
                             intent: "success",
-                            message: "Product has been created"
+                            message: "Product has been updated"
                           });
                         }}
                       />
