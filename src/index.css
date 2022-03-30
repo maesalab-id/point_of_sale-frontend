@@ -7,10 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.bp3-input-group {
+.bp3-input-group input {
   max-width: 390px;
 }
-.bp3-input-group.bp3-fill {
+.bp3-input-group.bp3-fill input {
   max-width: 100%;
 }
 

@@ -24,10 +24,18 @@ export const Sidemenu = () => {
         <Menu>
           <MenuDivider title="Main Menu" />
           {[{
+            text: "Customers",
+            icon: "blank",
+            path: "customers"
+          }, {
+            text: "Vendors",
+            icon: "blank",
+            path: "vendors"
+          }, {
             text: "Products",
             icon: "blank",
             path: "products"
-          },{
+          }, {
             text: "Categories",
             icon: "blank",
             path: "categories"
