@@ -6,7 +6,7 @@ import { Header } from "./Header"
 import List from "./List"
 import { Toolbar } from "./Toolbar";
 
-export const filterField = ["order_number"];
+export const filterField = ["order_number", "start", "end"];
 
 export const Orders = () => {
   const location = useLocation();

@@ -5,6 +5,7 @@ export { useClient } from "./client";
 export { AspectRatio } from "./AspectRatio";
 export { Box, Flex } from "./Grid";
 export { Container } from "./Container";
+export { DateRangePicker } from "./DateRangePicker";
 export { Divider } from "./Divider";
 export { FetchAndSelect } from "./FetchAndSelect";
 export { Pagination } from "./Pagination";

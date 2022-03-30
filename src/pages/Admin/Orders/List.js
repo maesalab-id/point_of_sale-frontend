@@ -4,6 +4,7 @@ import { Pagination } from "components/Pagination";
 import { useEffect } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
+import moment from "moment";
 
 const List = () => {
   const client = useClient();
@@ -12,11 +13,17 @@ const List = () => {
   useEffect(() => {
     const fetch = async () => {
       setItems(null);
+      const startDate = moment(filter["start"], "DD-MM-YYYY");
+      const endDate = moment(filter["end"], "DD-MM-YYYY");
       try {
         const query = {
           $distinct: true,
           $limit: 25,
           "order_number": filter["order_number"] || undefined,
+          "created_at": (startDate.isValid() && endDate.isValid()) ? {
+            $gte: startDate.isValid() ? startDate.toISOString() : undefined,
+            $lte: endDate.isValid() ? endDate.toISOString() : undefined
+          } : undefined,
           $select: ["id", "order_number", "tax"],
           $skip: paging.skip,
           $sort: {
@@ -136,8 +143,11 @@ const List = () => {
               }, {
                 label: "Quantity",
                 value: `${_get(item, "quantity")}`,
+              }, {
+                label: "Date",
+                value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
               }].map(({ label, value }) => (
-                <Box key={label} sx={{ width: `${100 / 3}%` }}>
+                <Box key={label} sx={{ width: `${100 / 4}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>

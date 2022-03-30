@@ -4,6 +4,7 @@ import { Pagination } from "components/Pagination";
 import { useEffect } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
+import moment from "moment";
 
 const List = () => {
   const client = useClient();
@@ -12,12 +13,18 @@ const List = () => {
   useEffect(() => {
     const fetch = async () => {
       setItems(null);
+      const startDate = moment(filter["start"], "DD-MM-YYYY");
+      const endDate = moment(filter["end"], "DD-MM-YYYY");
       try {
         const query = {
           $distinct: true,
           $limit: 25,
           "receipt_number": filter["receipt_number"] || undefined,
-          $select: ["id", "receipt_number", "tax"],
+          "created_at": (startDate.isValid() && endDate.isValid()) ? {
+            $gte: startDate.isValid() ? startDate.toISOString() : undefined,
+            $lte: endDate.isValid() ? endDate.toISOString() : undefined
+          } : undefined,
+          $select: ["id", "receipt_number", "tax", "created_at"],
           $skip: paging.skip,
           $sort: {
             id: -1
@@ -138,9 +145,12 @@ const List = () => {
                 value: `${currency(_get(item, "total"), { symbol: "Rp. ", precision: 0 }).format()}`,
               }, {
                 label: "Quantity",
-                value: `${_get(item, "quantity")}`,
+                value: `${_get(item, "quantity")} unit`,
+              }, {
+                label: "Date",
+                value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
               }].map(({ label, value }) => (
-                <Box key={label} sx={{ width: `${100 / 3}%` }}>
+                <Box key={label} sx={{ width: `${100 / 5}%` }}>
                   <Box sx={{ color: "gray.5" }}>
                     {label}
                   </Box>

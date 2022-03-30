@@ -6,7 +6,7 @@ import { Header } from "./Header"
 import List from "./List"
 import { Toolbar } from "./Toolbar";
 
-export const filterField = ["receipt_number"];
+export const filterField = ["receipt_number", "start", "end"];
 
 export const Receipts = () => {
   const location = useLocation();

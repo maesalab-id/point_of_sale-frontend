@@ -32,9 +32,6 @@ export const Header = () => {
                   <span>Signed as <Box as="span" sx={{ fontWeight: "bold" }}>{account && role}</Box></span>
                 } />
                 <MenuDivider />
-                <MenuItem text="Settings" />
-                <MenuItem text="Help" />
-                <MenuDivider />
                 <MenuItem
                   intent="danger"
                   icon="log-out"
