@@ -158,7 +158,7 @@ export const DialogAdd = ({
                           </Box>
                         </Flex>
                       </ListGroupHeader>
-                      {values["orders"].map((_, index) => {
+                      {values["orders"].map((value, index) => {
                         return (
                           <ListGroupItem key={index}>
                             <Flex sx={{ mx: -2 }}>
@@ -174,22 +174,26 @@ export const DialogAdd = ({
                                     service={client["items"]}
                                     id="f-item_id"
                                     name={`orders[${index}].item_id`}
-                                    value={_get(values, `orders[${index}].item_id`)}
+                                    value={_get(value, "item_id")}
                                     intent={_get(errors, `orders[${index}].item_id`) ? "danger" : "none"}
                                     onChange={async ({ value }) => {
                                       await setFieldValue(`orders[${index}].item_id`, value);
                                     }}
                                     onPreFetch={(q, query) => {
+                                      let selectedItems = _get(values, `orders`).filter((_, i) => i !== index).map((order) => {
+                                        return order["item_id"];
+                                      }).reduce((p, c) => {
+                                        if (typeof c === "undefined") return p;
+                                        return [...p, c];
+                                      }, []);
                                       return {
                                         ...query,
                                         "name": q ? {
                                           $iLike: `%${q}%`
                                         } : undefined,
-                                        "id": {
-                                          "$nin": _get(values, `orders`).filter((_, i) => i !== index).map((order) => {
-                                            return order["item_id"];
-                                          })
-                                        },
+                                        "id": selectedItems.length > 0 ? {
+                                          "$nin": selectedItems
+                                        } : undefined,
                                         $select: ["id", "name"]
                                       }
                                     }}

@@ -1,4 +1,4 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup, Spinner } from "@blueprintjs/core";
+import { Classes, Dialog, Spinner } from "@blueprintjs/core";
 import { Box, Divider, Flex, useClient } from "components";
 import { toaster } from "components/toaster";
 import { useEffect, useMemo, useState } from "react";
@@ -69,7 +69,7 @@ export const DialogDetails = ({
       }
     }
     fetch();
-  }, [id, isOpen]);
+  }, [client, id, isOpen]);
 
   return (
     <Dialog
@@ -90,7 +90,7 @@ export const DialogDetails = ({
               {_get(receipt, "customer") &&
                 <Flex sx={{ mt: 2 }}>
                   <Box sx={{ flexGrow: 1 }}>Customer:</Box>
-                  <Box  sx={{ textAlign: "right" }}>
+                  <Box sx={{ textAlign: "right" }}>
                     <Box>{_get(receipt, "customer.name")}</Box>
                     <Box sx={{ color: "gray.5" }}>{_get(receipt, "customer.phone_number")}</Box>
                   </Box>

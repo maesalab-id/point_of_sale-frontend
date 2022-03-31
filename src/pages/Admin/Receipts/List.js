@@ -62,7 +62,7 @@ const List = () => {
       skip: res.skip,
       data
     };
-  }, [client, filter, paging.skip, setItems, setPaging]);
+  }, [client, paging.skip, setItems, filter]);
 
   const onExport = useCallback(async () => {
     let data = null;
@@ -73,8 +73,8 @@ const List = () => {
     });
 
     const startEnd = [
-      filter["start"] ? moment(filter["start"], "DD-MM-YYYY").format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
-      filter["end"] ? moment(filter["end"], "DD-MM-YYYY").format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
+      filter.start ? moment(filter.start, "DD-MM-YYYY").format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
+      filter.end ? moment(filter.end, "DD-MM-YYYY").format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
     ];
 
     try {
@@ -151,7 +151,7 @@ const List = () => {
       )
     });
 
-  }, [items, fetchList, filter["start"], filter["end"]]);
+  }, [fetchList, filter.start, filter.end]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -177,7 +177,7 @@ const List = () => {
       }
     }
     fetch();
-  }, [fetchList]);
+  }, [fetchList, setItems, setPaging]);
 
   return (
     <Container sx={{ px: 3 }}>

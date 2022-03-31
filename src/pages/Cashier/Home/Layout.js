@@ -1,4 +1,4 @@
-import { Button, Text } from "@blueprintjs/core";
+import { Text } from "@blueprintjs/core";
 import { Box, Divider, Flex, useClient, useList } from "components";
 import { VENDOR_INFORMATION } from "components/constants";
 import { Cart } from "./Cart";
