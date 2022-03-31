@@ -16,10 +16,6 @@ export const exportToCSV = ({
     csvContent += result[i].join(";") + "\r\n";
   }
 
-  for (let i = 0; i < result.length; i++) {
-    console.log(result[i]);
-  }
-
   let encodedUri = encodeURI(csvContent);
 
   let link = document.createElement("a");
