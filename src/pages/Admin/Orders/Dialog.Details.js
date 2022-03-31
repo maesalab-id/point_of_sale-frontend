@@ -92,10 +92,9 @@ export const DialogDetails = ({
             </Box>
             <Box>
               <Box className={Classes.CARD} sx={{ px: 0, py: 2 }}>
-                <Box></Box>
                 <Box>
-                  {_get(order, "order_lists").map((item) => (
-                    <Flex sx={{ px: 2, mb: 2 }}>
+                  {_get(order, "order_lists").map((item, index) => (
+                    <Flex key={index} sx={{ px: 2, mb: 2 }}>
                       <Box sx={{ flexGrow: 1 }}>
                         <Box sx={{ mr: 2 }}>{_get(item, "item.name")}</Box>
                         <Box sx={{ fontSize: 0, color: "gray.5" }}>{_get(item, "item.code")}</Box>

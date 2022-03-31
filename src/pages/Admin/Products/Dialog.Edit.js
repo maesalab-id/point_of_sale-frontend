@@ -1,9 +1,10 @@
 import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
-import { FetchAndSelect, useClient } from "components";
+import { FetchAndSelect, State, useClient } from "components";
 import { toaster } from "components/toaster";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import _get from "lodash.get";
+import { DialogAdd as CategoryDialogAdd } from "../Categories/Dialog.Add";
 
 const Schema = Yup.object().shape({
   "name": Yup.string().required(),
@@ -97,41 +98,72 @@ export const DialogEdit = ({
                   intent={errors["price"] ? "danger" : "none"}
                 />
               </FormGroup>
-              <FormGroup
-                label="Category"
-                labelFor="f-category_id"
-                helperText={errors["category_id"]}
-                intent={"danger"}
+              <State
+                initialValue={{
+                  isOpen: false,
+                  query: ""
+                }}
               >
-                <FetchAndSelect
-                  loaded={true}
-                  service={client["categories"]}
-                  id="f-category_id"
-                  name="category_id"
-                  value={values["category_id"]}
-                  intent={errors["category_id"] ? "danger" : "none"}
-                  onChange={async ({ value }) => {
-                    await setFieldValue("category_id", value);
-                  }}
-                  onPreFetch={(q, query) => {
-                    return {
-                      ...query,
-                      "name": q ? {
-                        $iLike: `%${q}%`
-                      } : undefined,
-                      $select: ["id", "name"]
-                    }
-                  }}
-                  onFetched={(items) => {
-                    return items.map((item) => {
-                      return {
-                        label: item["name"],
-                        value: `${item["id"]}`,
-                      }
-                    })
-                  }}
-                />
-              </FormGroup>
+                {([state, setState]) => <>
+                  <FormGroup
+                    label="Category"
+                    labelFor="f-category_id"
+                    helperText={errors["category_id"]}
+                    intent={"danger"}
+                  >
+                    <FetchAndSelect
+                      allowCreateItem={true}
+                      loaded={true}
+                      service={client["categories"]}
+                      id="f-category_id"
+                      name="category_id"
+                      value={values["category_id"]}
+                      intent={errors["category_id"] ? "danger" : "none"}
+                      onChange={async ({ value }) => {
+                        await setFieldValue("category_id", value);
+                      }}
+                      onCreateNew={(query) => {
+                        setState({
+                          isOpen: true,
+                          query
+                        })
+                      }}
+                      onPreFetch={(q, query) => {
+                        return {
+                          ...query,
+                          "name": q ? {
+                            $iLike: `%${q}%`
+                          } : undefined,
+                          $select: ["id", "name"]
+                        }
+                      }}
+                      onFetched={(items) => {
+                        return items.map((item) => {
+                          return {
+                            label: item["name"],
+                            value: `${item["id"]}`,
+                          }
+                        })
+                      }}
+                    />
+                  </FormGroup>
+                  <CategoryDialogAdd
+                    isOpen={state.isOpen}
+                    initialValue={{
+                      name: state.query
+                    }}
+                    onClose={() => {
+                      setState(s => ({ ...s, isOpen: false }));
+                    }}
+                    onSubmitted={() => {
+                      toaster.show({
+                        intent: "success",
+                        message: "Category created"
+                      });
+                    }}
+                  />
+                </>}
+              </State>
             </div>
             <div className={Classes.DIALOG_FOOTER}>
               <div className={Classes.DIALOG_FOOTER_ACTIONS}>
