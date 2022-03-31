@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from "@blueprintjs/core"
 import { Flex } from "components"
 import { useMemo } from "react"
 
-export const Pagination = ({ loading, disabled, total, skip, limit, onClick = () => { } }) => {
+export const Pagination = ({ sx = {}, loading, disabled, total, skip, limit, onClick = () => { } }) => {
   const opt = useMemo(() => {
     if (total === null
       || skip === null
@@ -48,7 +48,7 @@ export const Pagination = ({ loading, disabled, total, skip, limit, onClick = ()
   }
 
   return (
-    <Flex sx={{ justifyContent: "center" }}>
+    <Flex sx={{ ...sx, justifyContent: "center" }}>
       {opt.active > 1 &&
         <Button
           disabled={disabled}

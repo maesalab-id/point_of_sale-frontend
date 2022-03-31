@@ -1,5 +1,5 @@
 import { Button, Checkbox, Classes, NonIdealState, Spinner, Tag } from "@blueprintjs/core";
-import { Box, Container, Flex, ListGroup, useClient, useList } from "components";
+import { Box, Container, Flex, ListGroup, State, useClient, useList } from "components";
 import { Pagination } from "components/Pagination";
 import { useCallback, useEffect } from "react";
 import _get from "lodash.get";
@@ -7,6 +7,7 @@ import currency from "currency.js";
 import moment from "moment";
 import { exportToCSV } from "components/exportToCSV";
 import { toaster } from "components/toaster";
+import { DialogDetails } from "./Dialog.Details";
 
 const List = () => {
   const client = useClient();
@@ -253,35 +254,60 @@ const List = () => {
                   }}
                 />
               </Box>
-              {[{
-                label: "Order Number",
-                value: `#${_get(item, "receipt_number")}`,
-              }, {
-                label: "Subtotal",
-                value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
-              }, {
-                label: "Total Price + 10% tax",
-                value: `${currency(_get(item, "total"), { symbol: "Rp. ", precision: 0 }).format()}`,
-              }, {
-                label: "Quantity",
-                value: `${_get(item, "quantity")} unit`,
-              }, {
-                label: "Date",
-                value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
-              }].map(({ label, value }) => (
-                <Box key={label} sx={{ width: `${100 / 5}%` }}>
-                  <Box sx={{ color: "gray.5" }}>
-                    {label}
+              <Flex sx={{ flexGrow: 1 }}>
+                {[{
+                  label: "Order Number",
+                  value: `#${_get(item, "receipt_number")}`,
+                }, {
+                  label: "Subtotal",
+                  value: `${currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}`,
+                }, {
+                  label: "Total Price + 10% tax",
+                  value: `${currency(_get(item, "total"), { symbol: "Rp. ", precision: 0 }).format()}`,
+                }, {
+                  label: "Quantity",
+                  value: `${_get(item, "quantity")} unit`,
+                }, {
+                  label: "Date",
+                  value: `${moment(_get(item, "created_at")).format("DD/MM/YYYY")}`,
+                }].map(({ label, value }) => (
+                  <Box key={label} sx={{ width: `${100 / 5}%` }}>
+                    <Box sx={{ color: "gray.5" }}>
+                      {label}
+                    </Box>
+                    <Box>
+                      {value}
+                    </Box>
                   </Box>
-                  <Box>
-                    {value}
-                  </Box>
-                </Box>
-              ))}
+                ))}
+              </Flex>
+              <Box
+                className="action-button"
+                sx={{ width: 30 }}
+              >
+                <State>
+                  {([isOpen, setOpen]) => (
+                    <>
+                      <Button
+                        minimal={true}
+                        icon="info-sign"
+                        onClick={() => {
+                          setOpen(true);
+                        }}
+                      />
+                      <DialogDetails
+                        id={_get(item, "id")}
+                        isOpen={isOpen}
+                        onClose={() => { setOpen(false) }}
+                      />
+                    </>)}
+                </State>
+              </Box>
             </Flex>
           </ListGroup.Item>))}
       </ListGroup>
       <Pagination
+        sx={{ mt: 3 }}
         loading={items === null}
         total={paging.total}
         limit={paging.limit}
