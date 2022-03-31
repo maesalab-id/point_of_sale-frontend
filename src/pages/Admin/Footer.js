@@ -1,4 +1,5 @@
 import { Box, Container, Flex } from "components";
+import { VENDOR_INFORMATION } from "components/constants";
 import { useMemo } from "react";
 import pjson from "../../../package.json";
 
@@ -17,7 +18,7 @@ export const Footer = () => {
         }}
       >
         <Flex>
-          <Box>© 2022 Maesalab Tech Indonesia</Box>
+          <Box>© 2022 {VENDOR_INFORMATION.NAME}</Box>
           <Box sx={{ flexGrow: 1 }} />
           <Box>App ver. {version}</Box>
         </Flex>

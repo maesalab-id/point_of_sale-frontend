@@ -6,6 +6,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import _get from "lodash.get";
 import { toaster } from "components/toaster";
+import { VENDOR_INFORMATION } from "components/constants";
 
 const Schema = Yup.object().shape({
   username: Yup.string().required(),
@@ -22,7 +23,7 @@ const Login = () => {
       bg: "gray.1"
     }}>
       <Helmet>
-        <title>Login ke POS</title>
+        <title>Login ke POS - {VENDOR_INFORMATION.NAME}</title>
       </Helmet>
       <Box sx={{
         width: 275,
@@ -39,11 +40,17 @@ const Login = () => {
           />
           <Box as="h1" sx={{
             mt: 3,
-            mb: 3,
+            mb: 1,
             fontSize: 4,
             fontWeight: "lighter"
           }}>
             Points of Sale
+          </Box>
+          <Box as="h3" sx={{
+            mb: 3,
+            fontWeight: "lighter"
+          }}>
+            {VENDOR_INFORMATION.NAME}
           </Box>
         </Box>
         <Box sx={{

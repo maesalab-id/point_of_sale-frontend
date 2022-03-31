@@ -1,5 +1,6 @@
 import { Button, Text } from "@blueprintjs/core";
 import { Box, Divider, Flex, useClient, useList } from "components";
+import { VENDOR_INFORMATION } from "components/constants";
 import { Cart } from "./Cart";
 import { Toolbar } from "./Toolbar";
 import { List } from "./List";
@@ -60,14 +61,11 @@ export const Layout = () => {
       <Flex sx={{ flexGrow: 1, flexDirection: "column" }}>
         <Flex sx={{ py: 3, px: 3, alignItems: "center" }}>
           <Box sx={{ flexGrow: 1, fontWeight: "bold" }}>
-            <Text>HOME</Text>
+            <Text>{VENDOR_INFORMATION.NAME}</Text>
           </Box>
           <Box sx={{ px: 3, flexGrow: 1, textAlign: "right" }}>
             <Box sx={{ fontSize: 0, color: "gray.5" }}>Logged in as</Box>
             <Box>{_get(client, "account.name")}</Box>
-          </Box>
-          <Box>
-            <Button outlined={true} icon="info-sign" text="help" />
           </Box>
         </Flex>
         <Toolbar />

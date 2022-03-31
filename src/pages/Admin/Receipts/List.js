@@ -1,56 +1,166 @@
-import { Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
+import { Button, Checkbox, Classes, NonIdealState, Spinner, Tag } from "@blueprintjs/core";
 import { Box, Container, Flex, ListGroup, useClient, useList } from "components";
 import { Pagination } from "components/Pagination";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
 import moment from "moment";
+import { exportToCSV } from "components/exportToCSV";
+import { toaster } from "components/toaster";
 
 const List = () => {
   const client = useClient();
   const { filter, items, setItems, status, paging, setPaging, selectedItem, dispatchSelectedItem } = useList();
 
+  const fetchList = useCallback(async ({
+    limit = 25,
+    start,
+    end
+  }) => {
+    const startDate = moment(start || filter["start"], "DD-MM-YYYY");
+    const endDate = moment(start || filter["end"], "DD-MM-YYYY");
+    const query = {
+      $distinct: true,
+      $limit: limit,
+      "receipt_number": filter["receipt_number"] || undefined,
+      "created_at": (startDate.isValid() && endDate.isValid()) ? {
+        $gte: startDate.isValid() ? startDate.startOf("day").toISOString() : undefined,
+        $lte: endDate.isValid() ? endDate.endOf("day").toISOString() : undefined
+      } : undefined,
+      $select: ["id", "receipt_number", "tax", "created_at"],
+      $skip: paging.skip,
+      $sort: {
+        id: -1
+      },
+      $include: [{
+        model: "receipt_items",
+        $select: ["price", "quantity"],
+      }]
+    };
+    const res = await client["receipts"].find({ query });
+    const data = res.data.map((item) => {
+      let tax = item["tax"];
+      let quantity = 0;
+      let price = _get(item, "receipt_items").reduce((p, c) => {
+        quantity += c.quantity;
+        return p + (parseInt(c.price) * c.quantity);
+      }, 0);
+      tax = price * tax;
+      let total = price + tax;
+      return {
+        ...item,
+        total,
+        price,
+        quantity,
+      }
+    });
+    setItems(data);
+    return {
+      total: res.total,
+      limit: res.limit,
+      skip: res.skip,
+      data
+    };
+  }, [client, filter, paging.skip, setItems, setPaging]);
+
+  const onExport = useCallback(async () => {
+    let data = null;
+
+    let toast = toaster.show({
+      intent: "none",
+      message: "Fetching data..."
+    });
+
+    const startEnd = [
+      filter["start"] ? moment(filter["start"], "DD-MM-YYYY").format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
+      filter["end"] ? moment(filter["end"], "DD-MM-YYYY").format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
+    ];
+
+    try {
+      data = await fetchList({
+        limit: 1000,
+        start: startEnd[0],
+        end: startEnd[1],
+      });
+    } catch (err) {
+      console.error(err);
+      toaster.dismiss(toast);
+      toaster.show({
+        intent: "danger",
+        message: err.message
+      });
+    }
+    if (!data) {
+      toaster.show({
+        intent: "warning",
+        message: "Can't export data"
+      })
+      return;
+    }
+
+    toaster.dismiss(toast);
+    toast = toaster.show({
+      intent: "none",
+      message: "Exporting data..."
+    });
+
+    const fileName = `[POS] ${startEnd.join(" to ")}.csv`;
+
+    try {
+      exportToCSV({
+        fileName,
+        header: ["Receipt No.", "Date", "Subtotal", "Tax (10%)", "Total"],
+        items: data.data,
+        parseData(item) {
+          const price = {
+            total: 0,
+            subTotal: 0,
+            tax: 0
+          }
+          price["subTotal"] = item["receipt_items"].reduce((p, c) => {
+            return p + (c["price"] * c["quantity"]);
+          }, 0);
+          price["tax"] = item["tax"] * price["subTotal"];
+          price["total"] = price["tax"] + price["subTotal"];
+          return [
+            item["receipt_number"],
+            moment(item["created_at"]).format("DD/MM/YYYY HH:mm"),
+            price["subTotal"],
+            price["tax"],
+            price["total"]
+          ]
+        }
+      });
+    } catch (err) {
+      toaster.dismiss(toast);
+      console.error(err);
+      toaster.show({
+        intent: "danger",
+        message: err.message
+      })
+    }
+
+    toaster.dismiss(toast);
+    toaster.show({
+      intent: "success",
+      message: (
+        <>
+          {"Data exported "}<Tag>{`${fileName}`}</Tag>
+        </>
+      )
+    });
+
+  }, [items, fetchList, filter["start"], filter["end"]]);
+
   useEffect(() => {
     const fetch = async () => {
+
       setItems(null);
-      const startDate = moment(filter["start"], "DD-MM-YYYY");
-      const endDate = moment(filter["end"], "DD-MM-YYYY");
       try {
-        const query = {
-          $distinct: true,
+        let res = await fetchList({
           $limit: 25,
-          "receipt_number": filter["receipt_number"] || undefined,
-          "created_at": (startDate.isValid() && endDate.isValid()) ? {
-            $gte: startDate.isValid() ? startDate.toISOString() : undefined,
-            $lte: endDate.isValid() ? endDate.toISOString() : undefined
-          } : undefined,
-          $select: ["id", "receipt_number", "tax", "created_at"],
-          $skip: paging.skip,
-          $sort: {
-            id: -1
-          },
-          $include: [{
-            model: "receipt_items",
-            $select: ["price", "quantity"],
-          }]
-        };
-        const res = await client["receipts"].find({ query });
-        setItems(res.data.map((item) => {
-          let tax = item["tax"];
-          let quantity = 0;
-          let price = _get(item, "receipt_items").reduce((p, c) => {
-            quantity += c.quantity;
-            return p + (parseInt(c.price) * c.quantity);
-          }, 0);
-          tax = price * tax;
-          let total = price + tax;
-          return {
-            ...item,
-            total,
-            price,
-            quantity,
-          }
-        }));
+        });
+        setItems(res.data);
         setPaging({
           total: res.total,
           limit: res.limit,
@@ -59,10 +169,14 @@ const List = () => {
       } catch (err) {
         console.error(err);
         setItems([]);
+        toaster.show({
+          intent: "danger",
+          message: err.message
+        })
       }
     }
     fetch();
-  }, [client, filter, paging.skip, setItems, setPaging]);
+  }, [fetchList]);
 
   return (
     <Container sx={{ px: 3 }}>
@@ -93,6 +207,11 @@ const List = () => {
                 {selectedItem.length} selected
               </Box>
             }
+            <Box sx={{ flexGrow: 1 }} />
+            <Button
+              text="Export to CSV"
+              onClick={() => onExport()}
+            />
           </Flex>
         </ListGroup.Header>
         {items === null &&

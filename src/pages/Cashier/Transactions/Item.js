@@ -35,17 +35,27 @@ export const Item = ({
       {/* <AspectRatio ratio="4:3"> */}
       <Box sx={{ px: 2, py: 3, height: "100%" }}>
         <Flex sx={{ flexDirection: "column", flexGrow: 1, height: "100%" }}>
-          <Box sx={{
+          <Flex sx={{
             fontSize: 1,
             fontWeight: "bold"
           }}>
-            Receipt #{data["receipt_number"]}
-          </Box>
+            <Box sx={{ flexGrow: 1 }}>
+              Receipt
+            </Box>
+            <Box>
+              #{String(_get(data, "receipt_number")).padStart(7, "0")}
+            </Box>
+          </Flex>
+          <Flex sx={{ fontSize: 0 }}>
+            <Box sx={{ flexGrow: 1 }}>
+              Date
+            </Box>
+            <Box>
+              at {moment(_get(data, "created_at")).format("HH:mm a")}
+            </Box>
+          </Flex>
           <Box sx={{ flexGrow: 1, color: "gray.5" }}>
             {_get(meta, "quantity")} unit of {_get(data, "receipt_items.length")} item
-          </Box>
-          <Box sx={{ fontSize: 0, textAlign: "right" }}>
-            at {moment(_get(data, "created_at")).format("HH:mm a")}
           </Box>
           <Divider />
           <Flex sx={{ fontSize: 0, color: "gray.5" }}>

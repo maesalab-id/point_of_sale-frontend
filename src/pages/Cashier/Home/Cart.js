@@ -5,7 +5,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import currency from "currency.js";
 import _get from "lodash.get";
 import { DialogCheckout } from "./Dialog.Checkout";
-import { CURRENCY_OPTIONS } from "components/constants";
+import { CURRENCY_OPTIONS, VENDOR_INFORMATION } from "components/constants";
 import { Print } from "../Transactions/Print";
 import { useReactToPrint } from "react-to-print";
 
@@ -58,7 +58,7 @@ export const Cart = ({
       toaster.dismiss(toast);
       toaster.show({
         intent: "success",
-        message: `Successfull Check out #${res["receipt_number"]}`
+        message: `Successfull Check out #${String(_get(res, "receipt_number")).padStart(7, "0")}`
       });
 
       onClear();
@@ -215,8 +215,8 @@ export const Cart = ({
         </Box>
         <Print
           ref={printArea}
-          company_name="Sample Company Ltd"
-          company_address="35 Kingsland Road London AK E2 8AA"
+          company_name={VENDOR_INFORMATION.NAME}
+          company_address={VENDOR_INFORMATION.ADDRESS}
           receipt_no={_get(submitted, "receipt_number")}
           items={_get(submitted, "items") && _get(submitted, "items").map((item) => ({
             ...item,

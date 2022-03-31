@@ -1,6 +1,6 @@
 import { Classes } from "@blueprintjs/core";
 import { Box, Flex } from "components";
-import { forwardRef, useRef } from "react";
+import { forwardRef } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
 import { CURRENCY_OPTIONS } from "components/constants";
@@ -35,7 +35,7 @@ export const Print = forwardRef(({
             <Box as="h3" className={Classes.HEADING} sx={{ mb: 2 }}>INVOICE</Box>
             <Flex sx={{ mb: 1 }}>
               <Box sx={{ flexGrow: 1 }}>Receipt No. </Box>
-              <Box sx={{ fontWeight: "bold" }}>{receipt_no}</Box>
+              <Box sx={{ fontWeight: "bold" }}>#{String(receipt_no).padStart(7, "0")}</Box>
             </Flex>
             <Flex sx={{ mb: 2 }}>
               <Box sx={{ flexGrow: 1 }}>Date: </Box>
