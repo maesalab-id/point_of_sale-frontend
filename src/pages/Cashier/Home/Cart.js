@@ -8,6 +8,7 @@ import { DialogCheckout } from "./Dialog.Checkout";
 import { CURRENCY_OPTIONS, VENDOR_INFORMATION } from "components/constants";
 import { Print } from "../Transactions/Print";
 import { useReactToPrint } from "react-to-print";
+import { CartItem } from "./Cart.Item";
 
 export const Cart = ({
   cart,
@@ -27,8 +28,10 @@ export const Cart = ({
     let total = 0;
     let subtotal = 0;
     let tax = 10;
-    subtotal = cart.reduce((p, { price, count }) => {
-      return p + (price * count);
+    subtotal = cart.reduce((p, { price, count, discount }) => {
+      const discount_price = (price * (discount / 100) || 0);
+      const price_discounted = price - discount_price;
+      return p + (price_discounted * count);
     }, 0);
     tax = (10 * subtotal) / 100;
     total = subtotal + tax;
@@ -54,7 +57,17 @@ export const Cart = ({
       message: "Checking out"
     });
     try {
-      const res = await client["receipts"].create(values);
+      const res = await client["receipts"].create({
+        ...values,
+        items: cart.map((item) => {
+          return {
+            item_id: item["id"],
+            quantity: item["count"],
+            price: item["price"],
+            discount: item["discount"]
+          }
+        }),
+      });
       toaster.dismiss(toast);
       toaster.show({
         intent: "success",
@@ -94,31 +107,16 @@ export const Cart = ({
       </Flex>
       <Box sx={{ flexGrow: 1, overflowX: "hidden" }}>
         {cart.map((item, i) => (
-          <Flex key={i} sx={{ py: 2, px: 3, alignItems: "center" }}>
-            <Box sx={{ mr: 2, flexGrow: 1 }}>
-              <Box>
-                {item["name"]}
-              </Box>
-              <Box sx={{ fontWeight: "bold" }}>{currency(item["price"], { symbol: "Rp. ", precision: 0 }).format()}</Box>
-            </Box>
-            <Flex sx={{ alignItems: "center", mr: 2 }}>
-              <Button
-                small={true}
-                icon={item["count"] > 1 ? "minus" : "trash"}
-                onClick={() => {
-                  onRemove(item);
-                }} />
-              <Box sx={{ width: "30px", textAlign: "center", p: 1 }}>{item["count"]}</Box>
-              <Button
-                disabled={item.count >= item.quantity}
-                small={true}
-                icon="plus"
-                onClick={() => {
-                  onAdd(item);
-                }}
-              />
-            </Flex>
-          </Flex>
+          <CartItem
+            key={i}
+            data={item}
+            onAdd={() => {
+              onAdd(item);
+            }}
+            onRemove={() => {
+              onRemove(item);
+            }}
+          />
         ))}
       </Box>
       <Box sx={{ px: 3, pt: 2 }}>
@@ -151,6 +149,7 @@ export const Cart = ({
           <DialogCheckout
             isOpen={dialogOpen === "checkout"}
             price={price}
+            tax={10}
             onClose={() => {
               setDialogOpen(null);
             }}
@@ -183,6 +182,7 @@ export const Cart = ({
           <DialogCheckout
             isOpen={dialogOpen === "checkout-print"}
             price={price}
+            tax={10}
             onClose={() => {
               setDialogOpen(null);
             }}

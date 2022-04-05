@@ -28,6 +28,10 @@ export const Sidemenu = () => {
             icon: "blank",
             path: "customers"
           }, {
+            text: "Vouchers",
+            icon: "blank",
+            path: "vouchers"
+          }, {
             text: "Vendors",
             icon: "blank",
             path: "vendors"

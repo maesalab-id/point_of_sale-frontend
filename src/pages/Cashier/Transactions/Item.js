@@ -1,4 +1,4 @@
-import { Card } from "@blueprintjs/core";
+import { Card, Tag } from "@blueprintjs/core";
 import { Box, Divider, Flex } from "components";
 import currency from "currency.js";
 import { useMemo } from "react";
@@ -9,12 +9,19 @@ export const Item = ({
   data,
   onClick = () => { }
 }) => {
+
   const meta = useMemo(() => {
     let quantity = 0;
     let price = _get(data, "receipt_items").reduce((p, c) => {
+      const price = parseInt(c.price);
+      const discount_price = (price * (c.discount / 100) || 0);
+      const price_discounted = price - discount_price;
       quantity += c.quantity;
-      return p + (parseInt(c.price) * c.quantity);
+      return p + (price_discounted * c.quantity);
     }, 0);
+
+    let voucher = (_get(data, "voucher.value") || 0) / 100;
+    price = price - (price * voucher);
 
     let tax = price * data["tax"];
     let total = price + tax;
@@ -23,9 +30,11 @@ export const Item = ({
       tax,
       total,
       quantity,
-      price
+      price,
+      voucher,
     }
   }, [data]);
+
   return (
     <Card
       style={{ padding: 0 }}
@@ -54,9 +63,14 @@ export const Item = ({
               at {moment(_get(data, "created_at")).format("HH:mm a")}
             </Box>
           </Flex>
-          <Box sx={{ flexGrow: 1, color: "gray.5" }}>
-            {_get(meta, "quantity")} unit of {_get(data, "receipt_items.length")} item
-          </Box>
+          <Flex>
+            <Box sx={{ fontSize: 0, flexGrow: 1, color: "gray.5" }}>
+              {_get(meta, "quantity")} unit of {_get(data, "receipt_items.length")} item
+            </Box>
+            {_get(data, "voucher") &&
+              <Tag intent="warning">-{_get(data, "voucher.value")}%</Tag>}
+          </Flex>
+
           <Divider />
           <Flex sx={{ fontSize: 0, color: "gray.5" }}>
             <Box sx={{ flexGrow: 1 }}>Subtotal</Box>

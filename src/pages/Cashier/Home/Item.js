@@ -1,11 +1,23 @@
-import { Card } from "@blueprintjs/core";
+import { Card, Tag } from "@blueprintjs/core";
 import { AspectRatio, Box, Flex } from "components";
 import currency from "currency.js";
+import _get from "lodash.get";
+import { useMemo } from "react";
 
 export const Item = ({
   data,
   onClick = () => { }
 }) => {
+
+  const extras = useMemo(() => {
+    const discount_price = (data.price * (data.discount / 100) || 0);
+    const price_discounted = data.price - discount_price;
+    return {
+      discount_price,
+      price_discounted
+    }
+  }, [data.discount, data.price]);
+
   return (
     <Card
       style={{ padding: 0 }}
@@ -32,12 +44,25 @@ export const Item = ({
             <Box sx={{ flexGrow: 1, color: "gray.5" }}>
               {data["quantity"]} unit left
             </Box>
-            <Box sx={{
-              fontSize: 3,
-              fontWeight: "bold"
-            }}>
-              {currency(data["price"], { symbol: "Rp. ", precision: 0 }).format()}
-            </Box>
+            {_get(data, "discount") &&
+              <Box sx={{
+                fontSize: 0
+              }}>
+                <strike>
+                  {currency(data["price"], { symbol: "Rp. ", precision: 0 }).format()}
+                </strike>
+              </Box>}
+            <Flex>
+              <Box sx={{
+                mr: 1,
+                fontSize: 2,
+                fontWeight: "bold"
+              }}>
+                {currency(_get(extras, "price_discounted"), { symbol: "Rp. ", precision: 0 }).format()}
+              </Box>
+              {_get(data, "discount") &&
+                <Tag intent="warning">-{_get(data, "discount")}%</Tag>}
+            </Flex>
           </Flex>
         </Box>
       </AspectRatio>

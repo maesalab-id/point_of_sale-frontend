@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Alignment, Button, MenuItem } from "@blueprintjs/core";
 import { Select as BPSelect } from "@blueprintjs/select";
 import _debounce from "lodash/debounce";
+import _get from "lodash.get";
 
 export const Select = ({
   id,
@@ -61,7 +62,7 @@ export const Select = ({
       <MenuItem
         key={item.value}
         active={modifiers.active}
-        disabled={modifiers.disabled}
+        disabled={modifiers.disabled || _get(item, "disabled")}
         onClick={handleClick}
         text={item.label}
         label={item.info}

@@ -97,6 +97,7 @@ export const ClientProvider = ({ children }) => {
       get "users"() { return feathers.service("users") },
       get "customers"() { return feathers.service("customers") },
       get "vendors"() { return feathers.service("vendors") },
+      get "vouchers"() { return feathers.service("vouchers") },
 
       get "items"() { return feathers.service("items") },
       get "categories"() { return feathers.service("categories") },

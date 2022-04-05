@@ -6,11 +6,13 @@ import { Products } from "./Products"
 import { Receipts } from "./Receipts"
 import { Users } from "./Users"
 import { Vendors } from "./Vendors"
+import { Vouchers } from "./Vouchers"
 
 export const Router = () => {
   return (
     <Routes>
       <Route index element={<Navigate to="orders" />} />
+      <Route path="vouchers" element={<Vouchers />} />
       <Route path="vendors" element={<Vendors />} />
       <Route path="customers" element={<Customers />} />
       <Route path="users" element={<Users />} />

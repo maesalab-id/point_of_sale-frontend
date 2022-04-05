@@ -20,9 +20,12 @@ export const List = ({
             $gte: moment().startOf("day").toISOString(),
             $lte: moment().endOf("day").toISOString(),
           },
-          $select: ["id", "receipt_number", "tax", "created_at"],
+          $select: ["id", "receipt_number", "tax", "created_at", "voucher_id"],
           $include: [{
-            model: "receipt_items"
+            model: "receipt_items",
+          }, {
+            model: "vouchers",
+            $select: ["name", "value"]
           }],
           $skip: paging.skip,
           $sort: {

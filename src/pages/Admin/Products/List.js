@@ -1,13 +1,10 @@
 import { Button, Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
-import { Box, Container, Flex, ListGroup, State, useClient, useList } from "components";
+import { Box, Container, Flex, ListGroup, useClient, useList } from "components";
 import { Pagination } from "components/Pagination";
 import { toaster } from "components/toaster";
 import { useEffect, useState } from "react";
 import { DialogRemove } from "./Dialog.Remove";
-import _get from "lodash.get";
-import { DialogEdit } from "./Dialog.Edit";
-import currency from "currency.js";
-import { CURRENCY_OPTIONS } from "components/constants";
+import { Item } from "./Item";
 
 const List = () => {
   const client = useClient();
@@ -25,7 +22,7 @@ const List = () => {
           "name": filter["name"] ? {
             $iLike: `%${filter["name"]}%`
           } : undefined,
-          $select: ["id", "name", "code", "price", "quantity"],
+          $select: ["id", "name", "discount", "code", "price", "quantity"],
           $skip: paging.skip,
           $sort: {
             id: 1
@@ -111,88 +108,7 @@ const List = () => {
           </Box>
         )}
         {items && items.map((item) => (
-          <ListGroup.Item
-            key={item["id"]}
-            sx={{
-              "& .action-button": {
-                opacity: 0
-              },
-              "&:hover .action-button": {
-                opacity: 1
-              }
-            }}
-          >
-            <Flex>
-              <Box sx={{ width: 40, flexShrink: 0 }}>
-                <Checkbox
-                  checked={selectedItem.indexOf(item["id"]) !== -1}
-                  onChange={(e) => {
-                    dispatchSelectedItem({
-                      type: "toggle",
-                      data: {
-                        name: item["id"],
-                        value: e.target.checked
-                      }
-                    })
-                  }}
-                />
-              </Box>
-              {[{
-                label: "Code",
-                value: `${_get(item, "code")}`,
-              }, {
-                label: "Name",
-                value: `${_get(item, "name")}`,
-              }, {
-                label: "Price",
-                value: `${currency(_get(item, "price"), CURRENCY_OPTIONS).format()} /unit`,
-              }, {
-                label: "Stock",
-                value: `${_get(item, "quantity")} unit`,
-              }, {
-                label: "Category",
-                value: `${_get(item, "category.name")}`,
-              }].map(({ label, value }) => (
-                <Box key={label} sx={{ width: `${100 / 5}%` }}>
-                  <Box sx={{ color: "gray.5" }}>
-                    {label}
-                  </Box>
-                  <Box>
-                    {value}
-                  </Box>
-                </Box>
-              ))}
-              <Box
-                className="action-button"
-                sx={{ width: 30 }}
-              >
-                <State>
-                  {([isOpen, setOpen]) => (
-                    <>
-                      <Button
-                        minimal={true}
-                        icon="edit"
-                        onClick={() => {
-                          setOpen(true);
-                        }}
-                      />
-                      <DialogEdit
-                        data={item}
-                        isOpen={isOpen}
-                        onClose={() => { setOpen(false) }}
-                        onSubmitted={() => {
-                          setFilter(f => ({ ...f, type: undefined }));
-                          toaster.show({
-                            intent: "success",
-                            message: "Product has been updated"
-                          });
-                        }}
-                      />
-                    </>)}
-                </State>
-              </Box>
-            </Flex>
-          </ListGroup.Item>))}
+          <Item data={item} />))}
       </ListGroup>
       <Pagination
         loading={items === null}

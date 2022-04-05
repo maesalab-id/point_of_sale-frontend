@@ -1,4 +1,4 @@
-import { Button, Classes, NonIdealState, Spinner, Text } from "@blueprintjs/core";
+import { Button, Classes, NonIdealState, Spinner, Tag, Text } from "@blueprintjs/core";
 import { Box, Divider, Flex, useClient } from "components"
 import { toaster } from "components/toaster";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -6,6 +6,7 @@ import _get from "lodash.get";
 import currency from "currency.js";
 import { Print } from "./Print";
 import { useReactToPrint } from "react-to-print";
+import { ReceiptItem } from "./Receipt.Item";
 
 export const Receipt = ({
   data
@@ -23,20 +24,33 @@ export const Receipt = ({
     let quantity = 0;
     let price = 0;
     let tax = 0;
+    let discount = 0;
+    let voucher = 0;
+    let subtotal_discounted = 0;
     if (data) {
+
       price = _get(data, "receipt_items").reduce((p, c) => {
+        const price = parseInt(c.price);
+        const discount_price = (price * (c.discount / 100) || 0);
+        const price_discounted = price - discount_price;
         quantity += c.quantity;
-        return p + (parseInt(c.price) * c.quantity);
+        return p + (price_discounted * c.quantity);
       }, 0);
-      tax = price * data["tax"];
+      voucher = (_get(data, "voucher.value") || 0) / 100;
+      discount = voucher * price;
+      subtotal_discounted = price - discount;
+      tax = subtotal_discounted * data["tax"];
     }
-    let total = price + tax;
+
+    let total = subtotal_discounted + tax;
 
     return {
       tax,
       total,
       quantity,
-      price
+      price,
+      subtotal_discounted,
+      discount,
     }
   }, [data]);
 
@@ -49,7 +63,7 @@ export const Receipt = ({
           query: {
             $include: [{
               model: "receipt_items",
-              $select: ["id", "price", "quantity"],
+              $select: ["id", "price", "quantity", "discount"],
               $include: [{
                 model: "items",
                 $select: ["id", "name", "code"]
@@ -70,7 +84,7 @@ export const Receipt = ({
   }, [client, data]);
 
   return (
-    <Flex sx={{ backgroundColor: "gray.1", flexDirection: "column", flexShrink: 0, width: "30%" }}>
+    <Flex sx={{ backgroundColor: "gray.1", flexDirection: "column", flexShrink: 0, width: "35%" }}>
       {!data && <NonIdealState
         title="Select receipt"
       />}
@@ -88,17 +102,7 @@ export const Receipt = ({
           {items === null &&
             <Spinner />}
           {items && items.map((item, i) => (
-            <Flex key={i} sx={{ py: 2, px: 3, alignItems: "center" }}>
-              <Box sx={{ mr: 2, flexGrow: 1 }}>
-                <Box>
-                  {_get(item, "item.name")}
-                </Box>
-                <Box sx={{ fontWeight: "bold" }}>{currency(_get(item, "price"), { symbol: "Rp. ", precision: 0 }).format()}</Box>
-              </Box>
-              <Flex sx={{ alignItems: "center", mr: 2 }}>
-                <Box sx={{ width: "30px", whiteSpace: "nowrap", textAlign: "right", p: 1 }}>x {_get(item, "quantity")}</Box>
-              </Flex>
-            </Flex>
+            <ReceiptItem key={i} data={item} />
           ))}
         </Box>
         <Box sx={{ px: 3, pt: 2 }}>
@@ -107,6 +111,16 @@ export const Receipt = ({
               <Box sx={{ flexGrow: 1 }}>Subtotal</Box>
               <Box>{currency(_get(meta, "price"), { symbol: "Rp. ", precision: 0 }).format()}</Box>
             </Flex>
+            {_get(data, "voucher") &&
+              <Flex sx={{ px: 2, mb: 2 }}>
+                <Box sx={{ flexGrow: 1 }}>Voucher (-{_get(data, "voucher.value")}%)</Box>
+                <Flex>
+                  <Tag>{currency(_get(meta, "discount") * -1, { symbol: "Rp. ", precision: 0 }).format()}</Tag>
+                  <Box sx={{ ml: 1 }}>
+                    {currency(_get(meta, "subtotal_discounted"), { symbol: "Rp. ", precision: 0 }).format()}
+                  </Box>
+                </Flex>
+              </Flex>}
             <Flex sx={{ px: 2 }}>
               <Box sx={{ flexGrow: 1 }}>Tax (10%)</Box>
               <Box>{currency(_get(meta, "tax"), { symbol: "Rp. ", precision: 0 }).format()}</Box>

@@ -23,7 +23,7 @@ export const List = ({
               $iLike: `%${filter["name"]}%`
             } : undefined,
           } : undefined,
-          $select: ["id", "name", "code", "price", "quantity"],
+          $select: ["id", "name", "discount", "code", "price", "quantity"],
           $skip: paging.skip,
           $sort: {
             id: 1
