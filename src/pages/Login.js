@@ -7,66 +7,87 @@ import * as Yup from "yup";
 import _get from "lodash.get";
 import { toaster } from "components/toaster";
 import { VENDOR_INFORMATION } from "components/constants";
-
-const Schema = Yup.object().shape({
-  username: Yup.string().required(),
-  password: Yup.string().required(),
-})
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const client = useClient();
   const navigate = useNavigate();
+  const { t } = useTranslation("login-page");
+
+  const Schema = useMemo(
+    () =>
+      Yup.object().shape({
+        username: Yup.string().required(t("form.username.error-message")),
+        password: Yup.string().required(t("form.username.error-message")),
+      }),
+    [t]
+  );
+
   return (
-    <Box sx={{
-      position: "fixed",
-      inset: 0,
-      bg: "gray.1"
-    }}>
+    <Box
+      sx={{
+        position: "fixed",
+        inset: 0,
+        bg: "gray.1",
+      }}
+    >
       <Helmet>
         <title>Login ke POS - {VENDOR_INFORMATION.NAME}</title>
       </Helmet>
-      <Box sx={{
-        width: 275,
-        mx: "auto",
-        pt: 4,
-      }}>
+      <Box
+        sx={{
+          width: 275,
+          mx: "auto",
+          pt: 4,
+        }}
+      >
         <Box sx={{ textAlign: "center", py: 3 }}>
           <Box
             as="img"
             src="logo192.png"
             sx={{
-              width: 75
+              width: 75,
             }}
           />
-          <Box as="h1" sx={{
-            mt: 3,
-            mb: 1,
-            fontSize: 4,
-            fontWeight: "lighter"
-          }}>
+          <Box
+            as="h1"
+            sx={{
+              mt: 3,
+              mb: 1,
+              fontSize: 4,
+              fontWeight: "lighter",
+            }}
+          >
             Points of Sale
           </Box>
-          <Box as="h3" sx={{
-            mb: 3,
-            fontWeight: "lighter"
-          }}>
+          <Box
+            as="h3"
+            sx={{
+              mb: 3,
+              fontWeight: "lighter",
+            }}
+          >
             {VENDOR_INFORMATION.NAME}
           </Box>
         </Box>
-        <Box sx={{
-          borderRadius: 4,
-          border: "1px solid white",
-          borderColor: "gray.3",
-          py: 4,
-          bg: "white"
-        }}>
+        <Box
+          sx={{
+            borderRadius: 4,
+            border: "1px solid white",
+            borderColor: "gray.3",
+            py: 4,
+            bg: "white",
+          }}
+        >
           <Box sx={{ px: 3 }}>
             <Formik
               validationSchema={Schema}
+              validateOnChange={false}
               initialValues={{
                 username: undefined,
                 password: undefined,
-                hidePassword: true
+                hidePassword: true,
               }}
               onSubmit={async (values, { setSubmitting }) => {
                 const toast = toaster.show({
@@ -78,7 +99,7 @@ const Login = () => {
                   await client.authenticate({
                     strategy: "local",
                     username: values["username"],
-                    password: values["password"]
+                    password: values["password"],
                   });
                   toaster.dismiss(toast);
                   toaster.show({
@@ -96,11 +117,18 @@ const Login = () => {
                 setSubmitting(false);
               }}
             >
-              {({ values, errors, isSubmitting, setFieldValue, handleChange, handleSubmit }) => {
+              {({
+                values,
+                errors,
+                isSubmitting,
+                setFieldValue,
+                handleChange,
+                handleSubmit,
+              }) => {
                 return (
                   <form onSubmit={handleSubmit}>
                     <FormGroup
-                      label="Username"
+                      label={t("form.username.label")}
                       labelFor="f-username"
                       helperText={_get(errors, "username")}
                       intent={_get(errors, "username") ? "danger" : "none"}
@@ -108,13 +136,13 @@ const Login = () => {
                       <InputGroup
                         id="f-username"
                         name="username"
-                        value={values["username"]}
+                        value={values["username"] || ""}
                         onChange={handleChange}
                         intent={_get(errors, "username") ? "danger" : "none"}
                       />
                     </FormGroup>
                     <FormGroup
-                      label="Password"
+                      label={t("form.password.label")}
                       labelFor="f-password"
                       helperText={_get(errors, "password")}
                       intent={_get(errors, "password") ? "danger" : "none"}
@@ -122,19 +150,24 @@ const Login = () => {
                       <InputGroup
                         id="f-password"
                         name="password"
-                        value={values["password"]}
+                        value={values["password"] || ""}
                         onChange={handleChange}
                         type={values["hidePassword"] ? "password" : "text"}
                         intent={_get(errors, "password") ? "danger" : "none"}
-                        rightElement={(
+                        rightElement={
                           <Button
                             minimal={true}
-                            icon={values["hidePassword"] ? "eye-off" : "eye-open"}
+                            icon={
+                              values["hidePassword"] ? "eye-off" : "eye-open"
+                            }
                             onClick={() => {
-                              setFieldValue("hidePassword", !values["hidePassword"]);
+                              setFieldValue(
+                                "hidePassword",
+                                !values["hidePassword"]
+                              );
                             }}
                           />
-                        )}
+                        }
                       />
                     </FormGroup>
                     <Box sx={{ textAlign: "right" }}>
@@ -146,14 +179,14 @@ const Login = () => {
                       />
                     </Box>
                   </form>
-                )
+                );
               }}
             </Formik>
           </Box>
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 export default Login;
