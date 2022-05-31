@@ -6,7 +6,7 @@
         "placeholder": "Filter dengan Nama atau Phone atau Alamat"
       }
     },
-    "add-button": "Tambah Pelanggan"
+    "add_button": "Tambah Pelanggan"
   },
   "dialog_add": {
     "title": "Tambah Pelanggan Baru",

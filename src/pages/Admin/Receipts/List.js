@@ -5,7 +5,7 @@ import { useCallback, useEffect } from "react";
 import _get from "lodash.get";
 import currency from "currency.js";
 import moment from "moment";
-import { exportToCSV } from "components/exportToCSV";
+import { exportToCSV } from "components/utils/exportToCSV";
 import { toaster } from "components/toaster";
 import { DialogDetails } from "./Dialog.Details";
 

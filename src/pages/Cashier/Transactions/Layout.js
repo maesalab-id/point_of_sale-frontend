@@ -4,7 +4,7 @@ import { useCallback, useState } from "react"
 import { List } from "./List"
 import { Receipt } from "./Receipt"
 import _get from "lodash.get";
-import { exportToCSV } from "components/exportToCSV"
+import { exportToCSV } from "components/utils/exportToCSV"
 import moment from "moment";
 
 export const Layout = () => {

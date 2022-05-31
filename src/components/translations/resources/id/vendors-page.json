@@ -1,0 +1,36 @@
+{
+  "title": "Vendors",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter dengan Nama atau Telepon atau Alamat"
+      }
+    },
+    "add_button": "Tambah Vendor"
+  },
+  "dialog_form": {
+    "name": {
+      "label": "Nama",
+      "error_message": "Silahkan masukan Nama Customer"
+    },
+    "phone_number": {
+      "label": "Nomor Telepon",
+      "error_message": "Silahkan masukan Nomor Telepon Customer"
+    },
+    "address": {
+      "label": "Alamat",
+      "error_message": "Silahkan masukan Alamat"
+    },
+    "submit_button": "Kirim",
+    "close_button": "Tutup"
+  },
+  "dialog_add": {
+    "title": "Tambah Vendor Baru"
+  },
+  "dialog_edit": {
+    "title": "Perbarui Informasi Vendor"
+  },
+  "dialog_remove": {
+    "title": "Hapus Vendor"
+  }
+}
