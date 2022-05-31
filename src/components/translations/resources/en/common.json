@@ -1,7 +1,7 @@
 {
   "loading-message": "Loading",
   "dialog_remove": {
-    "title": "Delete Customer",
+    "title": "Delete Items",
     "description_1": "Your will delete `{{length}}` selected data.",
     "description_2": "Deleted data cannot be recovered. You are sure?",
     "form": {

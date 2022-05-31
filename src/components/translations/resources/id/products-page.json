@@ -1,0 +1,55 @@
+{
+  "title": "Produk",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter dengan Nama"
+      },
+      "category": {
+        "placeholder": "Kategori"
+      },
+      "clear_button": "Hapus filter"
+    },
+    "add_button": "Tambah Produk"
+  },
+  "dialog_form": {
+    "title_1": "Informasi Produk",
+    "title_2": "Diskon",
+    "name": {
+      "label": "Nama",
+      "error_message": "Silahkan masukan Nama Produk"
+    },
+    "code": {
+      "label": "Kode",
+      "error_message": "Silahkan masukan Kode Produk"
+    },
+    "price": {
+      "label": "Harga",
+      "error_message": "Silahkan masukan Harga Produk"
+    },
+    "category": {
+      "label": "Kategori",
+      "error_message": "Silahkan masukan Kategori Produk"
+    },
+    "discount": {
+      "label": "Diskon"
+    },
+    "discounted": {
+      "label": "Harga diskon"
+    },
+    "stock": {
+      "label": "Stok"
+    },
+    "submit_button": "Kirim",
+    "close_button": "Tutup"
+  },
+  "dialog_add": {
+    "title": "Tambah Produk Baru"
+  },
+  "dialog_edit": {
+    "title": "Perbarui informasi Produk"
+  },
+  "dialog_remove": {
+    "title": "Hapus Produk"
+  }
+}

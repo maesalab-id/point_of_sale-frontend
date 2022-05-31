@@ -8,30 +8,30 @@ import _get from "lodash.get";
 import { toaster } from "components/toaster";
 import { useMemo } from "react";
 
-export const Item = ({
-  data: item
-}) => {
+export const Item = ({ data: item }) => {
   const { setFilter, selectedItem, dispatchSelectedItem } = useList();
 
   const extras = useMemo(() => {
-    const discount_price = (item.price * (item.discount / 100) || 0);
-    const price_discounted = item.price - discount_price;
+    const price = Number(item.price);
+    const discount_price = price * (item.discount / 100) || 0;
+    const price_discounted = price - discount_price;
+    const isDiscounted = price_discounted !== price;
     return {
+      isDiscounted,
       discount_price,
-      price_discounted
-    }
+      price_discounted,
+    };
   }, [item.discount, item.price]);
 
   return (
     <ListGroup.Item
-      key={item["id"]}
       sx={{
         "& .action-button": {
-          opacity: 0
+          opacity: 0.25,
         },
         "&:hover .action-button": {
-          opacity: 1
-        }
+          opacity: 1,
+        },
       }}
     >
       <Flex>
@@ -43,57 +43,70 @@ export const Item = ({
                 type: "toggle",
                 data: {
                   name: item["id"],
-                  value: e.target.checked
-                }
-              })
+                  value: e.target.checked,
+                },
+              });
             }}
           />
         </Box>
         <Flex sx={{ flexGrow: 1 }}>
-          {[{
-            label: "Code",
-            value: `${_get(item, "code")}`,
-          }, {
-            label: "Name",
-            value: `${_get(item, "name")}`,
-          }, {
-            label: (<Box>
-              <Box as="span" sx={{ mr: 1 }}>Price</Box>
-              {_get(item, "discount") &&
-                <Tag intent="warning">{`-${_get(item, "discount")}%`}</Tag>}
-            </Box>),
-            value: (
-              <Box>
-                {_get(item, "discount") &&
-                  <strike>
-                    {`${currency(_get(item, "price"), CURRENCY_OPTIONS).format()}`}
-                  </strike>
-                }
+          {[
+            {
+              label: "Code",
+              value: `${_get(item, "code")}`,
+            },
+            {
+              label: "Name",
+              value: `${_get(item, "name")}`,
+            },
+            {
+              label: (
                 <Box>
-                  {`${currency(_get(extras, "price_discounted"), CURRENCY_OPTIONS).format()} /unit`}
+                  <Box as="span" sx={{ mr: 1 }}>
+                    Price
+                  </Box>
+                  {extras.isDiscounted && (
+                    <Tag intent="warning">{`-${_get(item, "discount")}%`}</Tag>
+                  )}
                 </Box>
-              </Box>
-            ),
-          }, {
-            label: "Stock",
-            value: `${_get(item, "quantity")} unit`,
-          }, {
-            label: "Category",
-            value: `${_get(item, "category.name")}`,
-          }].map(({ label, value, hide }) => (
-            <Box key={label} sx={{ width: `${100 / 5}%`, opacity: hide ? 0 : 1 }}>
-              <Box sx={{ color: "gray.5" }}>
-                {label}
-              </Box>
-              <Box>
-                {value}
-              </Box>
+              ),
+              value: (
+                <Box>
+                  {extras.isDiscounted && (
+                    <strike>
+                      {`${currency(
+                        _get(item, "price"),
+                        CURRENCY_OPTIONS
+                      ).format()}`}
+                    </strike>
+                  )}
+                  <Box>
+                    {`${currency(
+                      _get(extras, "price_discounted"),
+                      CURRENCY_OPTIONS
+                    ).format()} /unit`}
+                  </Box>
+                </Box>
+              ),
+            },
+            {
+              label: "Stock",
+              value: `${_get(item, "quantity")} unit`,
+            },
+            {
+              label: "Category",
+              value: `${_get(item, "category.name")}`,
+            },
+          ].map(({ label, value, hide }, idx) => (
+            <Box key={idx} sx={{ width: `${100 / 5}%`, opacity: hide ? 0 : 1 }}>
+              <Box sx={{ color: "gray.5" }}>{label}</Box>
+              <Box>{value}</Box>
             </Box>
           ))}
         </Flex>
         <Flex
           className="action-button"
-          sx={{ width: 60 }}
+          sx={{ width: 60, alignItems: "center" }}
         >
           <State>
             {([isOpen, setOpen]) => (
@@ -108,16 +121,19 @@ export const Item = ({
                 <DialogEdit
                   data={item}
                   isOpen={isOpen}
-                  onClose={() => { setOpen(false) }}
+                  onClose={() => {
+                    setOpen(false);
+                  }}
                   onSubmitted={() => {
-                    setFilter(f => ({ ...f, type: undefined }));
+                    setFilter((f) => ({ ...f, type: undefined }));
                     toaster.show({
                       intent: "success",
-                      message: "Product has been updated"
+                      message: "Product has been updated",
                     });
                   }}
                 />
-              </>)}
+              </>
+            )}
           </State>
           <State>
             {([isOpen, setOpen]) => (
@@ -132,15 +148,18 @@ export const Item = ({
                 <DialogDetail
                   data={item}
                   isOpen={isOpen}
-                  onClose={() => { setOpen(false) }}
+                  onClose={() => {
+                    setOpen(false);
+                  }}
                   onSubmitted={() => {
-                    setFilter(f => ({ ...f, type: undefined }));
+                    setFilter((f) => ({ ...f, type: undefined }));
                   }}
                 />
-              </>)}
+              </>
+            )}
           </State>
         </Flex>
       </Flex>
     </ListGroup.Item>
-  )
-}
+  );
+};

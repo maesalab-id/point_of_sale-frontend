@@ -20,7 +20,6 @@ export const DialogDetail = ({
     }
   }, [data]);
 
-
   return (
     <Dialog
       enforceFocus={false}

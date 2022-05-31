@@ -1,79 +1,40 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core"
+import { DialogRemove as BaseDialogRemove } from "components/common";
 import { useClient } from "components";
 import { toaster } from "components/toaster";
-import { Formik } from "formik"
-import { useMemo } from "react";
-import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useCallback } from "react";
 
-export const DialogRemove = ({
-  isOpen,
-  onClose = () => { },
-  onSubmitted = () => { },
-  data
-}) => {
+export const DialogRemove = (props) => {
+  const { isOpen, data, onClose = () => {}, onSubmitted = () => {} } = props;
+  const { t } = useTranslation("products-page");
   const client = useClient();
-  const Schema = useMemo(() => (Yup.object().shape({
-    'last-word': Yup.string()
-      .oneOf(["CONFIRM"], 'Not match')
-      .required('Field is required')
-  })), []);
+
+  const onSubmit = useCallback(
+    async (values, { setSubmitting, setErrors }) => {
+      try {
+        const res = client["items"].remove(data);
+        onClose();
+        onSubmitted(res);
+      } catch (err) {
+        console.error(err.message);
+        setErrors({ submit: err.message });
+        setSubmitting(false);
+        toaster.show({
+          intent: "danger",
+          message: err.message,
+        });
+      }
+    },
+    [client, data, onClose, onSubmitted]
+  );
+
   return (
-    <Dialog
+    <BaseDialogRemove
       isOpen={isOpen}
-      onClose={() => onClose()}
-      title="Hapus data"
-    >
-      <Formik
-        validationSchema={Schema}
-        initialValues={{
-          "last-word": "",
-        }}
-        onSubmit={async (values, { setErrors, setSubmitting }) => {
-          try {
-            const res = await client["items"].remove(data);
-            onClose();
-            onSubmitted(res);
-          } catch (err) {
-            console.error(err);
-            setErrors({ submit: err.message });
-            setSubmitting(false);
-            toaster.show({
-              intent: "danger",
-              message: err.message
-            })
-          }
-        }}
-      >
-        {({ values, errors, isSubmitting, handleSubmit, handleChange }) =>
-          <form onSubmit={handleSubmit}>
-            <div className={Classes.DIALOG_BODY}>
-              <h5 className={Classes.HEADING}>Anda akan menghapus `{data.length}` data yang dipilih.</h5>
-              <p>Data yang terhapus tidak dapat dikembalikan. Anda yakin?</p>
-              <FormGroup
-                label={(<>Please type <strong>CONFIRM</strong> to confirm</>)}
-                labelFor={'last-word'}
-                intent={errors['last-word'] ? 'danger' : 'none'}
-                helperText={errors['last-word']}>
-                <InputGroup
-                  name="last-word"
-                  onChange={handleChange}
-                  value={values['last-word']}
-                  placeholder="type here"
-                  intent={errors['last-word'] ? 'danger' : 'none'} />
-              </FormGroup>
-            </div>
-            <div className={Classes.DIALOG_FOOTER}>
-              <Button
-                fill={true}
-                text="Saya mengerti dan menghapus data ini."
-                intent="danger"
-                type="submit"
-                loading={isSubmitting}
-                disabled={Object.entries(errors).length > 0} />
-            </div>
-          </form>
-        }
-      </Formik>
-    </Dialog>
-  )
-}
+      onClose={onClose}
+      data={data}
+      title={t("dialog_remove.title")}
+      onSubmit={onSubmit}
+    />
+  );
+};

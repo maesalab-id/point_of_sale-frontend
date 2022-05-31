@@ -10,14 +10,15 @@ import { useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import * as Yup from "yup";
 
-export const DialogRemove = ({
-  isOpen,
-  onClose = () => {},
-  onSubmit = () => {},
-  title = "Remove items",
-  data,
-}) => {
+export const DialogRemove = (props) => {
   const { t } = useTranslation("common");
+  const {
+    isOpen,
+    onClose = () => {},
+    onSubmit = () => {},
+    title = t("dialog_remove.title"),
+    data,
+  } = props;
   const Schema = useMemo(
     () =>
       Yup.object().shape({
@@ -31,11 +32,7 @@ export const DialogRemove = ({
     [] // eslint-disable-line react-hooks/exhaustive-deps
   );
   return (
-    <Dialog
-      isOpen={isOpen}
-      onClose={() => onClose()}
-      title={title}
-    >
+    <Dialog isOpen={isOpen} onClose={() => onClose()} title={title}>
       <Formik
         validationSchema={Schema}
         initialValues={{
