@@ -1,15 +1,42 @@
-import { Button, Checkbox, Classes, NonIdealState, Spinner } from "@blueprintjs/core";
-import { Box, Container, Flex, ListGroup, State, useClient, useList } from "components";
+import {
+  Button,
+  Checkbox,
+  Classes,
+  NonIdealState,
+  Spinner,
+} from "@blueprintjs/core";
+import {
+  Box,
+  Container,
+  Flex,
+  ListGroup,
+  State,
+  useClient,
+  useList,
+} from "components";
 import { Pagination } from "components/Pagination";
 import { toaster } from "components/toaster";
+import { useDebounce } from "components/useDebounce";
 import { useEffect, useState } from "react";
 import { DialogEdit } from "./Dialog.Edit";
 import { DialogRemove } from "./Dialog.Remove";
 
 const List = () => {
   const client = useClient();
-  const { filter, setFilter, items, setItems, status, paging, setPaging, selectedItem, dispatchSelectedItem } = useList();
+  const {
+    filter: rawFilter,
+    setFilter,
+    items,
+    setItems,
+    status,
+    paging,
+    setPaging,
+    selectedItem,
+    dispatchSelectedItem,
+  } = useList();
   const [dialogOpen, setDialogOpen] = useState(null);
+
+  const filter = useDebounce(rawFilter, 500);
 
   useEffect(() => {
     const fetch = async () => {
@@ -18,27 +45,29 @@ const List = () => {
         const query = {
           $distinct: true,
           $limit: 25,
-          "name": filter["name"] ? {
-            $iLike: `%${filter["name"]}%`
-          } : undefined,
+          name: filter["name"]
+            ? {
+                $iLike: `%${filter["name"]}%`,
+              }
+            : undefined,
           $select: ["id", "name"],
           $skip: paging.skip,
           $sort: {
-            id: 1
-          }
+            id: 1,
+          },
         };
         const res = await client["categories"].find({ query });
         setItems(res.data);
         setPaging({
           total: res.total,
           limit: res.limit,
-          skip: res.skip
+          skip: res.skip,
         });
       } catch (err) {
         console.error(err);
         setItems([]);
       }
-    }
+    };
     fetch();
   }, [client, filter, paging.skip, setItems, setPaging]);
 
@@ -47,8 +76,8 @@ const List = () => {
       <ListGroup
         sx={{
           [`.${Classes.CHECKBOX}`]: {
-            m: 0
-          }
+            m: 0,
+          },
         }}
       >
         <ListGroup.Header>
@@ -61,12 +90,12 @@ const List = () => {
                 onChange={(e) => {
                   dispatchSelectedItem({
                     type: "all",
-                    data: e.target.checked
-                  })
+                    data: e.target.checked,
+                  });
                 }}
               />
             </Box>
-            {selectedItem.length > 0 &&
+            {selectedItem.length > 0 && (
               <Box>
                 <Button
                   minimal={true}
@@ -75,99 +104,97 @@ const List = () => {
                   onClick={() => setDialogOpen("delete")}
                 />
               </Box>
-            }
+            )}
             <DialogRemove
               data={selectedItem}
               isOpen={dialogOpen === "delete"}
-              onClose={() => { setDialogOpen(null) }}
+              onClose={() => {
+                setDialogOpen(null);
+              }}
               onSubmitted={() => {
-                setFilter(f => ({ ...f, type: undefined }));
+                setFilter((f) => ({ ...f, type: undefined }));
                 toaster.show({
                   intent: "success",
-                  message: `Category has been deleted`
+                  message: `Category has been deleted`,
                 });
               }}
             />
           </Flex>
         </ListGroup.Header>
-        {items === null &&
+        {items === null && (
           <Box sx={{ p: 2 }}>
             <Spinner size={50} />
           </Box>
-        }
+        )}
         {items && items.length === 0 && (
           <Box sx={{ my: 3 }}>
-            <NonIdealState
-              title="No user available"
-            />
+            <NonIdealState title="No user available" />
           </Box>
         )}
-        {items && items.map((item) => (
-          <ListGroup.Item
-            key={item["id"]}
-            sx={{
-              "& .action-button": {
-                opacity: 0
-              },
-              "&:hover .action-button": {
-                opacity: 1
-              }
-            }}
-          >
-            <Flex>
-              <Box sx={{ width: 40, flexShrink: 0 }}>
-                <Checkbox
-                  checked={selectedItem.indexOf(item["id"]) !== -1}
-                  onChange={(e) => {
-                    dispatchSelectedItem({
-                      type: "toggle",
-                      data: {
-                        name: item["id"],
-                        value: e.target.checked
-                      }
-                    })
-                  }}
-                />
-              </Box>
-              <Box sx={{ flexGrow: 1, flexShrink: 0, width: `${100 / 3}%` }}>
-                <Box sx={{ color: "gray.5" }}>
-                  Name
+        {items &&
+          items.map((item) => (
+            <ListGroup.Item
+              key={item["id"]}
+              sx={{
+                "& .action-button": {
+                  opacity: 0.25,
+                },
+                "&:hover .action-button": {
+                  opacity: 1,
+                },
+              }}
+            >
+              <Flex>
+                <Box sx={{ width: 40, flexShrink: 0 }}>
+                  <Checkbox
+                    checked={selectedItem.indexOf(item["id"]) !== -1}
+                    onChange={(e) => {
+                      dispatchSelectedItem({
+                        type: "toggle",
+                        data: {
+                          name: item["id"],
+                          value: e.target.checked,
+                        },
+                      });
+                    }}
+                  />
                 </Box>
-                <Box>
-                  {item["name"]}
+                <Box sx={{ flexGrow: 1, flexShrink: 0, width: `${100 / 3}%` }}>
+                  <Box sx={{ color: "gray.5" }}>Name</Box>
+                  <Box>{item["name"]}</Box>
                 </Box>
-              </Box>
-              <Box
-                className="action-button"
-                sx={{ width: 30 }}
-              >
-                <State>
-                  {([isOpen, setOpen]) => (
-                    <>
-                      <Button
-                        minimal={true}
-                        icon="edit"
-                        onClick={() => {
-                          setOpen(true);
-                        }}
-                      />
-                      <DialogEdit
-                        data={item}
-                        isOpen={isOpen}
-                        onClose={() => { setOpen(false) }}
-                        onSubmitted={() => {
-                          setFilter(f => ({ ...f, type: undefined }));
-                          toaster.show({
-                            intent: "success",
-                            message: "Category was updated"
-                          });
-                        }}
-                      />
-                    </>)}
-                </State>
-              </Box>
-            </Flex>
-          </ListGroup.Item>))}
+                <Box className="action-button" sx={{ width: 30 }}>
+                  <State>
+                    {([isOpen, setOpen]) => (
+                      <>
+                        <Button
+                          minimal={true}
+                          icon="edit"
+                          onClick={() => {
+                            setOpen(true);
+                          }}
+                        />
+                        <DialogEdit
+                          data={item}
+                          isOpen={isOpen}
+                          onClose={() => {
+                            setOpen(false);
+                          }}
+                          onSubmitted={() => {
+                            setFilter((f) => ({ ...f, type: undefined }));
+                            toaster.show({
+                              intent: "success",
+                              message: "Category was updated",
+                            });
+                          }}
+                        />
+                      </>
+                    )}
+                  </State>
+                </Box>
+              </Flex>
+            </ListGroup.Item>
+          ))}
       </ListGroup>
       <Pagination
         loading={items === null}
@@ -175,11 +202,11 @@ const List = () => {
         limit={paging.limit}
         skip={paging.skip}
         onClick={({ page, skip }) => {
-          setPaging(paging => ({ ...paging, skip: skip }));
+          setPaging((paging) => ({ ...paging, skip: skip }));
         }}
       />
-    </Container >
-  )
-}
+    </Container>
+  );
+};
 
 export default List;

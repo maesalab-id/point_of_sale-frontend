@@ -3,7 +3,7 @@
   "toolbar": {
     "filter": {
       "search": {
-        "placeholder": "Filter dengan Nama atau Telepon atau Alamat"
+        "placeholder": "Filter berdasarkan Nama atau Telepon atau Alamat"
       }
     },
     "add_button": "Tambah Vendor"

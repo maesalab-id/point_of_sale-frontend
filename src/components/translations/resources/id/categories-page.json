@@ -1,0 +1,28 @@
+{
+  "title": "Kategori",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter berdasarkan Nama"
+      }
+    },
+    "add_button": "Tambah Kategori"
+  },
+  "dialog_form": {
+    "name": {
+      "label": "Nama",
+      "error_message": "Silahkan masukan Nama Kategori"
+    },
+    "submit_button": "Kirim",
+    "close_button": "Tutup"
+  },
+  "dialog_add": {
+    "title": "Tambah Kategori Baru"
+  },
+  "dialog_edit": {
+    "title": "Perbarui Informasi Kategori"
+  },
+  "dialog_remove": {
+    "title": "Hapus Kategori"
+  }
+}

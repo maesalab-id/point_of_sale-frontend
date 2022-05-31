@@ -3,7 +3,7 @@
   "toolbar": {
     "filter": {
       "search": {
-        "placeholder": "Filter dengan Nama"
+        "placeholder": "Filter berdasarkan Nama"
       },
       "category": {
         "placeholder": "Kategori"

@@ -3,7 +3,7 @@
   "toolbar": {
     "filter": {
       "search": {
-        "placeholder": "Filter dengan Name"
+        "placeholder": "Filter berdasarkan Nama"
       }
     },
     "add_button": "Tambah Voucher"

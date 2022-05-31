@@ -1,32 +1,41 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Button, Classes, Dialog } from "@blueprintjs/core";
 import { useClient } from "components";
 import { toaster } from "components/toaster";
 import { Formik } from "formik";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
-
-const Schema = Yup.object().shape({
-  "name": Yup.string().required(),
-});
-
+import { DialogForm } from "./Dialog.Form";
 
 const initialValues = {
-  "name": "",
-}
+  name: "",
+};
 
 export const DialogAdd = ({
   initialValue = initialValues,
   isOpen,
-  onClose = () => { },
-  onSubmitted = () => { }
+  onClose = () => {},
+  onSubmitted = () => {},
 }) => {
+  const { t } = useTranslation("categories-page");
   const client = useClient();
+
+  const Schema = useMemo(
+    () =>
+      Yup.object().shape({
+        name: Yup.string().required(t("dialog_form.name.error_message")),
+      }),
+    [t]
+  );
 
   return (
     <Dialog
       enforceFocus={false}
       isOpen={isOpen}
-      onClose={() => { onClose() }}
-      title="Add new Category"
+      onClose={() => {
+        onClose();
+      }}
+      title={t("dialog_add.title")}
     >
       <Formik
         validationSchema={Schema}
@@ -44,47 +53,32 @@ export const DialogAdd = ({
             setSubmitting(false);
             toaster.show({
               intent: "danger",
-              message: err.message
-            })
+              message: err.message,
+            });
           }
         }}
       >
-        {({ values, errors, isSubmitting, handleSubmit, handleChange }) =>
+        {({ isSubmitting, handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <div className={Classes.DIALOG_BODY}>
-              <FormGroup
-                label="Name"
-                labelFor="f-name"
-                helperText={errors["name"]}
-                intent={"danger"}
-              >
-                <InputGroup
-                  id="f-name"
-                  name="name"
-                  value={values["name"]}
-                  onChange={handleChange}
-                  intent={errors["name"] ? "danger" : "none"}
-                />
-              </FormGroup>
-            </div>
+            <DialogForm />
             <div className={Classes.DIALOG_FOOTER}>
               <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                 <Button
                   minimal={true}
                   onClick={() => onClose()}
-                  text="Close"
+                  text={t("dialog_form.close_button")}
                 />
                 <Button
                   loading={isSubmitting}
                   type="submit"
                   intent="primary"
-                  text="Simpan"
+                  text={t("dialog_form.submit_button")}
                 />
               </div>
             </div>
           </form>
-        }
+        )}
       </Formik>
     </Dialog>
-  )
-}
+  );
+};

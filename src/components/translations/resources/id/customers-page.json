@@ -3,7 +3,7 @@
   "toolbar": {
     "filter": {
       "search": {
-        "placeholder": "Filter dengan Nama atau Phone atau Alamat"
+        "placeholder": "Filter berdasarkan Nama atau Phone atau Alamat"
       }
     },
     "add_button": "Tambah Pelanggan"
