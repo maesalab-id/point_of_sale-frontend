@@ -20,11 +20,12 @@ import { useEffect, useState } from "react";
 import { DialogEdit } from "./Dialog.Edit";
 import { DialogRemove } from "./Dialog.Remove";
 import _get from "lodash.get";
+import { useDebounce } from "components/useDebounce";
 
 const List = () => {
   const client = useClient();
   const {
-    filter,
+    filter: rawFilter,
     setFilter,
     items,
     setItems,
@@ -35,6 +36,8 @@ const List = () => {
     dispatchSelectedItem,
   } = useList();
   const [dialogOpen, setDialogOpen] = useState(null);
+
+  const filter = useDebounce(rawFilter, 500);
 
   useEffect(() => {
     const fetch = async () => {

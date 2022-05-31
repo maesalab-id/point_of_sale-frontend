@@ -21,7 +21,7 @@ export const InputMask = (props) => {
       const e = createSyntheticEvent(event);
       onChange(e);
     },
-    [onAccept]
+    [onAccept, onChange]
   );
 
   const _onComplete = useCallback(
