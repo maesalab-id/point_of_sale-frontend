@@ -30,7 +30,7 @@ export const DialogRemove = ({
           )
           .required(t("dialog_remove.form.confirm.error_message.required")),
       }),
-    []
+    [] // eslint-disable-line react-hooks/exhaustive-deps
   );
   return (
     <Dialog

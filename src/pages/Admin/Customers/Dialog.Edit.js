@@ -58,8 +58,6 @@ export const DialogEdit = ({
           phone_number: _get(data, "phone_number"),
         }}
         onSubmit={async (values, { setSubmitting }) => {
-          console.log(values);
-          return;
           try {
             const res = await client["customers"].patch(data["id"], values);
             onClose();
