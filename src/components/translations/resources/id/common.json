@@ -1,3 +1,19 @@
 {
-  "loading-message": "Loading"
+  "loading-message": "Loading",
+  "dialog_remove": {
+    "title": "Menghapus Customer",
+    "description_1": "Anda akan menghapus `{{length}}` data yang dipilih.",
+    "description_2": "Data yang terhapus tidak dapat dikembalikan. Anda yakin?",
+    "form": {
+      "confirm": {
+        "label": "Silahkan ketik <strong>CONFIRM</strong> untuk mengkonfirmasi",
+        "placeholder": "ketik disini",
+        "error_message": {
+          "unmatched": "Ketik CONFIRM secara kapital",
+          "required": "Anda harus mengetik CONFIRM untuk melanjutkan"
+        }
+      },
+      "submit_button": "Saya mengerti dan menghapus data ini."
+    }
+  }
 }

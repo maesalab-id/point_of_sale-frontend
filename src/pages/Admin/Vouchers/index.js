@@ -1,42 +1,40 @@
-import { Box, Divider } from "components"
-import ListProvider from "components/list"
+import { Box, Divider } from "components";
+import ListProvider from "components/list";
 import { useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Header } from "./Header"
-import List from "./List"
+import { useSearchParams } from "react-router-dom";
+import { Header } from "./Header";
+import List from "./List";
 import { Toolbar } from "./Toolbar";
 
 export const filterField = ["search"];
 
 export const Vouchers = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [filter, filterSearch] = useMemo(() => {
-    const url = new URLSearchParams(location["search"]);
+  const filter = useMemo(() => {
+    const url = searchParams;
     const filter = {};
     for (let f of filterField) {
       filter[f] = url.get(f) || "";
     }
-    return [filter, url];
-  }, [location["search"]]); // eslint-disable-line react-hooks/exhaustive-deps
+    return filter;
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ListProvider
       filter={filter}
       onFilterChange={(value, { dispatchSelectedItem }) => {
         for (let v of filterField) {
-          if (value[v]) filterSearch.set(v, value[v]);
-          else filterSearch.delete(v);
+          if (value[v]) searchParams.set(v, value[v]);
+          else searchParams.delete(v);
         }
-        navigate({
-          search: filterSearch.toString()
-        }, { replace: true });
+        setSearchParams(searchParams);
         dispatchSelectedItem({
           type: "all",
-          data: false
-        })
-      }}>
+          data: false,
+        });
+      }}
+    >
       <Box>
         <Box sx={{ pt: 4 }}>
           <Header />
@@ -50,5 +48,5 @@ export const Vouchers = () => {
         </Box>
       </Box>
     </ListProvider>
-  )
-}
+  );
+};

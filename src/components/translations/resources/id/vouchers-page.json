@@ -1,0 +1,42 @@
+{
+  "title": "Voucher",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter dengan Name"
+      }
+    },
+    "add_button": "Tambah Voucher"
+  },
+  "dialog_form": {
+    "name": {
+      "label": "Name",
+      "error_message": "Silahkan masukan Nama Voucher"
+    },
+    "discount": {
+      "label": "Diskon",
+      "error_message": "Silahkan tentukan Diskon Voucher"
+    },
+    "start_end": {
+      "label": "Tanggal aktif",
+      "error_message": "Silahkan masukan Tanggal Aktif",
+      "start": {
+        "label": "Dari"
+      },
+      "end": {
+        "label": "Sampai"
+      }
+    },
+    "submit_button": "Kirim",
+    "close_button": "Tutup"
+  },
+  "dialog_add": {
+    "title": "Tambah Voucher Baru"
+  },
+  "dialog_edit": {
+    "title": "Perbarui Informasi Voucher"
+  },
+  "dialog_remove": {
+    "title": "Hapus Voucher"
+  }
+}

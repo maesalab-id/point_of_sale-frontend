@@ -6,7 +6,7 @@ import id from "./resources/id";
 i18n.use(initReactI18next).init({
   // debug: true,
   lng: window.localStorage.getItem("lang"),
-  fallbackLng: "en",
+  // fallbackLng: "en",
   interpolation: {
     escapeValue: false,
   },

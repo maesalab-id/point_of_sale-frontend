@@ -1,7 +1,7 @@
 import { Box, Divider } from "components";
 import ListProvider from "components/list";
 import { useMemo } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Header } from "./Header";
 import List from "./List";
 import { Toolbar } from "./Toolbar";
@@ -16,7 +16,7 @@ export const Customers = () => {
     for (let f of filterField) {
       filter[f] = url.get(f) || "";
     }
-    return [filter, url];
+    return filter;
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

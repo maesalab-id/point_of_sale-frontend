@@ -1,45 +1,56 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup, Tag } from "@blueprintjs/core";
-import { DateRangeInput } from "@blueprintjs/datetime";
+import { Button, Classes, Dialog } from "@blueprintjs/core";
 import { useClient } from "components";
 import { toaster } from "components/toaster";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import moment from "moment";
-
-const Schema = Yup.object().shape({
-  "name": Yup.string().required(),
-  "value": Yup.number().required(),
-  "start": Yup.date().required(),
-  "end": Yup.date().required(),
-});
+import { useTranslation } from "react-i18next";
+import { DialogForm } from "./Dialog.Form";
+import { useMemo } from "react";
 
 const initialValues = {
-  "name": "",
-  "value": "",
-  "start": moment().startOf("day").toDate(),
-  "end": moment().endOf("day").add(1, "month").toDate(),
-}
+  name: "",
+  value: "",
+  start: moment().startOf("day").toDate(),
+  end: moment().endOf("day").add(1, "month").toDate(),
+};
 
 export const DialogAdd = ({
   initialValue = initialValues,
   isOpen,
-  onClose = () => { },
-  onSubmitted = () => { }
+  onClose = () => {},
+  onSubmitted = () => {},
 }) => {
   const client = useClient();
+
+  const { t } = useTranslation("vouchers-page");
+
+  const Schema = useMemo(
+    () =>
+      Yup.object().shape({
+        name: Yup.string().required(t("dialog_form.name.error_message")),
+        value: Yup.number().required(t("dialog_form.discount.error_message")),
+        start: Yup.date().required(),
+        end: Yup.date().required(),
+      }),
+    []
+  );
 
   return (
     <Dialog
       enforceFocus={false}
       isOpen={isOpen}
-      onClose={() => { onClose() }}
-      title="Add new Voucher"
+      onClose={() => {
+        onClose();
+      }}
+      title={t("dialog_add.title")}
     >
       <Formik
         validationSchema={Schema}
+        validateOnChange={false}
         initialValues={{
           ...initialValues,
-          ...initialValue
+          ...initialValue,
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
@@ -51,93 +62,32 @@ export const DialogAdd = ({
             setSubmitting(false);
             toaster.show({
               intent: "danger",
-              message: err.message
-            })
+              message: err.message,
+            });
           }
         }}
       >
-        {({ values, errors, isSubmitting, handleSubmit, handleChange, setFieldValue }) =>
+        {({ isSubmitting, handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <div className={Classes.DIALOG_BODY}>
-              <FormGroup
-                label="Name"
-                labelFor="f-name"
-                helperText={errors["name"]}
-                intent={"danger"}
-              >
-                <InputGroup
-                  id="f-name"
-                  name="name"
-                  value={values["name"]}
-                  onChange={handleChange}
-                  intent={errors["name"] ? "danger" : "none"}
-                />
-              </FormGroup>
-              <FormGroup
-                label="Discount Value"
-                labelFor="f-value"
-                helperText={errors["value"]}
-                intent={"danger"}
-              >
-                <InputGroup
-                  id="f-value"
-                  name="value"
-                  value={values["value"]}
-                  onChange={handleChange}
-                  intent={errors["value"] ? "danger" : "none"}
-                  rightElement={(
-                    <Tag minimal={true}>%</Tag>
-                  )}
-                />
-              </FormGroup>
-              <FormGroup
-                label="Active date range"
-                labelFor="f-start_end"
-                helperText={errors["start"] || errors["end"]}
-                intent={"danger"}
-              >
-                <DateRangeInput
-                  id="f-start_end"
-                  name="start_end"
-                  startInputProps={{
-                    leftElement: (<Tag minimal={true}>From</Tag>),
-                    intent: errors["start"] ? "danger" : "none"
-                  }}
-                  endInputProps={{
-                    leftElement: (<Tag minimal={true}>To</Tag>),
-                    intent: errors["end"] ? "danger" : "none"
-                  }}
-                  formatDate={date => moment(date).format("DD/MM/YYYY")}
-                  onChange={async (value) => {
-                    let start = moment(value[0]).toDate();
-                    let end = moment(value[1]).toDate();
-                    await setFieldValue("start", start);
-                    await setFieldValue("end", end);
-                  }}
-                  parseDate={str => new Date(str)}
-                  value={[values["start"], values["end"]]}
-                  intent={errors["start"] || errors["end"] ? "danger" : "none"}
-                />
-              </FormGroup>
-            </div>
+            <DialogForm />
             <div className={Classes.DIALOG_FOOTER}>
               <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                 <Button
                   minimal={true}
                   onClick={() => onClose()}
-                  text="Close"
+                  text={t("dialog_form.close_button")}
                 />
                 <Button
                   loading={isSubmitting}
                   type="submit"
                   intent="primary"
-                  text="Simpan"
+                  text={t("dialog_form.submit_button")}
                 />
               </div>
             </div>
           </form>
-        }
+        )}
       </Formik>
     </Dialog>
-  )
-}
+  );
+};

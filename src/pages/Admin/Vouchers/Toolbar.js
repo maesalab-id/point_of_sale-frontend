@@ -1,22 +1,24 @@
-import { Button, ControlGroup, InputGroup } from "@blueprintjs/core"
-import { Box, Flex, useList } from "components"
+import { Button, ControlGroup, InputGroup } from "@blueprintjs/core";
+import { Box, Flex, useList } from "components";
 import { toaster } from "components/toaster";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DialogAdd } from "./Dialog.Add";
 
 export const Toolbar = () => {
   const [dialogOpen, setDialogOpen] = useState(null);
   const { filter, setFilter } = useList();
+  const { t } = useTranslation("vouchers-page");
   return (
     <Flex>
       <Box sx={{ flexGrow: 1 }}>
         <ControlGroup>
           <InputGroup
             leftIcon="search"
-            placeholder="Filter by name"
+            placeholder={t("toolbar.filter.search.placeholder")}
             value={filter["name"] || ""}
             onChange={(e) => {
-              setFilter(f => ({ ...f, name: e.target.value }));
+              setFilter((f) => ({ ...f, name: e.target.value }));
             }}
           />
         </ControlGroup>
@@ -24,23 +26,25 @@ export const Toolbar = () => {
       <Box>
         <Button
           intent="primary"
-          text="Add voucher"
+          text={t("toolbar.add_button")}
           onClick={() => {
             setDialogOpen("add");
           }}
         />
         <DialogAdd
           isOpen={dialogOpen === "add"}
-          onClose={() => { setDialogOpen(null) }}
+          onClose={() => {
+            setDialogOpen(null);
+          }}
           onSubmitted={() => {
-            setFilter(f => ({ ...f, type: undefined }));
+            setFilter((f) => ({ ...f, type: undefined }));
             toaster.show({
               intent: "success",
-              message: "Voucher created"
+              message: "Voucher created",
             });
           }}
         />
       </Box>
     </Flex>
-  )
-}
+  );
+};

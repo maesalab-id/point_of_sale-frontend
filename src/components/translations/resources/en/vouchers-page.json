@@ -1,0 +1,42 @@
+{
+  "title": "Vouchers",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter by Name"
+      }
+    },
+    "add_button": "Add Voucher"
+  },
+  "dialog_form": {
+    "name": {
+      "label": "Name",
+      "error_message": "Please enter voucher Name"
+    },
+    "discount": {
+      "label": "Discount value",
+      "error_message": "Please enter voucher Discount"
+    },
+    "start_end": {
+      "start": {
+        "label": "From"
+      },
+      "end": {
+        "label": "To"
+      },
+      "label": "Active date range",
+      "error_message": "Please enter Active range"
+    },
+    "submit_button": "Submit",
+    "close_button": "Close"
+  },
+  "dialog_add": {
+    "title": "Add new Voucher"
+  },
+  "dialog_edit": {
+    "title": "Edit Voucher Information"
+  },
+  "dialog_remove": {
+    "title": "Delete Voucher"
+  }
+}
