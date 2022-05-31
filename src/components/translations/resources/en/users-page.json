@@ -1,0 +1,48 @@
+{
+  "title": "Users",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter by Name"
+      }
+    },
+    "add_button": "Add User"
+  },
+  "dialog_form": {
+    "title": "User Information",
+    "type": {
+      "label": "Type",
+      "error_message": "Please select user Type"
+    },
+    "name": {
+      "label": "Name",
+      "error_message": "Please enter user Name"
+    },
+    "username": {
+      "label": "Username",
+      "error_message": "Please enter user Username"
+    },
+    "password": {
+      "label": "Password",
+      "error_message": "Please enter user Password"
+    },
+    "confirm_password": {
+      "label": "Confirm Password",
+      "error_message": "Please enter user Confirm Password"
+    },
+    "show_password": {
+      "label": "Show Password"
+    },
+    "submit_button": "Submit",
+    "close_button": "Close"
+  },
+  "dialog_add": {
+    "title": "Add new User"
+  },
+  "dialog_edit": {
+    "title": "Edit User Information"
+  },
+  "dialog_remove": {
+    "title": "Delete User"
+  }
+}

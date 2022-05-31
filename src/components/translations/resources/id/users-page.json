@@ -1,0 +1,48 @@
+{
+  "title": "Pengguna",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter berdasarkan Nama"
+      }
+    },
+    "add_button": "Tambah User"
+  },
+  "dialog_form": {
+    "title": "Informasi Pengguna",
+    "type": {
+      "label": "Tipe",
+      "error_message": "Silahkan pilih tipe Pengguna"
+    },
+    "name": {
+      "label": "Name",
+      "error_message": "Silahkan masukan nama Pengguna"
+    },
+    "username": {
+      "label": "Username",
+      "error_message": "Silahkan masukan username Pengguna"
+    },
+    "password": {
+      "label": "Password",
+      "error_message": "Silahkan masukan password Pengguna"
+    },
+    "confirm_password": {
+      "label": "Konfirmasi Password",
+      "error_message": "Silahkan masukan lagi password Pengguna"
+    },
+    "show_password": {
+      "label": "Perlihatkan Password"
+    },
+    "submit_button": "Kirim",
+    "close_button": "Tutup"
+  },
+  "dialog_add": {
+    "title": "Tambah Pengguna Baru"
+  },
+  "dialog_edit": {
+    "title": "Perbarui Informasi Pengguna"
+  },
+  "dialog_remove": {
+    "title": "Hapus Pengguna"
+  }
+}
