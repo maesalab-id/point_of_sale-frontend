@@ -20,6 +20,7 @@
     "excellentexport": "^3.8.0",
     "formik": "^2.2.9",
     "i18next": "^21.8.5",
+    "i18next-http-backend": "^1.4.1",
     "imask": "^6.4.2",
     "lodash.get": "^4.4.2",
     "lodash.isnil": "^4.0.0",

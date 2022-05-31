@@ -1,5 +1,20 @@
 {
-  "loading-message": "Loading",
+  "testing": "some text",
+  "form": {
+    "select_vendor": {
+      "label": "Vendor"
+    },
+    "select_category": {
+      "label": "Category"
+    }
+  },
+  "filter": {
+    "date_range": {
+      "label": "Date Range"
+    },
+    "clear_button": "Clear filter"
+  },
+  "loading_message": "Loading",
   "dialog_remove": {
     "title": "Delete Items",
     "description_1": "Your will delete `{{length}}` selected data.",

@@ -1,0 +1,20 @@
+{
+  "title": "Orders",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter berdasarkan Nama"
+      }
+    }
+  },
+  "dialog_detail": {
+    "title": "Detail Order #{{order_number}}",
+    "labels": {
+      "vendor": "Vendor",
+      "date": "Date",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total"
+    }
+  }
+}

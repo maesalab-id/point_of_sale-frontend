@@ -1,5 +1,20 @@
 {
-  "loading-message": "Loading",
+  "testing": "some text",
+  "form": {
+    "select_vendor": {
+      "label": "Vendor"
+    },
+    "select_category": {
+      "label": "Kategori"
+    }
+  },
+  "filter": {
+    "date_range": {
+      "label": "Date Range"
+    },
+    "clear_button": "Hapus filter"
+  },
+  "loading_message": "Menunggu",
   "dialog_remove": {
     "title": "Menghapus Customer",
     "description_1": "Anda akan menghapus `{{length}}` data yang dipilih.",
