@@ -33,7 +33,7 @@ export const DialogAdd = ({
         start: Yup.date().required(),
         end: Yup.date().required(),
       }),
-    []
+    [] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   return (

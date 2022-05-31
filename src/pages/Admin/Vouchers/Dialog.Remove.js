@@ -8,21 +8,26 @@ export const DialogRemove = (props) => {
   const { isOpen, data, onClose = () => {}, onSubmitted = () => {} } = props;
   const { t } = useTranslation("vouchers-page");
   const client = useClient();
-  const onSubmit = useCallback(async (values, { setSubmitting, setErrors }) => {
-    try {
-      console.log(values);
-      // onClose();
-      // onSubmitted();
-    } catch (err) {
-      console.error(err.message);
-      setErrors({ submit: err.message });
-      setSubmitting(false);
-      toaster.show({
-        intent: "danger",
-        message: err.message,
-      });
-    }
-  }, []);
+
+  const onSubmit = useCallback(
+    async (values, { setSubmitting, setErrors }) => {
+      try {
+        const res = client["vouchers"].remove(data);
+        onClose();
+        onSubmitted(res);
+      } catch (err) {
+        console.error(err.message);
+        setErrors({ submit: err.message });
+        setSubmitting(false);
+        toaster.show({
+          intent: "danger",
+          message: err.message,
+        });
+      }
+    },
+    [client, data, onClose, onSubmitted]
+  );
+
   return (
     <BaseDialogRemove
       isOpen={isOpen}
