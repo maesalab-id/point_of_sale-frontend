@@ -1,0 +1,65 @@
+{
+  "title": "Customers",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter by Name or Phone or Address"
+      }
+    },
+    "add_button": "Add Customer"
+  },
+  "dialog_add": {
+    "title": "Add new Customer",
+    "form": {
+      "name": {
+        "label": "Name",
+        "error_message": "Please enter customer Name"
+      },
+      "phone_number": {
+        "label": "Phone Number",
+        "error_message": "Please enter customer Phone Number"
+      },
+      "address": {
+        "label": "Address",
+        "error_message": "Please enter customer Address"
+      },
+      "submit_button": "Submit",
+      "close_button": "Close"
+    }
+  },
+  "dialog_edit": {
+    "title": "Edit Customer Information",
+    "form": {
+      "name": {
+        "label": "Name",
+        "error_message": "Please enter customer Name"
+      },
+      "phone_number": {
+        "label": "Phone Number",
+        "error_message": "Please enter customer Phone Number"
+      },
+      "address": {
+        "label": "Address",
+        "error_message": "Please enter customer Address"
+      },
+      "submit_button": "Submit",
+      "close_button": "Close"
+    }
+  },
+  "dialog_remove": {
+    "title": "Delete Customer",
+    "description_1": "Your will delete `{{length}}` selected data.",
+    "description_2": "Deleted data cannot be recovered. You are sure?",
+    "form": {
+      "confirm": {
+        "label": "Please tipe <strong>CONFIRM</strong> to confirm",
+        "placeholder": "type here",
+        "error_message": {
+          "unmatched": "Must be CONFIRM with capitalize",
+          "required": "You must type CONFIRM to continue"
+        }
+      },
+      "submit_button": "I understand and delete this data"
+    }
+  }
+}

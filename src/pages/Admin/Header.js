@@ -1,10 +1,19 @@
 import { Button, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
-import { Box, Navbar } from "components";
+import { Box, Navbar, useI18n } from "components";
 import { useClient } from "components/client";
+import { useMemo } from "react";
+import _get from "lodash.get";
 
 export const Header = () => {
   const { account, role, logout } = useClient();
+  const { setLang, currentLang } = useI18n();
+  const language = useMemo(() => {
+    return [
+      { label: "Indonesia", value: "id" },
+      { label: "English", value: "en" },
+    ];
+  }, []);
   return (
     <Navbar>
       <Navbar.Group>
@@ -20,17 +29,42 @@ export const Header = () => {
         </Box>
         <Button minimal={true} text="Contact Center" /> */}
       </Navbar.Group>
-      <Navbar.Group>
-      </Navbar.Group>
+      <Navbar.Group></Navbar.Group>
       <Navbar.Group align="right">
         <Box sx={{ ml: 2 }}>
           <Popover2
             placement="bottom-end"
-            content={(
+            content={
               <Menu>
-                <MenuItem text={
-                  <span>Signed as <Box as="span" sx={{ fontWeight: "bold" }}>{account && role}</Box></span>
-                } />
+                <MenuItem
+                  text={
+                    <span>
+                      Signed as{" "}
+                      <Box as="span" sx={{ fontWeight: "bold" }}>
+                        {account && role}
+                      </Box>
+                    </span>
+                  }
+                />
+                <MenuItem
+                  text={
+                    <span>
+                      Lang:{" "}
+                      {_get(
+                        language.find(({ value }) => value === currentLang),
+                        "label"
+                      )}
+                    </span>
+                  }
+                >
+                  {language.map(({ label, value }) => (
+                    <MenuItem
+                      key={value}
+                      text={label}
+                      onClick={() => setLang(value)}
+                    />
+                  ))}
+                </MenuItem>
                 <MenuDivider />
                 <MenuItem
                   intent="danger"
@@ -41,12 +75,23 @@ export const Header = () => {
                   }}
                 />
               </Menu>
-            )}
+            }
           >
-            <Button minimal={true} icon="user" text={<span>Signed as <Box as="span" sx={{ fontWeight: "bold" }}>{account && role}</Box></span>} />
+            <Button
+              minimal={true}
+              icon="user"
+              text={
+                <span>
+                  Signed as{" "}
+                  <Box as="span" sx={{ fontWeight: "bold" }}>
+                    {account && role}
+                  </Box>
+                </span>
+              }
+            />
           </Popover2>
         </Box>
       </Navbar.Group>
     </Navbar>
-  )
-}
+  );
+};

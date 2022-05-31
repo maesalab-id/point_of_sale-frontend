@@ -1,41 +1,64 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup, TextArea } from "@blueprintjs/core";
-import { useClient } from "components";
+import {
+  Button,
+  Classes,
+  Dialog,
+  FormGroup,
+  InputGroup,
+  TextArea,
+} from "@blueprintjs/core";
+import { InputMask, useClient } from "components";
 import { toaster } from "components/toaster";
 import { Formik } from "formik";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
-
-const Schema = Yup.object().shape({
-  "name": Yup.string().required(),
-  "address": Yup.string().required(),
-  "phone_number": Yup.string().required(),
-});
+import _get from "lodash.get";
 
 const initialValues = {
-  "name": "",
-  "address": "",
-  "phone_number": "",
-}
+  name: "",
+  address: "",
+  phone_number: "",
+};
 
 export const DialogAdd = ({
   initialValue = initialValues,
   isOpen,
-  onClose = () => { },
-  onSubmitted = () => { }
+  onClose = () => {},
+  onSubmitted = () => {},
 }) => {
   const client = useClient();
+
+  const { t } = useTranslation("customers-page");
+
+  const Schema = useMemo(
+    () =>
+      Yup.object().shape({
+        name: Yup.string().required(t("dialog_add.form.name.error_message")),
+        address: Yup.string().required(
+          t("dialog_add.form.address.error_message")
+        ),
+        phone_number: Yup.string().required(
+          t("dialog_add.form.phone_number.error_message")
+        ),
+      }),
+    [t]
+  );
 
   return (
     <Dialog
       enforceFocus={false}
       isOpen={isOpen}
-      onClose={() => { onClose() }}
-      title="Add new Category"
+      onClose={() => {
+        onClose();
+      }}
+      title={t("dialog_add.title")}
     >
       <Formik
         validationSchema={Schema}
+        validateOnChange={false}
         initialValues={{
           ...initialValues,
-          ...initialValue
+          ...initialValue,
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
@@ -47,16 +70,16 @@ export const DialogAdd = ({
             setSubmitting(false);
             toaster.show({
               intent: "danger",
-              message: err.message
-            })
+              message: err.message,
+            });
           }
         }}
       >
-        {({ values, errors, isSubmitting, handleSubmit, handleChange }) =>
+        {({ values, errors, isSubmitting, handleSubmit, handleChange }) => (
           <form onSubmit={handleSubmit}>
             <div className={Classes.DIALOG_BODY}>
               <FormGroup
-                label="Name"
+                label={t("dialog_add.form.name.label")}
                 labelFor="f-name"
                 helperText={errors["name"]}
                 intent={"danger"}
@@ -70,21 +93,31 @@ export const DialogAdd = ({
                 />
               </FormGroup>
               <FormGroup
-                label="Phone Number"
+                label={t("dialog_add.form.phone_number.label")}
                 labelFor="f-phone_number"
                 helperText={errors["phone_number"]}
                 intent={"danger"}
               >
-                <InputGroup
-                  id="f-phone_number"
-                  name="phone_number"
-                  value={values["phone_number"]}
+                <InputMask
+                  mask={[
+                    { mask: "+{62} 000-000-0000" },
+                    { mask: "+{62} 000-0000-0000" },
+                  ]}
+                  value={_get(values, "phone_number")}
                   onChange={handleChange}
-                  intent={errors["phone_number"] ? "danger" : "none"}
-                />
+                >
+                  {({ ref }) => (
+                    <InputGroup
+                      inputRef={ref}
+                      id="f-phone_number"
+                      name="phone_number"
+                      intent={errors["phone_number"] ? "danger" : "none"}
+                    />
+                  )}
+                </InputMask>
               </FormGroup>
               <FormGroup
-                label="Address"
+                label={t("dialog_add.form.address.label")}
                 labelFor="f-address"
                 helperText={errors["address"]}
                 intent={"danger"}
@@ -105,19 +138,19 @@ export const DialogAdd = ({
                 <Button
                   minimal={true}
                   onClick={() => onClose()}
-                  text="Close"
+                  text={t("dialog_add.form.close_button")}
                 />
                 <Button
                   loading={isSubmitting}
                   type="submit"
                   intent="primary"
-                  text="Simpan"
+                  text={t("dialog_add.form.submit_button")}
                 />
               </div>
             </div>
           </form>
-        }
+        )}
       </Formik>
     </Dialog>
-  )
-}
+  );
+};

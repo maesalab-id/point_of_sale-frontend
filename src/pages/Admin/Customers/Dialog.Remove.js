@@ -1,27 +1,42 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core"
+import {
+  Button,
+  Classes,
+  Dialog,
+  FormGroup,
+  InputGroup,
+} from "@blueprintjs/core";
 import { useClient } from "components";
 import { toaster } from "components/toaster";
-import { Formik } from "formik"
+import { Formik } from "formik";
 import { useMemo } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import * as Yup from "yup";
 
 export const DialogRemove = ({
   isOpen,
-  onClose = () => { },
-  onSubmitted = () => { },
-  data
+  onClose = () => {},
+  onSubmitted = () => {},
+  data,
 }) => {
+  const { t } = useTranslation("customers-page");
   const client = useClient();
-  const Schema = useMemo(() => (Yup.object().shape({
-    'last-word': Yup.string()
-      .oneOf(["CONFIRM"], 'Not match')
-      .required('Field is required')
-  })), []);
+  const Schema = useMemo(
+    () =>
+      Yup.object().shape({
+        "last-word": Yup.string()
+          .oneOf(
+            ["CONFIRM"],
+            t("dialog_remove.form.confirm.error_message.unmatched")
+          )
+          .required(t("dialog_remove.form.confirm.error_message.required")),
+      }),
+    []
+  );
   return (
     <Dialog
       isOpen={isOpen}
       onClose={() => onClose()}
-      title="Delete customer"
+      title={t("dialog_remove.title")}
     >
       <Formik
         validationSchema={Schema}
@@ -39,41 +54,52 @@ export const DialogRemove = ({
             setSubmitting(false);
             toaster.show({
               intent: "danger",
-              message: err.message
-            })
+              message: err.message,
+            });
           }
         }}
       >
-        {({ values, errors, isSubmitting, handleSubmit, handleChange }) =>
+        {({ values, errors, isSubmitting, handleSubmit, handleChange }) => (
           <form onSubmit={handleSubmit}>
             <div className={Classes.DIALOG_BODY}>
-              <h5 className={Classes.HEADING}>Anda akan menghapus `{data.length}` data yang dipilih.</h5>
-              <p>Data yang terhapus tidak dapat dikembalikan. Anda yakin?</p>
+              <h5 className={Classes.HEADING}>
+                {t("dialog_remove.description_1", {
+                  length: data.length,
+                })}
+              </h5>
+              <p>
+                {t("dialog_remove.description_2", {
+                  length: data.length,
+                })}
+              </p>
               <FormGroup
-                label={(<>Please type <strong>CONFIRM</strong> to confirm</>)}
-                labelFor={'last-word'}
-                intent={errors['last-word'] ? 'danger' : 'none'}
-                helperText={errors['last-word']}>
+                label={<Trans>{t("dialog_remove.form.confirm.label")}</Trans>}
+                labelFor={"last-word"}
+                intent={errors["last-word"] ? "danger" : "none"}
+                helperText={errors["last-word"]}
+              >
                 <InputGroup
                   name="last-word"
                   onChange={handleChange}
-                  value={values['last-word']}
+                  value={values["last-word"]}
                   placeholder="type here"
-                  intent={errors['last-word'] ? 'danger' : 'none'} />
+                  intent={errors["last-word"] ? "danger" : "none"}
+                />
               </FormGroup>
             </div>
             <div className={Classes.DIALOG_FOOTER}>
               <Button
                 fill={true}
-                text="Saya mengerti dan menghapus data ini."
+                text={t("dialog_remove.form.submit_button")}
                 intent="danger"
                 type="submit"
                 loading={isSubmitting}
-                disabled={Object.entries(errors).length > 0} />
+                disabled={Object.entries(errors).length > 0}
+              />
             </div>
           </form>
-        }
+        )}
       </Formik>
     </Dialog>
-  )
-}
+  );
+};

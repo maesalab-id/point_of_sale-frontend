@@ -1,0 +1,65 @@
+{
+  "title": "Pelanggan",
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Filter dengan Nama atau Phone atau Alamat"
+      }
+    },
+    "add-button": "Tambah Pelanggan"
+  },
+  "dialog_add": {
+    "title": "Tambah Pelanggan Baru",
+    "form": {
+      "name": {
+        "label": "Nama",
+        "error_message": "Silahkan masukan Nama Customer"
+      },
+      "phone_number": {
+        "label": "Nomor Telepon",
+        "error_message": "Silahkan masukan Nomor Telepon Customer"
+      },
+      "address": {
+        "label": "Alamat",
+        "error_message": "Silahkan masukan Alamat"
+      },
+      "submit_button": "Kirim",
+      "close_button": "Tutup"
+    }
+  },
+  "dialog_edit": {
+    "title": "Perbarui informasi Pelanggan",
+    "form": {
+      "name": {
+        "label": "Nama",
+        "error_message": "Silahkan masukan Nama Customer"
+      },
+      "phone_number": {
+        "label": "Nomor Telepon",
+        "error_message": "Silahkan masukan Nomor Telepon Customer"
+      },
+      "address": {
+        "label": "Alamat",
+        "error_message": "Silahkan masukan Alamat Customer"
+      },
+      "submit_button": "Kirim",
+      "close_button": "Tutup"
+    }
+  },
+  "dialog_remove": {
+    "title": "Menghapus Customer",
+    "description_1": "Anda akan menghapus `{{length}}` data yang dipilih.",
+    "description_2": "Data yang terhapus tidak dapat dikembalikan. Anda yakin?",
+    "form": {
+      "confirm": {
+        "label": "Silahkan ketik <strong>CONFIRM</strong> untuk mengkonfirmasi",
+        "placeholder": "ketik disini",
+        "error_message": {
+          "unmatched": "Ketik CONFIRM secara kapital",
+          "required": "Anda harus mengetik CONFIRM untuk melanjutkan"
+        }
+      },
+      "submit_button": "Saya mengerti dan menghapus data ini."
+    }
+  }
+}
