@@ -1,6 +1,6 @@
 import {
-  BrowserRouter,
-  // HashRouter as Router,
+  // BrowserRouter,
+  HashRouter,
   Route,
   Routes
 } from "react-router-dom";
@@ -11,7 +11,7 @@ import { PrivateRoute } from "components/PrivateRoute";
 
 const Router = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="login" element={<Login />} />
         <Route path="/*" element={
@@ -21,7 +21,7 @@ const Router = () => {
         } />
         <Route path="*" element={<FourOFour />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
