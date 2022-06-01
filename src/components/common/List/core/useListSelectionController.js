@@ -21,7 +21,8 @@ export const useListSelectionController = () => {
       case "remove":
         return [...state.filter((item) => item !== action.data.name)];
       case "all": {
-        if (action.data) {
+        const items = action.items;
+        if (action.data && items) {
           return [...items.map((item) => item.id)];
         } else {
           return [];
@@ -62,14 +63,13 @@ export const useListSelectionController = () => {
       },
       unselect: (data) => {
         dispatchSelectedItem({
-          type: "add",
+          type: "remove",
           data,
         });
       },
       clearSelection: () => {
         dispatchSelectedItem({
-          type: "toggle",
-          data,
+          type: "all",
         });
       },
     }),

@@ -1,6 +1,6 @@
 import _set from 'lodash/set';
-import removeEmpty from './utils/removeEmpty';
-import removeKey from './utils/removeKey';
+import removeEmpty from '../utils/removeEmpty';
+import removeKey from '../utils/removeKey';
 
 export const SET_SORT = 'SET_SORT';
 export const SORT_ASC = 'ASC';

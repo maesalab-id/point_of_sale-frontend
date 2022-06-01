@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { SORT_ASC } from "./queryReducer";
 import { useListParamsController } from "./useListParamsController";
 import { useListSelectionController } from "./useListSelectionController";
 
-export const useListController = (props) => {
+export const useListController = (props = {}) => {
   const {
     resource = "list",
     limit = 10,
@@ -32,7 +32,7 @@ export const useListController = (props) => {
       limit: query.limit,
       page: query.page,
     }),
-    []
+    [query.limit, query.page]
   );
 
   const currentSort = useMemo(
@@ -45,7 +45,7 @@ export const useListController = (props) => {
 
   const {
     data: rawData,
-    refetch,
+    refetch: queryRefetch,
     isLoading,
     isFetching,
     isError,
@@ -56,25 +56,32 @@ export const useListController = (props) => {
       {
         pagination,
         currentSort,
-        filter: query.filter,
+        filter: query.debouncedFilter,
       },
     ],
-    queryFn({
-      filter: query.filter,
-    }),
+    () =>
+      queryFn({
+        filter: query.debouncedFilter,
+        pagination,
+        sort: {
+          field: query.sort,
+          order: query.order,
+        },
+      }),
     {
       ...queryOptions,
       refetchOnWindowFocus: false,
     }
   );
 
-  const [selectedIds, selectionModifier] = useListSelectionController();
+  const [selectedIds, selectionModifier, dispatchSelectedItem] =
+    useListSelectionController();
 
   const { items, total } = useMemo(() => {
     if (!rawData) {
       return {
         total: 0,
-        data: [],
+        items: [],
       };
     }
     return {
@@ -82,6 +89,31 @@ export const useListController = (props) => {
       items: rawData.data,
     };
   }, [rawData]);
+
+  const selectionStatus = useMemo(() => {
+    let indeterminate = false;
+    let checked = false;
+    let disabled = true;
+    indeterminate = selectedIds.length > 0 && selectedIds.length < total;
+    checked = selectedIds.length > 0 && selectedIds.length === total;
+    disabled = !(total > 0);
+    return {
+      indeterminate,
+      checked,
+      disabled,
+    };
+  }, [total, selectedIds.length]);
+
+  const refetch = useCallback(
+    async (options = {}) => {
+      const { resetFilter, ...rest } = options;
+      if (resetFilter) {
+        await queryModifier.setFilters({});
+      }
+      await queryRefetch(rest);
+    },
+    [queryRefetch, queryModifier.setFilters]
+  );
 
   return {
     isLoading,
@@ -94,9 +126,9 @@ export const useListController = (props) => {
     page: query.page,
     sort: query.sort,
     limit: query.limit,
-    setPage: query.setPage,
-    setSort: query.setSort,
-    setLimit: query.setLimit,
+    setPage: queryModifier.setPage,
+    setSort: queryModifier.setSort,
+    setLimit: queryModifier.setLimit,
 
     filter: query.filter,
     debouncedFilter: query.debouncedFilter,
@@ -109,6 +141,8 @@ export const useListController = (props) => {
     selecting: selectionModifier.select,
     toggleSelection: selectionModifier.toggle,
     clearSelection: selectionModifier.clearSelection,
+    dispatchSelectedItem: dispatchSelectedItem,
+    selectionStatus,
   };
 };
 

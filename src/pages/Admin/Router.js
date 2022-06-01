@@ -1,12 +1,12 @@
-import { Navigate, Route, Routes } from "react-router-dom"
-import { Categories } from "./Categories"
-import { Customers } from "./Customers"
-import { Orders } from "./Orders"
-import { Products } from "./Products"
-import { Receipts } from "./Receipts"
-import { Users } from "./Users"
-import { Vendors } from "./Vendors"
-import { Vouchers } from "./Vouchers"
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Categories } from "./Categories";
+import { Customers } from "./Customers";
+import { Orders } from "./Orders";
+import { Products } from "./Products";
+import { Receipts } from "./Receipts";
+import { Users } from "./Users";
+import { Vendors } from "./Vendors";
+import { Vouchers } from "./Vouchers";
 
 export const Router = () => {
   return (
@@ -21,5 +21,5 @@ export const Router = () => {
       <Route path="receipts" element={<Receipts />} />
       <Route path="orders" element={<Orders />} />
     </Routes>
-  )
-}
+  );
+};
