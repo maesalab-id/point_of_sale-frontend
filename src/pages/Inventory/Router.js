@@ -1,8 +1,8 @@
 import { Categories } from "pages/Admin/Categories"
 import { Products } from "pages/Admin/Products"
+import { Vendors } from "../Admin/Vendors"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Orders } from "./Orders"
-import { Vendors } from "./Vendors"
 
 export const Router = () => {
   return (
