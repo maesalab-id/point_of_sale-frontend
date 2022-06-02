@@ -12,13 +12,20 @@ import theme from "./theme";
 import Router from "./Router";
 import reportWebVitals from "./reportWebVitals";
 import { ClientProvider } from "components/client";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 import "components/translations/i18n";
+
+const queryClient = new QueryClient();
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <ClientProvider>
-      <Router />
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
+        <Router />
+      </QueryClientProvider>
     </ClientProvider>
   </ThemeProvider>,
   document.getElementById("root")

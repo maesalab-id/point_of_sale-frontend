@@ -1,24 +1,37 @@
-import { Button, ControlGroup, Icon, InputGroup, Tag } from "@blueprintjs/core";
-import { Box, Flex, useList, DateRangePicker, Divider } from "components";
-import { filterField } from ".";
+import { ControlGroup, Icon, InputGroup, Tag } from "@blueprintjs/core";
+import { Box, Flex, DateRangePicker, Divider } from "components";
 import moment from "moment";
 import _get from "lodash.get";
 import { ExportButton } from "./ExportButton";
+import { useListContext } from "components/common/List";
+import { useTranslation } from "react-i18next";
+import { useFormik } from "formik";
+import { useEffect } from "react";
 
 export const Toolbar = () => {
-  const { filter, setFilter } = useList();
+  const { t } = useTranslation("receipts-page");
+
+  const { setFilters, filter, displayedFilter = {} } = useListContext();
+
+  const { values, handleChange, setFieldValue } = useFormik({
+    initialValues: filter,
+  });
+
+  useEffect(() => {
+    if (filter !== values) setFilters(values, displayedFilter);
+  }, [values]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Flex>
       <Flex sx={{ flexGrow: 1 }}>
         <Box sx={{ mr: 2 }}>
           <ControlGroup>
             <InputGroup
+              name="receipt_number"
               leftIcon="search"
-              placeholder="Filter by order number"
-              value={filter["receipt_number"] || ""}
-              onChange={(e) => {
-                setFilter((f) => ({ ...f, receipt_number: e.target.value }));
-              }}
+              placeholder={t("toolbar.filter.search.placeholder")}
+              value={values["receipt_number"] || ""}
+              onChange={handleChange}
             />
           </ControlGroup>
         </Box>
@@ -26,23 +39,27 @@ export const Toolbar = () => {
         <Flex sx={{ mr: 2, alignItems: "center" }}>
           <Box sx={{ mr: 2 }}>Date Range:</Box>
           <DateRangePicker
-            value={[_get(filter, "start"), _get(filter, "end")]}
-            onChange={([start, end]) => {
-              setFilter((f) => ({
-                ...f,
-                start: start.isValid()
+            value={[_get(values, "start"), _get(values, "end")]}
+            onChange={async ([start, end]) => {
+              await setFieldValue(
+                "start",
+                start.isValid()
                   ? start.endOf("day").format("DD-MM-YYYY")
                   : undefined,
-                end: end.isValid()
+                false
+              );
+              await setFieldValue(
+                "end",
+                end.isValid()
                   ? end.endOf("day").format("DD-MM-YYYY")
-                  : undefined,
-              }));
+                  : undefined
+              );
             }}
           >
             <Box>
               <Tag>
-                {filter["start"]
-                  ? moment(_get(filter, "start"), "DD-MM-YYYY").format(
+                {values["start"]
+                  ? moment(_get(values, "start"), "DD-MM-YYYY").format(
                       "dddd, LL"
                     )
                   : "not set"}
@@ -51,31 +68,13 @@ export const Toolbar = () => {
                 <Icon icon="arrow-right" />
               </Box>
               <Tag>
-                {filter["end"]
-                  ? moment(_get(filter, "end"), "DD-MM-YYYY").format("dddd, LL")
+                {values["end"]
+                  ? moment(_get(values, "end"), "DD-MM-YYYY").format("dddd, LL")
                   : "not set"}
               </Tag>
             </Box>
           </DateRangePicker>
         </Flex>
-        <Box>
-          {filterField.map((f) => !!filter[f]).indexOf(true) !== -1 && (
-            <Button
-              title="Clear Filter"
-              minimal={true}
-              intent="warning"
-              icon="filter-remove"
-              onClick={() => {
-                const ff = {};
-                filterField.forEach((f) => (ff[f] = undefined));
-                setFilter((filter) => ({
-                  ...filter,
-                  ...ff,
-                }));
-              }}
-            />
-          )}
-        </Box>
         <Box sx={{ flexGrow: 1 }} />
         <Box>
           <ExportButton />

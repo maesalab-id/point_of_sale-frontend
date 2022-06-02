@@ -1,39 +1,45 @@
-import { Box, Divider } from "components";
-import ListProvider from "components/list";
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Box, Divider, useClient } from "components";
+import { ListContextProvider } from "components/common/List";
+import { useCallback } from "react";
 import { Header } from "./Header";
-import List from "./List";
+import { List } from "./List";
 import { Toolbar } from "./Toolbar";
 
 export const filterField = ["type", "username"];
 
 export const Users = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const filter = useMemo(() => {
-    const url = searchParams;
-    const filter = {};
-    for (let f of filterField) {
-      filter[f] = url.get(f) || "";
-    }
-    return filter;
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  const client = useClient();
+
+  const fetch = useCallback(
+    async ({ filter, pagination }) => {
+      try {
+        const query = {
+          $distinct: true,
+          type: filter["type"] || undefined,
+          name: filter["username"]
+            ? {
+                $iLike: `%${filter["username"]}%`,
+              }
+            : undefined,
+          $select: ["id", "name", "username", "type"],
+          $skip: pagination.skip,
+          $sort: {
+            id: -1,
+          },
+          $limit: pagination.limit,
+        };
+        const res = await client["users"].find({ query });
+        return res;
+      } catch (err) {
+        console.error(err);
+        return {};
+      }
+    },
+    [client]
+  );
 
   return (
-    <ListProvider
-      filter={filter}
-      onFilterChange={(value, { dispatchSelectedItem }) => {
-        for (let v of filterField) {
-          if (value[v]) searchParams.set(v, value[v]);
-          else searchParams.delete(v);
-        }
-        setSearchParams(searchParams);
-        dispatchSelectedItem({
-          type: "all",
-          data: false,
-        });
-      }}
-    >
+    <ListContextProvider resource="users" queryFn={fetch} limit={10}>
       <Box>
         <Box sx={{ pt: 4 }}>
           <Header />
@@ -46,6 +52,6 @@ export const Users = () => {
           <List />
         </Box>
       </Box>
-    </ListProvider>
+    </ListContextProvider>
   );
 };

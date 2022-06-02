@@ -1,14 +1,7 @@
-import { Classes } from "@blueprintjs/core";
-import { Box } from "components";
+import { Header as AppshellHeader } from "components/common/Appshell";
 import { useTranslation } from "react-i18next";
 
 export const Header = () => {
   const { t } = useTranslation("vouchers-page");
-  return (
-    <Box sx={{ ml: 3, mb: 4 }}>
-      <Box as="h2" className={`${Classes.HEADING}`}>
-        {t("title")}
-      </Box>
-    </Box>
-  );
+  return <AppshellHeader title={t("title")} />;
 };

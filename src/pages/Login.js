@@ -1,5 +1,12 @@
-import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
-import { Box, useClient } from "components";
+import {
+  Button,
+  FormGroup,
+  InputGroup,
+  Menu,
+  MenuItem,
+  Position,
+} from "@blueprintjs/core";
+import { Box, useClient, useI18n } from "components";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Formik } from "formik";
@@ -9,11 +16,14 @@ import { toaster } from "components/toaster";
 import { VENDOR_INFORMATION } from "components/constants";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Popover2 } from "@blueprintjs/popover2";
 
 const Login = () => {
   const client = useClient();
   const navigate = useNavigate();
   const { t } = useTranslation("login-page");
+
+  const { setLang, currentLang, availableLang } = useI18n();
 
   const Schema = useMemo(
     () =>
@@ -136,6 +146,7 @@ const Login = () => {
                       <InputGroup
                         id="f-username"
                         name="username"
+                        autoComplete="username"
                         value={values["username"] || ""}
                         onChange={handleChange}
                         intent={_get(errors, "username") ? "danger" : "none"}
@@ -151,6 +162,7 @@ const Login = () => {
                         id="f-password"
                         name="password"
                         value={values["password"] || ""}
+                        autoComplete="current-password"
                         onChange={handleChange}
                         type={values["hidePassword"] ? "password" : "text"}
                         intent={_get(errors, "password") ? "danger" : "none"}
@@ -174,7 +186,7 @@ const Login = () => {
                       <Button
                         type="submit"
                         intent="primary"
-                        text="Login"
+                        text={t("form.submit-button")}
                         loading={isSubmitting}
                       />
                     </Box>
@@ -183,6 +195,37 @@ const Login = () => {
               }}
             </Formik>
           </Box>
+        </Box>
+        <Box sx={{ textAlign: "center", py: 3 }}>
+          <Popover2
+            position={Position.BOTTOM}
+            content={
+              <Menu>
+                {availableLang.map(({ label, value }) => (
+                  <MenuItem
+                    key={value}
+                    text={label}
+                    label={value}
+                    icon={currentLang === value ? "small-tick" : "blank"}
+                    selected={currentLang === value}
+                    onClick={() => setLang(value)}
+                  />
+                ))}
+              </Menu>
+            }
+            renderTarget={({ isOpen, ref, ...popoverProps }) => (
+              <Button
+                {...popoverProps}
+                elementRef={ref}
+                minimal={true}
+                active={isOpen}
+                text={`Lang: ${_get(
+                  availableLang.find(({ value }) => value === currentLang),
+                  "label"
+                )}`}
+              />
+            )}
+          />
         </Box>
       </Box>
     </Box>

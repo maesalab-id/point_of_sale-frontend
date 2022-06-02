@@ -1,4 +1,4 @@
-import { Button, Classes, Dialog } from "@blueprintjs/core";
+import { Button, Classes, Dialog, Spinner } from "@blueprintjs/core";
 import { useClient } from "components";
 import { toaster } from "components/toaster";
 import { Formik } from "formik";
@@ -54,9 +54,19 @@ export const DialogAdd = ({
         initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
           try {
+            const toast = toaster.show({
+              intent: "info",
+              icon: <Spinner className={Classes.ICON} size={16} />,
+              message: `Creating new Product`,
+            });
             const res = await client["items"].create(values);
             onClose();
-            onSubmitted(res);
+            await onSubmitted(res);
+            toaster.dismiss(toast);
+            toaster.show({
+              intent: "success",
+              message: "Product created",
+            });
           } catch (err) {
             console.error(err);
             setSubmitting(false);

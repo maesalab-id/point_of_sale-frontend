@@ -12,10 +12,12 @@ host.port = process.env["REACT_APP_SERVER_PORT"];
 const socket = io(host.toString());
 
 const feathers = Feathers();
-feathers.configure(FeathersSocketIOClient(socket))
-feathers.configure(FeathersAuth({
-  storageKey: "accessToken"
-}));
+feathers.configure(FeathersSocketIOClient(socket));
+feathers.configure(
+  FeathersAuth({
+    storageKey: "accessToken",
+  })
+);
 
 export const ClientContext = createContext(null);
 
@@ -31,15 +33,19 @@ export const ClientProvider = ({ children }) => {
 
   useEffect(() => {
     const listener = [
-      () => { setIsConnected(true); },
-      () => { setIsConnected(false); }
-    ]
+      () => {
+        setIsConnected(true);
+      },
+      () => {
+        setIsConnected(false);
+      },
+    ];
     socket.on("connect", listener[0]);
     socket.on("disconnect", listener[1]);
     return () => {
       socket.off("connect", listener[0]);
       socket.off("disconnect", listener[1]);
-    }
+    };
   }, []);
 
   async function authenticate(data, params) {
@@ -68,8 +74,8 @@ export const ClientProvider = ({ children }) => {
   }
 
   async function logout() {
-    const ret = await feathers.logout()
-    setIsAuthenticated(false);
+    const ret = await feathers.logout();
+    await setIsAuthenticated(false);
     return ret;
   }
 
@@ -84,37 +90,57 @@ export const ClientProvider = ({ children }) => {
       logout,
       reAuthenticate,
 
-      isAuthenticated() { return isAuthenticated },
-      isConnected() { return isConnected },
+      isAuthenticated() {
+        return isAuthenticated;
+      },
+      isConnected() {
+        return isConnected;
+      },
       __connected: isConnected,
       __authenticated: isAuthenticated,
 
-      get: (name) => { return feathers.get(name) },
+      get: (name) => {
+        return feathers.get(name);
+      },
 
       service: feathers.service,
 
       // Services
-      get "users"() { return feathers.service("users") },
-      get "customers"() { return feathers.service("customers") },
-      get "vendors"() { return feathers.service("vendors") },
-      get "vouchers"() { return feathers.service("vouchers") },
+      get users() {
+        return feathers.service("users");
+      },
+      get customers() {
+        return feathers.service("customers");
+      },
+      get vendors() {
+        return feathers.service("vendors");
+      },
+      get vouchers() {
+        return feathers.service("vouchers");
+      },
 
-      get "items"() { return feathers.service("items") },
-      get "categories"() { return feathers.service("categories") },
+      get items() {
+        return feathers.service("items");
+      },
+      get categories() {
+        return feathers.service("categories");
+      },
 
-      get "receipts"() { return feathers.service("receipts") },
-      get "orders"() { return feathers.service("orders") },
-    }
+      get receipts() {
+        return feathers.service("receipts");
+      },
+      get orders() {
+        return feathers.service("orders");
+      },
+    };
   }, [isConnected, isAuthenticated, account, role]);
 
   return (
-    <ClientContext.Provider value={client}>
-      {children}
-    </ClientContext.Provider>
-  )
-}
+    <ClientContext.Provider value={client}>{children}</ClientContext.Provider>
+  );
+};
 
 export const useClient = () => {
   const client = useContext(ClientContext);
   return client;
-}
+};

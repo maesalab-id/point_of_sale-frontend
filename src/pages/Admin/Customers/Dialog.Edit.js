@@ -4,6 +4,7 @@ import {
   Dialog,
   FormGroup,
   InputGroup,
+  Spinner,
   TextArea,
 } from "@blueprintjs/core";
 import { useClient, InputMask } from "components";
@@ -51,7 +52,7 @@ export const DialogEdit = ({
     >
       <Formik
         validationSchema={Schema}
-        // validateOnChange={false}
+        validateOnChange={false}
         initialValues={{
           name: _get(data, "name"),
           address: _get(data, "address"),
@@ -59,9 +60,19 @@ export const DialogEdit = ({
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
+            const toast = toaster.show({
+              intent: "info",
+              icon: <Spinner className={Classes.ICON} size={16} />,
+              message: `Submit changes`,
+            });
             const res = await client["customers"].patch(data["id"], values);
             onClose();
-            onSubmitted(res);
+            await onSubmitted(res);
+            toaster.dismiss(toast);
+            toaster.show({
+              intent: "success",
+              message: "Customer updated",
+            });
           } catch (err) {
             console.error(err);
             setSubmitting(false);

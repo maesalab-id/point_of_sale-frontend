@@ -1,23 +1,25 @@
 import { Button, Tag } from "@blueprintjs/core";
-import { useClient, useList } from "components";
+import { useClient } from "components";
 import { toaster } from "components/toaster";
 import { exportToCSV } from "components/utils";
 import moment from "moment";
 import { useCallback } from "react";
 import _get from "lodash.get";
+import { useListContext } from "components/common/List";
 
 export const ExportButton = () => {
   const client = useClient();
-  const { filter, paging } = useList();
+  const { filter } = useListContext();
 
   const fetchList = useCallback(
-    async ({ limit = 25, start, end }) => {
-      const startDate = moment(start || filter["start"], "DD-MM-YYYY");
-      const endDate = moment(end || filter["end"], "DD-MM-YYYY");
+    async ({ limit = 25, skip = 0, filter }) => {
+      const startDate = moment(_get(filter, "start"), "DD-MM-YYYY");
+      const endDate = moment(_get(filter, "end"), "DD-MM-YYYY");
       const query = {
         $distinct: true,
         $limit: limit,
-        receipt_number: filter["receipt_number"] || undefined,
+        $skip: skip,
+        receipt_number: _get(filter, "receipt_number") || undefined,
         created_at:
           startDate.isValid() && endDate.isValid()
             ? {
@@ -30,7 +32,6 @@ export const ExportButton = () => {
               }
             : undefined,
         $select: ["id", "receipt_number", "tax", "created_at"],
-        $skip: paging.skip,
         $sort: {
           id: -1,
         },
@@ -65,17 +66,18 @@ export const ExportButton = () => {
         data,
       };
     },
-    [client, paging.skip, filter]
+    [client]
   );
+
   const onExport = useCallback(async () => {
     let data = null;
 
     const startEnd = [
       filter.start
-        ? moment(filter.start, "DD-MM-YYYY").format("DD-MM-YYYY")
+        ? moment(_get(filter, "start"), "DD-MM-YYYY").format("DD-MM-YYYY")
         : moment().format("DD-MM-YYYY"),
       filter.end
-        ? moment(filter.end, "DD-MM-YYYY").format("DD-MM-YYYY")
+        ? moment(_get(filter, "end"), "DD-MM-YYYY").format("DD-MM-YYYY")
         : moment().format("DD-MM-YYYY"),
     ];
 
@@ -94,8 +96,8 @@ export const ExportButton = () => {
     try {
       data = await fetchList({
         limit: 1000,
-        start: startEnd[0],
-        end: startEnd[1],
+        skip: 0,
+        filter,
       });
     } catch (err) {
       console.error(err);
@@ -165,6 +167,7 @@ export const ExportButton = () => {
         </>
       ),
     });
-  }, [fetchList, filter.start, filter.end]);
+  }, [fetchList, filter]);
+
   return <Button text="Export to CSV" onClick={() => onExport()} />;
 };

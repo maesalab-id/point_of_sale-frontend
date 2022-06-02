@@ -3,7 +3,7 @@
   "toolbar": {
     "filter": {
       "search": {
-        "placeholder": "Filter by Name"
+        "placeholder": "Filter by Order Number"
       }
     }
   },

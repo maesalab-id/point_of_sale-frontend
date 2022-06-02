@@ -60,6 +60,7 @@ export const DialogForm = () => {
         <InputGroup
           id="f-username"
           name="username"
+          autoComplete="username"
           value={values["username"]}
           onChange={handleChange}
           intent={errors["username"] ? "danger" : "none"}
@@ -85,6 +86,7 @@ export const DialogForm = () => {
             <InputGroup
               id="f-password"
               name="password"
+              autoComplete="new-password"
               type={values["show_password"] ? "text" : "password"}
               value={values["password"]}
               onChange={handleChange}
@@ -102,6 +104,7 @@ export const DialogForm = () => {
             <InputGroup
               id="f-confirm_password"
               name="confirm_password"
+              autoComplete="new-password"
               type={values["show_password"] ? "text" : "password"}
               value={values["confirm_password"]}
               onChange={handleChange}

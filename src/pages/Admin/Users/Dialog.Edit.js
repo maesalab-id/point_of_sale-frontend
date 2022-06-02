@@ -1,4 +1,4 @@
-import { Button, Classes, Dialog } from "@blueprintjs/core";
+import { Button, Classes, Dialog, Spinner } from "@blueprintjs/core";
 import { toaster } from "components/toaster";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -49,13 +49,24 @@ export const DialogEdit = ({
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
+            const toast = toaster.show({
+              intent: "info",
+              icon: <Spinner className={Classes.ICON} size={16} />,
+              message: `Submit changes`,
+            });
             const res = await client["users"].patch(data["id"], values);
             onClose();
-            onSubmitted(res);
+            await onSubmitted(res);
+            toaster.dismiss(toast);
+            toaster.show({
+              intent: "success",
+              message: "User updated",
+            });
           } catch (err) {
             console.error(err);
             setSubmitting(false);
             toaster.show({
+              icon: "cross",
               intent: "danger",
               message: err.message,
             });

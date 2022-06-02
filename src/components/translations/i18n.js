@@ -10,7 +10,7 @@ i18n
   .use(Backend)
   .use(initReactI18next)
   .init({
-    debug: isDev,
+    // debug: isDev,
     lng: window.localStorage.getItem("lang") || "en",
     fallbackLng: isDev ? undefined : "en",
     interpolation: {
