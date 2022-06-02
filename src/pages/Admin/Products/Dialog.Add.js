@@ -77,7 +77,7 @@ export const DialogAdd = ({
           }
         }}
       >
-        {({ isSubmitting, handleSubmit, errors }) => (
+        {({ isSubmitting, handleSubmit }) => (
           <form onSubmit={handleSubmit}>
             <div className={Classes.DIALOG_BODY}>
               <DialogForm />

@@ -44,7 +44,6 @@ export const Toolbar = () => {
           <FetchAndSelect
             service={client["categories"]}
             placeholder={t("toolbar.filter.category.placeholder")}
-            id="f-category_id"
             name="category_id"
             value={filter["category_id"]}
             clearable={true}
