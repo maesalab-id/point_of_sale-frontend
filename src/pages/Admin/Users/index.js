@@ -2,7 +2,7 @@ import { Box, Divider, useClient } from "components";
 import { ListContextProvider } from "components/common/List";
 import { useCallback } from "react";
 import { Header } from "./Header";
-import List from "./List";
+import { List } from "./List";
 import { Toolbar } from "./Toolbar";
 
 export const filterField = ["type", "username"];
@@ -10,30 +10,33 @@ export const filterField = ["type", "username"];
 export const Users = () => {
   const client = useClient();
 
-  const fetch = useCallback(async ({ filter, pagination }) => {
-    try {
-      const query = {
-        $distinct: true,
-        type: filter["type"] || undefined,
-        name: filter["username"]
-          ? {
-              $iLike: `%${filter["username"]}%`,
-            }
-          : undefined,
-        $select: ["id", "name", "username", "type"],
-        $skip: pagination.skip,
-        $sort: {
-          id: -1,
-        },
-        $limit: pagination.limit,
-      };
-      const res = await client["users"].find({ query });
-      return res;
-    } catch (err) {
-      console.error(err);
-      return {};
-    }
-  }, []);
+  const fetch = useCallback(
+    async ({ filter, pagination }) => {
+      try {
+        const query = {
+          $distinct: true,
+          type: filter["type"] || undefined,
+          name: filter["username"]
+            ? {
+                $iLike: `%${filter["username"]}%`,
+              }
+            : undefined,
+          $select: ["id", "name", "username", "type"],
+          $skip: pagination.skip,
+          $sort: {
+            id: -1,
+          },
+          $limit: pagination.limit,
+        };
+        const res = await client["users"].find({ query });
+        return res;
+      } catch (err) {
+        console.error(err);
+        return {};
+      }
+    },
+    [client]
+  );
 
   return (
     <ListContextProvider resource="users" queryFn={fetch} limit={10}>

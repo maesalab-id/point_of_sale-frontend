@@ -37,6 +37,7 @@ export const DialogAdd = ({
       <Formik
         validationSchema={Schema}
         validateOnChange={false}
+        enableReinitialize={true}
         initialValues={{
           name: "",
           username: "",

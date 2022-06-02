@@ -1,8 +1,8 @@
 import { Button, ControlGroup, InputGroup } from "@blueprintjs/core";
-import { Box, Flex, useList } from "components";
+import { Box, Flex } from "components";
 import { useListContext } from "components/common/List";
 import { toaster } from "components/toaster";
-import { Formik, useFormik } from "formik";
+import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DialogAdd } from "./Dialog.Add";
@@ -19,7 +19,7 @@ export const Toolbar = () => {
 
   useEffect(() => {
     if (filter !== values) setFilters(values, displayedFilter);
-  }, [values]);
+  }, [values]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Flex>
