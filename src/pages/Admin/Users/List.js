@@ -2,7 +2,6 @@ import { ListBodyItem, ListView, useListContext } from "components/common/List";
 import { useState } from "react";
 import { DialogEdit } from "./Dialog.Edit";
 import _isNil from "lodash.isnil";
-import { toaster } from "components/toaster";
 import { Button, MenuDivider, MenuItem } from "@blueprintjs/core";
 import { DialogRemove } from "./Dialog.Remove";
 import { Box } from "components";
@@ -92,10 +91,6 @@ export const List = () => {
             onSubmitted={async () => {
               await refetch();
               await clearSelection();
-              toaster.show({
-                intent: "success",
-                message: `Users deleted`,
-              });
             }}
           />
           <DialogEdit
@@ -104,12 +99,8 @@ export const List = () => {
             onClose={() => {
               setSelectedData(null);
             }}
-            onSubmitted={() => {
-              refetch();
-              toaster.show({
-                intent: "success",
-                message: "User updated",
-              });
+            onSubmitted={async () => {
+              await refetch();
             }}
           />
         </>

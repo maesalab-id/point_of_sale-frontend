@@ -38,16 +38,22 @@ export const ListHeader = (props) => {
         {hasBulkAction && selectedIds.length > 0 && bulkActions}
         <Box sx={{ flexGrow: 1 }} />
         <Box>
-          <Tooltip2 content="Refresh">
-            <Button
-              loading={isFetching}
-              minimal={true}
-              icon="refresh"
-              onClick={() => {
-                refetch();
-              }}
-            />
-          </Tooltip2>
+          <Tooltip2
+            content="Refresh"
+            renderTarget={({ isOpen, ref, ...tooltipProps }) => (
+              <Button
+                {...tooltipProps}
+                active={isOpen}
+                elementRef={ref}
+                loading={isFetching}
+                minimal={true}
+                icon="refresh"
+                onClick={() => {
+                  refetch();
+                }}
+              />
+            )}
+          />
         </Box>
       </Flex>
     </ListGroup.Header>

@@ -1,1 +1,1 @@
-export { Header } from "components/common/Appshell";
+export { Navbar as Header } from "components/common/Appshell";
