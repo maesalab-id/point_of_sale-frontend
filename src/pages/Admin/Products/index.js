@@ -18,9 +18,14 @@ export const Products = () => {
           $limit: pagination.limit,
           $skip: pagination.skip,
           category_id: filter["category_id"] || undefined,
-          name: filter["name"]
+          $or: filter["name"]
             ? {
-                $iLike: `%${filter["name"]}%`,
+                name: {
+                  $iLike: `%${filter["name"]}%`,
+                },
+                code: {
+                  $iLike: `%${filter["name"]}%`,
+                },
               }
             : undefined,
           $select: ["id", "name", "discount", "code", "price", "quantity"],
