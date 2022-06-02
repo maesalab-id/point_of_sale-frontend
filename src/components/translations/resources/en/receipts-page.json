@@ -1,14 +1,14 @@
 {
-  "title": "Orders",
+  "title": "Receipts",
   "toolbar": {
     "filter": {
       "search": {
-        "placeholder": "Filter by Order Number"
+        "placeholder": "Filter by Receipt Number"
       }
     }
   },
   "dialog_detail": {
-    "title": "Detail Order #{{order_number}}",
+    "title": "Detail Receipt #{{receipt_number}}",
     "labels": {
       "vendor": "Vendor",
       "date": "Date",

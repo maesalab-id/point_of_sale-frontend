@@ -6,7 +6,7 @@ import { ListBodyItemBase } from "./ListBodyItemBase";
 
 export const ListBody = (props) => {
   const { hasBulkActions, children } = props;
-  const { items, isLoading } = useListContext();
+  const { items, isError, isLoading } = useListContext();
 
   if (isLoading) {
     return (
@@ -15,14 +15,22 @@ export const ListBody = (props) => {
       </Box>
     );
   }
-  if (items.length === 0) {
+
+  if (!Array.isArray(items) || isError) {
     return (
-      <Box sx={{ my: 3 }}>
-        <NonIdealState title="No user available" />
+      <Box sx={{ my: 4 }}>
+        <NonIdealState icon="graph-remove" title="Something went wrong" />
       </Box>
     );
   }
 
+  if (Array.isArray(items) && items.length === 0) {
+    return (
+      <Box sx={{ my: 4 }}>
+        <NonIdealState icon="antenna" title="No list available" />
+      </Box>
+    );
+  }
 
   return items.map((item) => (
     <RecordContextProvider key={item["id"]} record={item}>

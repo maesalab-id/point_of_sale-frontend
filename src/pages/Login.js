@@ -136,6 +136,7 @@ const Login = () => {
                       <InputGroup
                         id="f-username"
                         name="username"
+                        autoComplete="username"
                         value={values["username"] || ""}
                         onChange={handleChange}
                         intent={_get(errors, "username") ? "danger" : "none"}
@@ -151,6 +152,7 @@ const Login = () => {
                         id="f-password"
                         name="password"
                         value={values["password"] || ""}
+                        autoComplete="current-password"
                         onChange={handleChange}
                         type={values["hidePassword"] ? "password" : "text"}
                         intent={_get(errors, "password") ? "danger" : "none"}

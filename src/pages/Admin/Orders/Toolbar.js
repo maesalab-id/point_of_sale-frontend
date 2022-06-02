@@ -33,7 +33,7 @@ export const Toolbar = () => {
         <Box sx={{ mr: 2 }}>
           <ControlGroup>
             <InputGroup
-              name="order_name"
+              name="order_number"
               leftIcon="search"
               placeholder={t("toolbar.filter.search.placeholder")}
               value={values["order_number"] || ""}
