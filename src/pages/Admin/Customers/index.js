@@ -1,39 +1,58 @@
-import { Box, Divider } from "components";
-import ListProvider from "components/list";
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Box, Divider, useClient } from "components";
+import { ListContextProvider } from "components/common/List";
+import { useCallback } from "react";
 import { Header } from "./Header";
-import List from "./List";
+import { List } from "./List";
 import { Toolbar } from "./Toolbar";
 
 export const filterField = ["search"];
 
 export const Customers = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const filter = useMemo(() => {
-    const url = searchParams;
-    const filter = {};
-    for (let f of filterField) {
-      filter[f] = url.get(f) || "";
-    }
-    return filter;
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  const client = useClient();
+
+  const fetch = useCallback(
+    async ({ filter, pagination }) => {
+      try {
+        const query = {
+          $distinct: true,
+          $limit: pagination.limit,
+          $or: filter["search"]
+            ? {
+                name: filter["search"]
+                  ? {
+                      $iLike: `%${filter["search"]}%`,
+                    }
+                  : undefined,
+                address: filter["search"]
+                  ? {
+                      $iLike: `%${filter["search"]}%`,
+                    }
+                  : undefined,
+                phone_number: filter["search"]
+                  ? {
+                      $iLike: `%${filter["search"]}%`,
+                    }
+                  : undefined,
+              }
+            : undefined,
+          $select: ["id", "name", "phone_number", "address"],
+          $skip: pagination.skip,
+          $sort: {
+            id: -1,
+          },
+        };
+        const res = await client["customers"].find({ query });
+        return res;
+      } catch (err) {
+        console.error(err);
+        return {};
+      }
+    },
+    [client]
+  );
 
   return (
-    <ListProvider
-      filter={filter}
-      onFilterChange={(value, { dispatchSelectedItem }) => {
-        for (let v of filterField) {
-          if (value[v]) searchParams.set(v, value[v]);
-          else searchParams.delete(v);
-        }
-        setSearchParams(searchParams);
-        dispatchSelectedItem({
-          type: "all",
-          data: false,
-        });
-      }}
-    >
+    <ListContextProvider resource="customers" queryFn={fetch} limit={10}>
       <Box>
         <Box sx={{ pt: 4 }}>
           <Header />
@@ -46,6 +65,6 @@ export const Customers = () => {
           <List />
         </Box>
       </Box>
-    </ListProvider>
+    </ListContextProvider>
   );
 };

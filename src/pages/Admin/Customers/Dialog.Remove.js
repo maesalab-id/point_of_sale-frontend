@@ -1,105 +1,60 @@
-import {
-  Button,
-  Classes,
-  Dialog,
-  FormGroup,
-  InputGroup,
-} from "@blueprintjs/core";
+import { DialogRemove as BaseDialogRemove } from "components/common";
 import { useClient } from "components";
 import { toaster } from "components/toaster";
-import { Formik } from "formik";
-import { useMemo } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useCallback } from "react";
+import { Classes, Spinner } from "@blueprintjs/core";
 
-export const DialogRemove = ({
-  isOpen,
-  onClose = () => {},
-  onSubmitted = () => {},
-  data,
-}) => {
+export const DialogRemove = (props) => {
+  const {
+    isOpen,
+    data,
+    onClose = () => {},
+    onSubmit = () => {},
+    onSubmitted = () => {},
+  } = props;
   const { t } = useTranslation("customers-page");
   const client = useClient();
-  const Schema = useMemo(
-    () =>
-      Yup.object().shape({
-        "last-word": Yup.string()
-          .oneOf(
-            ["CONFIRM"],
-            t("dialog_remove.form.confirm.error_message.unmatched")
-          )
-          .required(t("dialog_remove.form.confirm.error_message.required")),
-      }),
-    [] // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSubmit = useCallback(
+    async (values, { setSubmitting, setErrors }) => {
+      try {
+        const toast = toaster.show({
+          intent: "info",
+          icon: <Spinner className={Classes.ICON} size={16} />,
+          message: `Deleting customer`,
+        });
+        await onSubmit(data);
+        const res = await client["customers"].remove(data);
+        onClose();
+        await onSubmitted(res);
+        toaster.dismiss(toast);
+        toaster.show({
+          icon: "tick",
+          intent: "success",
+          message: `Customer deleted`,
+        });
+      } catch (err) {
+        console.error(err.message);
+        setErrors({ submit: err.message });
+        setSubmitting(false);
+        toaster.show({
+          icon: "cross",
+          intent: "danger",
+          message: err.message,
+        });
+      }
+    },
+    [client, data, onClose, onSubmit, onSubmitted]
   );
+
   return (
-    <Dialog
+    <BaseDialogRemove
       isOpen={isOpen}
-      onClose={() => onClose()}
+      onClose={onClose}
+      data={data}
       title={t("dialog_remove.title")}
-    >
-      <Formik
-        validationSchema={Schema}
-        initialValues={{
-          "last-word": "",
-        }}
-        onSubmit={async (values, { setErrors, setSubmitting }) => {
-          try {
-            const res = await client["customers"].remove(data);
-            onClose();
-            onSubmitted(res);
-          } catch (err) {
-            console.error(err);
-            setErrors({ submit: err.message });
-            setSubmitting(false);
-            toaster.show({
-              intent: "danger",
-              message: err.message,
-            });
-          }
-        }}
-      >
-        {({ values, errors, isSubmitting, handleSubmit, handleChange }) => (
-          <form onSubmit={handleSubmit}>
-            <div className={Classes.DIALOG_BODY}>
-              <h5 className={Classes.HEADING}>
-                {t("dialog_remove.description_1", {
-                  length: data.length,
-                })}
-              </h5>
-              <p>
-                {t("dialog_remove.description_2", {
-                  length: data.length,
-                })}
-              </p>
-              <FormGroup
-                label={<Trans>{t("dialog_remove.form.confirm.label")}</Trans>}
-                labelFor={"last-word"}
-                intent={errors["last-word"] ? "danger" : "none"}
-                helperText={errors["last-word"]}
-              >
-                <InputGroup
-                  name="last-word"
-                  onChange={handleChange}
-                  value={values["last-word"]}
-                  placeholder="type here"
-                  intent={errors["last-word"] ? "danger" : "none"}
-                />
-              </FormGroup>
-            </div>
-            <div className={Classes.DIALOG_FOOTER}>
-              <Button
-                fill={true}
-                text={t("dialog_remove.form.submit_button")}
-                intent="danger"
-                type="submit"
-                loading={isSubmitting}
-                disabled={Object.entries(errors).length > 0}
-              />
-            </div>
-          </form>
-        )}
-      </Formik>
-    </Dialog>
+      onSubmit={handleSubmit}
+    />
   );
 };
