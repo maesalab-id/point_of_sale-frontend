@@ -62,6 +62,8 @@ export const Header = (props) => {
                     <MenuItem
                       key={value}
                       text={label}
+                      icon={currentLang === value ? "small-tick" : "blank"}
+                      selected={currentLang === value}
                       onClick={() => setLang(value)}
                     />
                   ))}
