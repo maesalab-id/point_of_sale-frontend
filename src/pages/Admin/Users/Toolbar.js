@@ -1,7 +1,6 @@
 import { Button, ControlGroup, InputGroup } from "@blueprintjs/core";
 import { Box, Flex } from "components";
 import { useListContext } from "components/common/List";
-import { toaster } from "components/toaster";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -47,13 +46,9 @@ export const Toolbar = () => {
           onClose={() => {
             setDialogOpen(null);
           }}
-          onSubmitted={() => {
-            setFilters({});
-            refetch();
-            toaster.show({
-              intent: "success",
-              message: "User created",
-            });
+          onSubmitted={async () => {
+            await setFilters({});
+            await refetch();
           }}
         />
       </Box>

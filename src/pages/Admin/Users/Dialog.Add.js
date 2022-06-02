@@ -59,7 +59,7 @@ export const DialogAdd = ({
             toaster.dismiss(toast);
             toaster.show({
               intent: "success",
-              message: "Uset created",
+              message: "User created",
             });
           } catch (err) {
             console.error(err);

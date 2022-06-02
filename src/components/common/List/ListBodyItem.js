@@ -30,10 +30,10 @@ export const ListBodyItem = (props) => {
 
   return (
     <>
-      {fields.map(({ label, props }) => (
+      {fields.map(({ label, props, value }) => (
         <Box key={label} sx={{ width: `${100 / 3}%` }}>
           <Box sx={{ color: "gray.5" }}>{label}</Box>
-          <Box>{_get(data, props)}</Box>
+          <Box>{value || _get(data, props)}</Box>
         </Box>
       ))}
       {hasActions && (
