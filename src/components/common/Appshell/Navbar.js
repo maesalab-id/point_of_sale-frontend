@@ -1,4 +1,4 @@
-import { Button, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
+import { Button, Menu, MenuDivider, MenuItem, Tag } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { Box, Navbar as BPNavbar, useI18n } from "components";
 import { useClient } from "components/client";
@@ -32,6 +32,11 @@ export const Navbar = (props) => {
       </BPNavbar.Group>
       <BPNavbar.Group></BPNavbar.Group>
       <BPNavbar.Group align="right">
+        {process.env.NODE_ENV === "development" && (
+          <Box sx={{ ml: 2 }}>
+            <Tag intent="warning">in Development</Tag>
+          </Box>
+        )}
         <Box sx={{ ml: 2 }}>
           <Popover2
             placement="bottom-end"

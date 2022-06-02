@@ -37,7 +37,7 @@ export const ListBodyItem = (props) => {
         </Box>
       ))}
       {hasActions && (
-        <Box className="action-button" sx={{ width: 30 }}>
+        <Box className="action-button" sx={{ width: 30, flexShrink: 0 }}>
           <Popover2
             content={
               <Menu>
