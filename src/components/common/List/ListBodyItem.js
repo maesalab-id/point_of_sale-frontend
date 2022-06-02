@@ -31,7 +31,7 @@ export const ListBodyItem = (props) => {
   return (
     <>
       {fields.map(({ label, props, value }) => (
-        <Box key={label} sx={{ width: `${100 / 3}%` }}>
+        <Box key={label} sx={{ flexGrow: 1, width: 1 }}>
           <Box sx={{ color: "gray.5" }}>{label}</Box>
           <Box>{value || _get(data, props)}</Box>
         </Box>

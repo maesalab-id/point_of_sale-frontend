@@ -33,7 +33,7 @@ export const ListBodyItemBase = (props) => {
             />
           </Box>
         )}
-        {children}
+        <Flex sx={{ flexGrow: 1 }}>{children}</Flex>
       </Flex>
     </ListGroup.Item>
   );
