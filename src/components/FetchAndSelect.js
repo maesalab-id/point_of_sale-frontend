@@ -1,38 +1,49 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Select } from "./Select";
 
 export const FetchAndSelect = ({
   service,
   onPreFetch,
   onFetched,
-  onOpening = async () => { },
-  loaded = false,
+  onOpening = async () => {},
+  initialValue,
   ...props
 }) => {
+  const isPreFetch = useMemo(() => {
+    return initialValue !== null && initialValue !== undefined;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [loading, setLoading] = useState(false);
 
   const [items, setItems] = useState([]);
 
-  const fetchItems = useCallback(async (q) => {
-    setLoading(() => true);
-    let query = {
-      $limit: 50,
-    };
-    query = onPreFetch(q, query);
-    try {
-      const res = await service.find({ query });
-      setItems(onFetched(res.data));
-    } catch (err) {
-      console.error(err.message);
-    }
-    setLoading(() => false);
-  }, [service, onFetched, onPreFetch]);
+  const fetchItems = useCallback(
+    async (q) => {
+      setLoading(() => true);
+      let query = {
+        $limit: 50,
+        $distinct: true,
+      };
+      query = onPreFetch(q, query);
+      try {
+        const res = await service.find({ query });
+        setItems(onFetched(res.data));
+      } catch (err) {
+        console.error(err.message);
+      }
+      setLoading(() => false);
+    },
+    [service, onFetched, onPreFetch]
+  );
 
   useEffect(() => {
-    if (loaded === false) return;
-    fetchItems();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!isPreFetch) return;
+    fetchItems("", {
+      query: {
+        id: initialValue,
+      },
+    });
+  }, [isPreFetch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Select
@@ -47,5 +58,5 @@ export const FetchAndSelect = ({
       }}
       options={items}
     />
-  )
-}
+  );
+};

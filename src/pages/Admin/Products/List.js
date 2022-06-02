@@ -1,155 +1,180 @@
-import {
-  Button,
-  Checkbox,
-  Classes,
-  NonIdealState,
-  Spinner,
-} from "@blueprintjs/core";
-import {
-  Box,
-  Container,
-  Flex,
-  ListGroup,
-  useClient,
-  useList,
-} from "components";
-import { Pagination } from "components/Pagination";
-import { toaster } from "components/toaster";
-import { useDebounce } from "components/useDebounce";
-import { useEffect, useState } from "react";
+import { ListBodyItem, ListView, useListContext } from "components/common/List";
+import { useState } from "react";
+import { DialogEdit } from "./Dialog.Edit";
+import _isNil from "lodash.isnil";
+import _get from "lodash.get";
+import { Button, MenuDivider, MenuItem, Tag } from "@blueprintjs/core";
 import { DialogRemove } from "./Dialog.Remove";
-import { Item } from "./Item";
+import { Box } from "components";
+import { CURRENCY_OPTIONS } from "components/constants";
+import currency from "currency.js";
+import { DialogDetails } from "./Dialog.Details";
 
-const List = () => {
-  const client = useClient();
-  const {
-    filter: rawFilter,
-    setFilter,
-    items,
-    setItems,
-    status,
-    paging,
-    setPaging,
-    selectedItem,
-    dispatchSelectedItem,
-  } = useList();
+export const List = () => {
+  const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
 
-  const filter = useDebounce(rawFilter, 500);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setItems(null);
-      try {
-        const query = {
-          $distinct: true,
-          $limit: 25,
-          category_id: filter["category_id"] || undefined,
-          name: filter["name"]
-            ? {
-                $iLike: `%${filter["name"]}%`,
-              }
-            : undefined,
-          $select: ["id", "name", "discount", "code", "price", "quantity"],
-          $skip: paging.skip,
-          $sort: {
-            id: 1,
-          },
-          $include: [
-            {
-              model: "categories",
-              $select: ["id", "name"],
-            },
-          ],
-        };
-        const res = await client["items"].find({ query });
-        setItems(res.data);
-        setPaging({
-          total: res.total,
-          limit: res.limit,
-          skip: res.skip,
-        });
-      } catch (err) {
-        console.error(err);
-        setItems([]);
-      }
-    };
-    fetch();
-  }, [client, filter, paging.skip, setItems, setPaging]);
+  const { refetch, clearSelection, selectedIds } = useListContext();
 
   return (
-    <Container sx={{ px: 3 }}>
-      <ListGroup
-        sx={{
-          [`.${Classes.CHECKBOX}`]: {
-            m: 0,
-          },
-        }}
-      >
-        <ListGroup.Header>
-          <Flex sx={{ alignItems: "center" }}>
+    <>
+      <ListView
+        bulkActions={
+          <>
             <Box>
-              <Checkbox
-                disabled={status.disabled}
-                checked={status.checked}
-                indeterminate={status.indeterminate}
-                onChange={(e) => {
-                  dispatchSelectedItem({
-                    type: "all",
-                    data: e.target.checked,
-                  });
+              <Button
+                minimal={true}
+                intent="danger"
+                text={`Delete ${selectedIds.length} selected`}
+                onClick={() => {
+                  setDialogOpen("bulk-delete");
+                }}
+              />
+              <DialogRemove
+                data={selectedIds}
+                isOpen={dialogOpen === "bulk-delete"}
+                onClose={() => {
+                  setDialogOpen(null);
+                }}
+                onSubmitted={async () => {
+                  await clearSelection();
+                  await refetch();
                 }}
               />
             </Box>
-            {selectedItem.length > 0 && (
-              <Box>
-                <Button
-                  minimal={true}
-                  intent="danger"
-                  text={`Delete ${selectedItem.length} selected`}
-                  onClick={() => setDialogOpen("delete")}
-                />
-              </Box>
-            )}
-            <DialogRemove
-              data={selectedItem}
-              isOpen={dialogOpen === "delete"}
-              onClose={() => {
-                setDialogOpen(null);
-              }}
-              onSubmitted={() => {
-                setFilter((f) => ({ ...f, type: undefined }));
-                toaster.show({
-                  intent: "success",
-                  message: `User deleted`,
-                });
-              }}
-            />
-          </Flex>
-        </ListGroup.Header>
-        {items === null && (
-          <Box sx={{ p: 2 }}>
-            <Spinner size={50} />
-          </Box>
-        )}
-        {items && items.length === 0 && (
-          <Box sx={{ my: 3 }}>
-            <NonIdealState title="No user available" />
-          </Box>
-        )}
-        {items && items.map((item) => <Item key={item["id"]} data={item} />)}
-      </ListGroup>
-      <Pagination
-        loading={items === null}
-        total={paging.total}
-        limit={paging.limit}
-        skip={paging.skip}
-        onClick={({ page, skip }) => {
-          setPaging((paging) => ({ ...paging, skip: skip }));
-        }}
-      />
-    </Container>
+          </>
+        }
+      >
+        <ListBodyItem
+          fields={(data) => {
+            const extras = (() => {
+              const price = Number(data.price);
+              const discount_price = price * (data.discount / 100) || 0;
+              const price_discounted = price - discount_price;
+              const isDiscounted = price_discounted !== price;
+              return {
+                isDiscounted,
+                discount_price,
+                price_discounted,
+              };
+            })();
+
+            return [
+              {
+                label: "Code",
+                value: `${_get(data, "code")}`,
+              },
+              {
+                label: "Name",
+                value: `${_get(data, "name")}`,
+              },
+              {
+                label: (
+                  <Box>
+                    <Box as="span" sx={{ mr: 1 }}>
+                      Price
+                    </Box>
+                    {extras.isDiscounted && (
+                      <Tag intent="warning">{`-${_get(
+                        data,
+                        "discount"
+                      )}%`}</Tag>
+                    )}
+                  </Box>
+                ),
+                value: (
+                  <Box>
+                    {extras.isDiscounted && (
+                      <strike>
+                        {`${currency(
+                          _get(data, "price"),
+                          CURRENCY_OPTIONS
+                        ).format()}`}
+                      </strike>
+                    )}
+                    <Box>
+                      {`${currency(
+                        _get(extras, "price_discounted"),
+                        CURRENCY_OPTIONS
+                      ).format()} /unit`}
+                    </Box>
+                  </Box>
+                ),
+              },
+              {
+                label: "Stock",
+                value: `${_get(data, "quantity")} unit`,
+              },
+              {
+                label: "Category",
+                value: `${_get(data, "category.name")}`,
+              },
+            ];
+          }}
+          actions={(data) => {
+            return [
+              <MenuItem
+                icon="info-sign"
+                text="Details"
+                onClick={() => {
+                  setDialogOpen("details");
+                  setSelectedData(data);
+                }}
+              />,
+              <MenuItem
+                icon="edit"
+                text="Edit"
+                onClick={() => {
+                  setDialogOpen("edit");
+                  setSelectedData(data);
+                }}
+              />,
+              <MenuDivider />,
+              <MenuItem
+                intent="danger"
+                icon="trash"
+                text="Delete"
+                onClick={() => {
+                  setDialogOpen("delete");
+                  setSelectedData(data);
+                }}
+              />,
+            ];
+          }}
+        />
+      </ListView>
+      {!_isNil(selectedData) && (
+        <>
+          <DialogDetails
+            data={selectedData}
+            isOpen={dialogOpen === "details"}
+            onClose={() => {
+              setSelectedData(null);
+            }}
+          />
+          <DialogEdit
+            data={selectedData}
+            isOpen={dialogOpen === "edit"}
+            onClose={() => {
+              setSelectedData(null);
+            }}
+            onSubmitted={async () => {
+              await refetch();
+            }}
+          />
+          <DialogRemove
+            data={[selectedData.id]}
+            isOpen={dialogOpen === "delete"}
+            onClose={() => {
+              setSelectedData(null);
+            }}
+            onSubmitted={async () => {
+              await refetch();
+              await clearSelection();
+            }}
+          />
+        </>
+      )}
+    </>
   );
 };
-
-export default List;

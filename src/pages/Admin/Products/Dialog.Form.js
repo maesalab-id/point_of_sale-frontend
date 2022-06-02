@@ -12,48 +12,6 @@ export const DialogForm = () => {
   return (
     <>
       <h6 className={Classes.HEADING}>{t("dialog_form.title_1")}</h6>
-      <FormGroup
-        label={t("dialog_form.code.label")}
-        labelFor="f-code"
-        helperText={errors["code"]}
-        intent={"danger"}
-      >
-        <InputGroup
-          id="f-code"
-          name="code"
-          value={values["code"]}
-          onChange={handleChange}
-          intent={errors["code"] ? "danger" : "none"}
-        />
-      </FormGroup>
-      <FormGroup
-        label={t("dialog_form.name.label")}
-        labelFor="f-name"
-        helperText={errors["name"]}
-        intent={"danger"}
-      >
-        <InputGroup
-          id="f-name"
-          name="name"
-          value={values["name"]}
-          onChange={handleChange}
-          intent={errors["name"] ? "danger" : "none"}
-        />
-      </FormGroup>
-      <FormGroup
-        label={t("dialog_form.price.label")}
-        labelFor="f-price"
-        helperText={errors["price"]}
-        intent={"danger"}
-      >
-        <InputGroup
-          id="f-price"
-          name="price"
-          value={values["price"]}
-          onChange={handleChange}
-          intent={errors["price"] ? "danger" : "none"}
-        />
-      </FormGroup>
       <State
         initialValue={{
           isOpen: false,
@@ -69,6 +27,7 @@ export const DialogForm = () => {
               intent={"danger"}
             >
               <FetchAndSelect
+                initialValue={values["category_id"]}
                 allowCreateItem={true}
                 service={client["categories"]}
                 id="f-category_id"
@@ -123,6 +82,48 @@ export const DialogForm = () => {
           </>
         )}
       </State>
+      <FormGroup
+        label={t("dialog_form.code.label")}
+        labelFor="f-code"
+        helperText={errors["code"]}
+        intent={"danger"}
+      >
+        <InputGroup
+          id="f-code"
+          name="code"
+          value={values["code"] || ""}
+          onChange={handleChange}
+          intent={errors["code"] ? "danger" : "none"}
+        />
+      </FormGroup>
+      <FormGroup
+        label={t("dialog_form.name.label")}
+        labelFor="f-name"
+        helperText={errors["name"]}
+        intent={"danger"}
+      >
+        <InputGroup
+          id="f-name"
+          name="name"
+          value={values["name"] || ""}
+          onChange={handleChange}
+          intent={errors["name"] ? "danger" : "none"}
+        />
+      </FormGroup>
+      <FormGroup
+        label={t("dialog_form.price.label")}
+        labelFor="f-price"
+        helperText={errors["price"]}
+        intent={"danger"}
+      >
+        <InputGroup
+          id="f-price"
+          name="price"
+          value={values["price"] || ""}
+          onChange={handleChange}
+          intent={errors["price"] ? "danger" : "none"}
+        />
+      </FormGroup>
     </>
   );
 };

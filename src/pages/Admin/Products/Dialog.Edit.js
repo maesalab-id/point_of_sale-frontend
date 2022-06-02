@@ -4,6 +4,7 @@ import {
   Dialog,
   FormGroup,
   InputGroup,
+  Spinner,
   Tag,
 } from "@blueprintjs/core";
 import { useClient } from "components";
@@ -33,9 +34,6 @@ export const DialogEdit = ({
         code: Yup.string().required(t("dialog_form.code.error_message")),
         price: Yup.number().required(t("dialog_form.price.error_message")),
         discount: Yup.number(),
-        quantity: Yup.number().required(
-          t("dialog_form.quantity.error_message")
-        ),
         category_id: Yup.number().required(
           t("dialog_form.category.error_message")
         ),
@@ -64,9 +62,19 @@ export const DialogEdit = ({
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
+            const toast = toaster.show({
+              intent: "info",
+              icon: <Spinner className={Classes.ICON} size={16} />,
+              message: `Submit changes`,
+            });
             const res = await client["items"].patch(data["id"], values);
             onClose();
-            onSubmitted(res);
+            await onSubmitted(res);
+            toaster.dismiss(toast);
+            toaster.show({
+              intent: "success",
+              message: "Product updated",
+            });
           } catch (err) {
             console.error(err);
             setSubmitting(false);
@@ -101,6 +109,7 @@ const DialogEditInfoAndDiscount = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className={Classes.DIALOG_BODY}>
+        <DialogForm />
         <h6 className={Classes.HEADING}>{t("dialog_form.title_2")}</h6>
         <FormGroup
           label={t("dialog_form.stock.label")}
@@ -158,7 +167,6 @@ const DialogEditInfoAndDiscount = (props) => {
             }
           />
         </FormGroup>
-        <DialogForm />
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>

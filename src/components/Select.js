@@ -13,31 +13,39 @@ export const Select = ({
   placeholder,
   small,
 
+  clearable = false,
   alignText = Alignment.LEFT,
   disabled,
   filterable,
   allowCreateItem,
-  createItemTitle = () => { },
+  createItemTitle = () => {},
   options,
   optionRenderer,
-  onCreateNew = () => { },
-  onQueryChange = () => { },
+  onCreateNew = () => {},
+  onQueryChange = () => {},
   onChange,
   onClick,
   onOpening,
   value,
   loading,
   multiple,
-  removeItem
+  removeItem,
 }) => {
-
   const items = useMemo(() => {
-    return options;
-  }, [options]);
+    if (!clearable) return options;
+    return [
+      {
+        intent: "warning",
+        label: "Clear Selection",
+        value: "",
+      },
+      ...options,
+    ];
+  }, [options, clearable]);
 
   const activeItem = useMemo(() => {
     // eslint-disable-next-line eqeqeq
-    return items.find(item => item.value == value);
+    return items.find((item) => item.value == value);
   }, [value, items]);
 
   const createNewItemRenderer = (query, active) => {
@@ -51,8 +59,8 @@ export const Select = ({
           onCreateNew(query);
         }}
       />
-    )
-  }
+    );
+  };
 
   const itemRenderer = (item, { handleClick, modifiers }) => {
     if (!modifiers.matchesPredicate) {
@@ -66,17 +74,22 @@ export const Select = ({
         onClick={handleClick}
         text={item.label}
         label={item.info}
+        intent={item.intent}
       />
-    )
-  }
+    );
+  };
 
   const itemPredicate = (query, item) => {
     const normalizeLabel = item.label.toLowerCase();
     const normalizeQuery = query.toLowerCase();
     let normalizeInfo = "";
     if (item.info) normalizeInfo = item.info.toLowerCase();
-    return `${item.value} ${normalizeLabel} ${normalizeInfo}`.indexOf(normalizeQuery) >= 0;
-  }
+    return (
+      `${item.value} ${normalizeLabel} ${normalizeInfo}`.indexOf(
+        normalizeQuery
+      ) >= 0
+    );
+  };
 
   return (
     <BPSelect
@@ -97,20 +110,19 @@ export const Select = ({
             e.stopPropagation();
             onCreateNew(e.target.value);
           }
-        }
+        },
       }}
-
       popoverProps={{
         onOpening: onOpening,
         minimal: true,
-        fill: fill
+        fill: fill,
       }}
       tagInputProps={{
-        onRemove: removeItem
+        onRemove: removeItem,
       }}
-      noResults={(
+      noResults={
         <MenuItem disabled={true} text={loading ? "Loading..." : "No Item"} />
-      )}
+      }
       selectedItems={value}
     >
       <Button
@@ -121,11 +133,11 @@ export const Select = ({
         minimal={minimal}
         intent={intent}
         loading={loading}
-        text={activeItem ? activeItem.label : (label || placeholder || "Select")}
+        text={activeItem ? activeItem.label : label || placeholder || "Select"}
         rightIcon="caret-down"
         onClick={onClick}
         fill={fill}
       />
-    </BPSelect >
-  )
-}
+    </BPSelect>
+  );
+};

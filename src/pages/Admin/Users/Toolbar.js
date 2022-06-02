@@ -9,8 +9,12 @@ import { DialogAdd } from "./Dialog.Add";
 export const Toolbar = () => {
   const { t } = useTranslation("users-page");
   const [dialogOpen, setDialogOpen] = useState(null);
-  const list = useListContext();
-  const { setFilters, filter, refetch, displayedFilter = {} } = list;
+  const {
+    setFilters,
+    filter,
+    refetch,
+    displayedFilter = {},
+  } = useListContext();
 
   const { values, handleChange } = useFormik({
     initialValues: filter,

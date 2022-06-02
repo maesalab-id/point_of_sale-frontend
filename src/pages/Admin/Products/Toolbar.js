@@ -1,28 +1,42 @@
 import { Button, ControlGroup, InputGroup } from "@blueprintjs/core";
-import { Box, FetchAndSelect, Flex, useClient, useList } from "components";
-import { toaster } from "components/toaster";
-import { useState } from "react";
+import { Box, FetchAndSelect, Flex, useClient } from "components";
+import { useListContext } from "components/common/List";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { filterField } from ".";
 import { DialogAdd } from "./Dialog.Add";
 
 export const Toolbar = () => {
   const { t } = useTranslation("products-page");
   const client = useClient();
+
   const [dialogOpen, setDialogOpen] = useState(null);
-  const { filter, setFilter } = useList();
+  const {
+    setFilters,
+    filter,
+    refetch,
+    displayedFilter = {},
+  } = useListContext();
+
+  const { values, handleChange, setFieldValue } = useFormik({
+    initialValues: filter,
+  });
+
+  useEffect(() => {
+    if (filter !== values) setFilters(values, displayedFilter);
+  }, [values]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Flex>
       <Flex sx={{ flexGrow: 1 }}>
         <Box sx={{ mr: 2 }}>
           <ControlGroup>
             <InputGroup
+              name="name"
               leftIcon="search"
               placeholder={t("toolbar.filter.search.placeholder")}
               value={filter["name"] || ""}
-              onChange={(e) => {
-                setFilter((f) => ({ ...f, name: e.target.value }));
-              }}
+              onChange={handleChange}
             />
           </ControlGroup>
         </Box>
@@ -33,8 +47,9 @@ export const Toolbar = () => {
             id="f-category_id"
             name="category_id"
             value={filter["category_id"]}
+            clearable={true}
             onChange={async ({ value }) => {
-              setFilter((f) => ({ ...f, category_id: value }));
+              setFieldValue("category_id", value);
             }}
             onPreFetch={(q, query) => {
               return {
@@ -57,24 +72,6 @@ export const Toolbar = () => {
             }}
           />
         </Box>
-        <Box>
-          {filterField.map((f) => !!filter[f]).indexOf(true) !== -1 && (
-            <Button
-              title={t("toolbar.filter.clear_button")}
-              minimal={true}
-              intent="warning"
-              icon="filter-remove"
-              onClick={() => {
-                const ff = {};
-                filterField.forEach((f) => (ff[f] = undefined));
-                setFilter((filter) => ({
-                  ...filter,
-                  ...ff,
-                }));
-              }}
-            />
-          )}
-        </Box>
       </Flex>
       <Box>
         <Button
@@ -89,12 +86,9 @@ export const Toolbar = () => {
           onClose={() => {
             setDialogOpen(null);
           }}
-          onSubmitted={() => {
-            setFilter((f) => ({ ...f, type: undefined }));
-            toaster.show({
-              intent: "success",
-              message: "Product has been created",
-            });
+          onSubmitted={async () => {
+            await setFilters({});
+            await refetch();
           }}
         />
       </Box>
