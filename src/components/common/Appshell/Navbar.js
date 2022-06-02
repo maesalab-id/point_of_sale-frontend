@@ -1,20 +1,22 @@
-import { Button, Menu, MenuDivider, MenuItem, Tag } from "@blueprintjs/core";
+import {
+  Button,
+  Classes,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  Spinner,
+  Tag,
+} from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { Box, Navbar as BPNavbar, useI18n } from "components";
 import { useClient } from "components/client";
-import { useMemo } from "react";
+import { toaster } from "components/toaster";
 import _get from "lodash.get";
 
 export const Navbar = (props) => {
   const { title = "Point of Sale" } = props;
   const { account, role, logout } = useClient();
-  const { setLang, currentLang } = useI18n();
-  const language = useMemo(() => {
-    return [
-      { label: "Indonesia", value: "id" },
-      { label: "English", value: "en" },
-    ];
-  }, []);
+  const { setLang, currentLang, availableLang } = useI18n();
   return (
     <BPNavbar>
       <BPNavbar.Group>
@@ -57,13 +59,15 @@ export const Navbar = (props) => {
                     <span>
                       Lang:{" "}
                       {_get(
-                        language.find(({ value }) => value === currentLang),
+                        availableLang.find(
+                          ({ value }) => value === currentLang
+                        ),
                         "label"
                       )}
                     </span>
                   }
                 >
-                  {language.map(({ label, value }) => (
+                  {availableLang.map(({ label, value }) => (
                     <MenuItem
                       key={value}
                       text={label}
@@ -78,8 +82,19 @@ export const Navbar = (props) => {
                   intent="danger"
                   icon="log-out"
                   text="Logout"
-                  onClick={() => {
-                    logout();
+                  onClick={async () => {
+                    let toast = toaster.show({
+                      intent: "info",
+                      icon: <Spinner className={Classes.ICON} size={16} />,
+                      message: "Logging out",
+                    });
+                    await logout();
+                    toaster.dismiss(toast);
+                    toaster.show({
+                      icon: "tick",
+                      intent: "success",
+                      message: "Logging out",
+                    });
                   }}
                 />
               </Menu>

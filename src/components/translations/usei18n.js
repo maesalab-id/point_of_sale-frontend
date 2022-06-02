@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import i18n from "./i18n";
 
 export const useI18n = () => {
@@ -9,5 +9,12 @@ export const useI18n = () => {
     window.localStorage.setItem("lang", newLanguage);
   }, []);
 
-  return { setLang, currentLang, i18n };
+  const availableLang = useMemo(() => {
+    return [
+      { label: "Indonesia", value: "id" },
+      { label: "English", value: "en" },
+    ];
+  }, []);
+
+  return { setLang, currentLang, i18n, availableLang };
 };
