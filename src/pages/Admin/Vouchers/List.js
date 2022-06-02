@@ -3,14 +3,14 @@ import { useState } from "react";
 import { DialogEdit } from "./Dialog.Edit";
 import _get from "lodash.get";
 import _isNil from "lodash.isnil";
-import { MenuDivider, MenuItem } from "@blueprintjs/core";
+import { MenuItem } from "@blueprintjs/core";
 import moment from "moment";
 
 export const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
 
-  const { refetch, clearSelection } = useListContext();
+  const { refetch } = useListContext();
 
   return (
     <>
