@@ -15,7 +15,7 @@ export const Toolbar = () => {
 
   const [categories, setCategories] = useState(null);
 
-  const { values, handleChange, resetForm, setFieldValue } = useFormik({
+  const { values, handleChange, setFieldValue } = useFormik({
     initialValues: filter,
     enableReinitialize: true,
   });
@@ -109,14 +109,14 @@ export const Toolbar = () => {
             <Button
               intent={
                 categories.findIndex(
-                  ({ value }) => value == values["category_id"]
+                  ({ value }) => value == values["category_id"] // eslint-disable-line eqeqeq
                 ) !== -1
                   ? "none"
                   : "primary"
               }
               minimal={
                 categories.findIndex(
-                  ({ value }) => value == values["category_id"]
+                  ({ value }) => value == values["category_id"] // eslint-disable-line eqeqeq
                 ) !== -1
                   ? true
                   : false
