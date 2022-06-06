@@ -1,5 +1,19 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup, Tag } from "@blueprintjs/core";
-import { Box, Divider, FetchAndSelect, Flex, State, useClient } from "components";
+import {
+  Button,
+  Classes,
+  Dialog,
+  FormGroup,
+  InputGroup,
+  Tag,
+} from "@blueprintjs/core";
+import {
+  Box,
+  Divider,
+  FetchAndSelect,
+  Flex,
+  State,
+  useClient,
+} from "components";
 import { CURRENCY_OPTIONS } from "components/constants";
 import { toaster } from "components/toaster";
 import currency from "currency.js";
@@ -9,44 +23,56 @@ import * as Yup from "yup";
 import _get from "lodash.get";
 import moment from "moment";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const Schema = Yup.object().shape({
-  "customer_id": Yup.number(),
-  "cash_in": Yup.number(),
+  customer_id: Yup.number(),
+  cash_in: Yup.number(),
 });
 
 const initialValues = {
-  "customer_id": undefined,
-  "cash_in": undefined,
-}
+  customer_id: undefined,
+  cash_in: undefined,
+};
 
 export const DialogCheckout = ({
   initialValue = {},
   tax,
   price,
   isOpen,
-  onClose = () => { },
-  onSubmitted = () => { }
+  onClose = () => {},
+  onSubmitted = () => {},
 }) => {
+  const { t } = useTranslation("cashier-home-page");
   const client = useClient();
   const [selectedVoucher, setSelectedVoucher] = useState(null);
-  const { values, errors, isSubmitting, resetForm, handleSubmit, handleChange, setFieldValue } = useFormik({
+  const {
+    values,
+    errors,
+    isSubmitting,
+    resetForm,
+    handleSubmit,
+    handleChange,
+    setFieldValue,
+  } = useFormik({
     validationSchema: Schema,
     initialValues: {
       ...initialValues,
-      ...initialValue
+      ...initialValue,
     },
     onReset: () => {
-      setSelectedVoucher(null)
+      setSelectedVoucher(null);
     },
     onSubmit: async ({ cash_in, cash_out, ...values }) => {
       onClose();
       onSubmitted(values);
-    }
+    },
   });
 
   const extras = useMemo(() => {
-    const voucher_discount = price["subtotal"] * ((selectedVoucher ? selectedVoucher["value"] : 0) / 100);
+    const voucher_discount =
+      price["subtotal"] *
+      ((selectedVoucher ? selectedVoucher["value"] : 0) / 100);
     let subtotal_discounted = price["subtotal"] - voucher_discount;
     const taxed = subtotal_discounted * (tax / 100);
     let total = subtotal_discounted + taxed;
@@ -55,7 +81,7 @@ export const DialogCheckout = ({
       voucher_discount,
       total,
       taxed,
-    }
+    };
     return result;
   }, [price, tax, selectedVoucher]);
 
@@ -63,86 +89,96 @@ export const DialogCheckout = ({
     <Dialog
       enforceFocus={false}
       isOpen={isOpen}
-      onClose={() => { onClose() }}
-      title="Confirm your order"
+      onClose={() => {
+        onClose();
+      }}
+      title={t("dialog_order.title")}
     >
       <form onSubmit={handleSubmit}>
         <div className={Classes.DIALOG_BODY}>
           <State
             initialValue={{
               isOpen: false,
-              query: ""
+              query: "",
             }}
           >
-            {([state, setState]) => <>
-              <FormGroup
-                label="Member"
-                labelInfo="optional"
-                labelFor="f-customer_id"
-                helperText={errors["customer_id"]}
-                intent={"danger"}
-              >
-                <FetchAndSelect
-                  allowCreateItem={true}
-                  service={client["customers"]}
-                  id="f-customer_id"
-                  name="customer_id"
-                  placeholder="Select Customer"
-                  value={values["customer_id"]}
-                  intent={errors["customer_id"] ? "danger" : "none"}
-                  onChange={async ({ value }) => {
-                    await setFieldValue("customer_id", value);
-                  }}
-                  onCreateNew={(query) => {
-                    setState({
-                      isOpen: true,
-                      query
-                    })
-                  }}
-                  onPreFetch={(q, query) => {
-                    return {
-                      ...query,
-                      $or: q ? {
-                        "name": q ? {
-                          $iLike: `%${q}%`
-                        } : undefined,
-                        "phone_number": q ? {
-                          $iLike: `%${q}%`
-                        } : undefined,
-                      } : undefined,
-                      $select: ["id", "name", "phone_number"]
-                    }
-                  }}
-                  onFetched={(items) => {
-                    return items.map((item) => {
+            {([state, setState]) => (
+              <>
+                <FormGroup
+                  label={t("dialog_order.form.customer.label")}
+                  labelInfo="optional"
+                  labelFor="f-customer_id"
+                  helperText={errors["customer_id"]}
+                  intent={"danger"}
+                >
+                  <FetchAndSelect
+                    allowCreateItem={true}
+                    service={client["customers"]}
+                    id="f-customer_id"
+                    name="customer_id"
+                    placeholder="Select Customer"
+                    value={values["customer_id"]}
+                    intent={errors["customer_id"] ? "danger" : "none"}
+                    onChange={async ({ value }) => {
+                      await setFieldValue("customer_id", value);
+                    }}
+                    onCreateNew={(query) => {
+                      setState({
+                        isOpen: true,
+                        query,
+                      });
+                    }}
+                    onPreFetch={(q, query) => {
                       return {
-                        label: item["name"],
-                        value: `${item["id"]}`,
-                        info: `${item["phone_number"]}`,
-                      }
-                    })
+                        ...query,
+                        $or: q
+                          ? {
+                              name: q
+                                ? {
+                                    $iLike: `%${q}%`,
+                                  }
+                                : undefined,
+                              phone_number: q
+                                ? {
+                                    $iLike: `%${q}%`,
+                                  }
+                                : undefined,
+                            }
+                          : undefined,
+                        $select: ["id", "name", "phone_number"],
+                      };
+                    }}
+                    onFetched={(items) => {
+                      return items.map((item) => {
+                        return {
+                          label: item["name"],
+                          value: `${item["id"]}`,
+                          info: `${item["phone_number"]}`,
+                        };
+                      });
+                    }}
+                  />
+                </FormGroup>
+                <CheckoutDialogAdd
+                  isOpen={state.isOpen}
+                  initialValue={{
+                    name: state.query,
+                  }}
+                  onClose={() => {
+                    setState((s) => ({ ...s, isOpen: false }));
+                  }}
+                  onSubmitted={() => {
+                    toaster.show({
+                      intent: "success",
+                      message: "Customer created",
+                    });
                   }}
                 />
-              </FormGroup>
-              <CheckoutDialogAdd
-                isOpen={state.isOpen}
-                initialValue={{
-                  name: state.query
-                }}
-                onClose={() => {
-                  setState(s => ({ ...s, isOpen: false }));
-                }}
-                onSubmitted={() => {
-                  toaster.show({
-                    intent: "success",
-                    message: "Customer created"
-                  });
-                }}
-              />
-            </>}
+              </>
+            )}
           </State>
           <FormGroup
-            label="Voucher"
+            label={t("dialog_order.form.voucher.label")}
             labelInfo="optional"
             labelFor="f-voucher_id"
             helperText={errors["voucher_id"]}
@@ -161,21 +197,25 @@ export const DialogCheckout = ({
                 await setSelectedVoucher({
                   value: v,
                   name: label,
-                })
+                });
               }}
               onPreFetch={(q, query) => {
                 return {
                   ...query,
-                  $or: q ? {
-                    "name": q ? {
-                      $iLike: `%${q}%`
-                    } : undefined,
-                  } : undefined,
+                  $or: q
+                    ? {
+                        name: q
+                          ? {
+                              $iLike: `%${q}%`,
+                            }
+                          : undefined,
+                      }
+                    : undefined,
                   end: {
-                    $gte: moment().format("YYYY-MM-DD")
+                    $gte: moment().format("YYYY-MM-DD"),
                   },
-                  $select: ["id", "name", "value", "start", "end"]
-                }
+                  $select: ["id", "name", "value", "start", "end"],
+                };
               }}
               onFetched={(items) => {
                 return items.map((item) => {
@@ -189,14 +229,16 @@ export const DialogCheckout = ({
                     value: `${item["id"]}`,
                     info: isDisabled
                       ? `until ${start.format("DD-MMMM")}`
-                      : isExpired ? `expired` : `${item["value"]}%`,
-                  }
-                })
+                      : isExpired
+                      ? `expired`
+                      : `${item["value"]}%`,
+                  };
+                });
               }}
             />
           </FormGroup>
           <FormGroup
-            label="Input Cash"
+            label={t("dialog_order.form.input_cash.label")}
             intent="danger"
             helperText={_get(errors, "cash_in")}
           >
@@ -209,18 +251,34 @@ export const DialogCheckout = ({
               leftElement={<Tag minimal={true}>Rp.</Tag>}
             />
           </FormGroup>
-          <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 3, }}>
+          <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 3 }}>
             <Flex sx={{ px: 2, mb: 2 }}>
               <Box sx={{ flexGrow: 1 }}>Subtotal</Box>
-              <Box>{currency(price["subtotal"], CURRENCY_OPTIONS).format()}</Box>
+              <Box>
+                {currency(price["subtotal"], CURRENCY_OPTIONS).format()}
+              </Box>
             </Flex>
-            {selectedVoucher &&
+            {selectedVoucher && (
               <>
                 <Flex sx={{ px: 2, mb: 2 }}>
-                  <Box sx={{ flexGrow: 1 }}>Voucher Discount (-{_get(selectedVoucher, "value")}%)</Box>
-                  <Box><Tag minimal={true}>{currency(extras["voucher_discount"] * -1, CURRENCY_OPTIONS).format()}</Tag> {currency(extras["subtotal_discounted"], CURRENCY_OPTIONS).format()}</Box>
+                  <Box sx={{ flexGrow: 1 }}>
+                    Voucher Discount (-{_get(selectedVoucher, "value")}%)
+                  </Box>
+                  <Box>
+                    <Tag minimal={true}>
+                      {currency(
+                        extras["voucher_discount"] * -1,
+                        CURRENCY_OPTIONS
+                      ).format()}
+                    </Tag>{" "}
+                    {currency(
+                      extras["subtotal_discounted"],
+                      CURRENCY_OPTIONS
+                    ).format()}
+                  </Box>
                 </Flex>
-              </>}
+              </>
+            )}
             <Flex sx={{ px: 2 }}>
               <Box sx={{ flexGrow: 1 }}>Tax (10%)</Box>
               <Box>{currency(extras["taxed"], CURRENCY_OPTIONS).format()}</Box>
@@ -232,27 +290,28 @@ export const DialogCheckout = ({
             </Flex>
             <Divider />
             <Flex sx={{ mb: 2, px: 2, fontSize: 1 }}>
-              <Box sx={{ flexGrow: 1 }}>Cash</Box>
-              <Box>{currency(_get(values, "cash_in"), CURRENCY_OPTIONS).format()}</Box>
+              <Box sx={{ flexGrow: 1 }}>{t("dialog_order.form.cash")}</Box>
+              <Box>
+                {currency(_get(values, "cash_in"), CURRENCY_OPTIONS).format()}
+              </Box>
             </Flex>
             <Flex sx={{ px: 2, fontSize: 2, fontWeight: "bold" }}>
-              <Box sx={{ flexGrow: 1 }}>Changes</Box>
-              <Box>{currency(_get(values, "cash_in") ? _get(values, "cash_in") - extras["total"] : 0, CURRENCY_OPTIONS).format()}</Box>
+              <Box sx={{ flexGrow: 1 }}>{t("dialog_order.form.change")}</Box>
+              <Box>
+                {currency(
+                  _get(values, "cash_in")
+                    ? _get(values, "cash_in") - extras["total"]
+                    : 0,
+                  CURRENCY_OPTIONS
+                ).format()}
+              </Box>
             </Flex>
           </Box>
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button
-              minimal={true}
-              onClick={() => resetForm()}
-              text="Reset"
-            />
-            <Button
-              minimal={true}
-              onClick={() => onClose()}
-              text="Cancel"
-            />
+            <Button minimal={true} onClick={() => resetForm()} text="Reset" />
+            <Button minimal={true} onClick={() => onClose()} text="Cancel" />
             <Button
               loading={isSubmitting}
               type="submit"
@@ -263,5 +322,5 @@ export const DialogCheckout = ({
         </div>
       </form>
     </Dialog>
-  )
-}
+  );
+};

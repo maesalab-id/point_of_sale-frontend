@@ -1,11 +1,10 @@
-import { Text } from "@blueprintjs/core";
-import { Box, Divider, Flex, useClient, useList } from "components";
-import { VENDOR_INFORMATION } from "components/constants";
+import { Divider, Flex } from "components";
 import { Cart } from "./Cart";
 import { Toolbar } from "./Toolbar";
 import { List } from "./List";
 import { useReducer } from "react";
-import _get from "lodash.get";
+import { useListContext } from "components/common/List";
+import { Topbar } from "./Topbar";
 
 const reducerCart = (state, action) => {
   let index;
@@ -15,8 +14,8 @@ const reducerCart = (state, action) => {
       if (index === -1) {
         state.push({
           ...action["data"],
-          count: 0
-        })
+          count: 0,
+        });
       }
       return state.map((item) => {
         if (item["id"] !== action.data["id"]) return item;
@@ -26,8 +25,8 @@ const reducerCart = (state, action) => {
         }
         return {
           ...item,
-          count
-        }
+          count,
+        };
       });
     case "remove":
       index = state.findIndex((item) => item["id"] === action.data["id"]);
@@ -39,8 +38,8 @@ const reducerCart = (state, action) => {
           if (item["id"] !== action.data["id"]) return item;
           return {
             ...item,
-            count: item["count"] - 1
-          }
+            count: item["count"] - 1,
+          };
         });
       } else {
         return state.filter((item) => item["id"] !== action.data["id"]);
@@ -50,31 +49,22 @@ const reducerCart = (state, action) => {
     default:
       return state;
   }
-}
+};
 
 export const Layout = () => {
-  const client = useClient();
-  const { items, setFilter } = useList();
+  const { items, resetFilters } = useListContext();
   const [cart, dispatchCart] = useReducer(reducerCart, []);
   return (
     <Flex sx={{ height: 615 }}>
       <Flex sx={{ flexGrow: 1, flexDirection: "column" }}>
-        <Flex sx={{ py: 3, px: 3, alignItems: "center" }}>
-          <Box sx={{ flexGrow: 1, fontWeight: "bold" }}>
-            <Text>{VENDOR_INFORMATION.NAME}</Text>
-          </Box>
-          <Box sx={{ px: 3, flexGrow: 1, textAlign: "right" }}>
-            <Box sx={{ fontSize: 0, color: "gray.5" }}>Logged in as</Box>
-            <Box>{_get(client, "account.name")}</Box>
-          </Box>
-        </Flex>
+        <Topbar />
         <Toolbar />
         <List
           items={items}
           onAdd={(item) => {
             dispatchCart({
               type: "add",
-              data: item
+              data: item,
             });
           }}
         />
@@ -83,28 +73,26 @@ export const Layout = () => {
       <Cart
         cart={cart}
         onSubmitted={() => {
-          setFilter(f => ({
-            category_id: undefined
-          }))
+          resetFilters();
         }}
         onClear={() => {
           dispatchCart({
-            type: "clear"
+            type: "clear",
           });
         }}
         onAdd={(item) => {
           dispatchCart({
             type: "add",
-            data: item
+            data: item,
           });
         }}
         onRemove={(item) => {
           dispatchCart({
             type: "remove",
-            data: item
+            data: item,
           });
         }}
       />
     </Flex>
-  )
-}
+  );
+};

@@ -1,0 +1,38 @@
+{
+  "topbar": {
+    "account": "Masuk sebagai"
+  },
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Pencarian Item"
+      },
+      "all_item_button": "Semua item"
+    }
+  },
+  "cart": {
+    "title": "Pesanan Saat Ini",
+    "clear_button": "Batalkan",
+    "subtotal": "Subtotal",
+    "tax": "Tax (10%)",
+    "total": "Total",
+    "checkout_button": "Checkout",
+    "checkout_with_print_button": "Checkout dan Print Tagihan"
+  },
+  "dialog_order": {
+    "title": "Konfirmasi pesanan",
+    "form": {
+      "customer": {
+        "label": "Member"
+      },
+      "voucher": {
+        "label": "Voucher"
+      },
+      "input_cash": {
+        "label": "Input Tunai"
+      },
+      "cash": "Tunai",
+      "change": "Kembalian"
+    }
+  }
+}

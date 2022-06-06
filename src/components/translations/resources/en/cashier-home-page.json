@@ -1,0 +1,38 @@
+{
+  "topbar": {
+    "account": "Logged in as"
+  },
+  "toolbar": {
+    "filter": {
+      "search": {
+        "placeholder": "Search Item"
+      },
+      "all_item_button": "All Item"
+    }
+  },
+  "cart": {
+    "title": "Current Order",
+    "clear_button": "Clear All",
+    "subtotal": "Subtotal",
+    "tax": "Tax (10%)",
+    "total": "Total",
+    "checkout_button": "Checkout",
+    "checkout_with_print_button": "Checkout and Print Invoice"
+  },
+  "dialog_order": {
+    "title": "Confirm Your Order",
+    "form": {
+      "customer": {
+        "label": "Member"
+      },
+      "voucher": {
+        "label": "Voucher"
+      },
+      "input_cash": {
+        "label": "Input Cash"
+      },
+      "cash": "Cash",
+      "change": "Changes"
+    }
+  }
+}

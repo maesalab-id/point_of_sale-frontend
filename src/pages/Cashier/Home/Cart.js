@@ -9,16 +9,19 @@ import { CURRENCY_OPTIONS, VENDOR_INFORMATION } from "components/constants";
 import { Print } from "../Transactions/Print";
 import { useReactToPrint } from "react-to-print";
 import { CartItem } from "./Cart.Item";
+import { useTranslation } from "react-i18next";
 
 export const Cart = ({
   cart,
-  onAdd = () => { },
-  onRemove = () => { },
-  onClear = () => { },
-  onSubmitted = () => { }
+  onAdd = () => {},
+  onRemove = () => {},
+  onClear = () => {},
+  onSubmitted = () => {},
 }) => {
   const client = useClient();
   const printArea = useRef(null);
+
+  const { t } = useTranslation("cashier-home-page");
 
   const [submitted, setSubmitted] = useState(null);
 
@@ -29,9 +32,9 @@ export const Cart = ({
     let subtotal = 0;
     let tax = 10;
     subtotal = cart.reduce((p, { price, count, discount }) => {
-      const discount_price = (price * (discount / 100) || 0);
+      const discount_price = price * (discount / 100) || 0;
       const price_discounted = price - discount_price;
-      return p + (price_discounted * count);
+      return p + price_discounted * count;
     }, 0);
     tax = (10 * subtotal) / 100;
     total = subtotal + tax;
@@ -39,7 +42,7 @@ export const Cart = ({
       total,
       subtotal,
       tax,
-    }
+    };
   }, [cart]);
 
   const handlePrint = useReactToPrint({
@@ -48,57 +51,71 @@ export const Cart = ({
     removeAfterPrint: true,
     onAfterPrint: () => {
       setSubmitted(null);
-    }
+    },
   });
 
-  const onSubmit = useCallback(async (values) => {
-    const toast = toaster.show({
-      intent: "none",
-      message: "Checking out"
-    });
-    try {
-      const res = await client["receipts"].create({
-        ...values,
-        items: cart.map((item) => {
-          return {
-            item_id: item["id"],
-            quantity: item["count"],
-            price: item["price"],
-            discount: item["discount"]
-          }
-        }),
+  const onSubmit = useCallback(
+    async (values) => {
+      const toast = toaster.show({
+        intent: "none",
+        message: "Checking out",
       });
-      toaster.dismiss(toast);
-      toaster.show({
-        intent: "success",
-        message: `Successfull Check out #${String(_get(res, "receipt_number")).padStart(7, "0")}`
-      });
+      try {
+        const res = await client["receipts"].create({
+          ...values,
+          items: cart.map((item) => {
+            return {
+              item_id: item["id"],
+              quantity: item["count"],
+              price: item["price"],
+              discount: item["discount"],
+            };
+          }),
+        });
+        toaster.dismiss(toast);
+        toaster.show({
+          intent: "success",
+          message: `Successfull Check out #${String(
+            _get(res, "receipt_number")
+          ).padStart(7, "0")}`,
+        });
 
-      onClear();
-      onSubmitted(res);
-      return res;
-    } catch (err) {
-      console.error(err);
-      toaster.dismiss(toast);
-      toaster.show({
-        intent: "danger",
-        message: err.message
-      });
-    }
-    return null;
-  }, [client, cart]);  // eslint-disable-line react-hooks/exhaustive-deps
+        onClear();
+        onSubmitted(res);
+        return res;
+      } catch (err) {
+        console.error(err);
+        toaster.dismiss(toast);
+        toaster.show({
+          intent: "danger",
+          message: err.message,
+        });
+      }
+      return null;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [client, cart]
+  );
 
   return (
-    <Flex sx={{ backgroundColor: "gray.1", flexDirection: "column", flexShrink: 0, width: "30%" }}>
+    <Flex
+      sx={{
+        backgroundColor: "gray.1",
+        flexDirection: "column",
+        flexShrink: 0,
+        width: "30%",
+      }}
+    >
       <Flex sx={{ py: 3, px: 3, alignItems: "center" }}>
         <Box sx={{ flexGrow: 1, fontWeight: "bold" }}>
-          <Text>Current Order</Text>
+          <Text>{t("cart.title")}</Text>
         </Box>
         <Box>
           <Button
             intent="danger"
-            outlined={true}
-            text="Clear All"
+            text={t("cart.clear_button")}
+            minimal={true}
+            disabled={cart.length === 0}
             onClick={() => {
               onClear();
             }}
@@ -120,7 +137,7 @@ export const Cart = ({
         ))}
       </Box>
       <Box sx={{ px: 3, pt: 2 }}>
-        <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 3, }}>
+        <Box className={Classes.CARD} sx={{ px: 0, py: 2, mb: 3 }}>
           <Flex sx={{ px: 2, mb: 2 }}>
             <Box sx={{ flexGrow: 1 }}>Subtotal</Box>
             <Box>{currency(price["subtotal"], CURRENCY_OPTIONS).format()}</Box>
@@ -141,7 +158,7 @@ export const Cart = ({
             large={true}
             fill={true}
             intent="primary"
-            text="Checkout"
+            text={t("cart.checkout_button")}
             onClick={() => {
               setDialogOpen("checkout");
             }}
@@ -161,9 +178,9 @@ export const Cart = ({
                 return {
                   item_id: item["id"],
                   quantity: item["count"],
-                  price: item["price"]
-                }
-              })
+                  price: item["price"],
+                };
+              }),
             }}
           />
         </Box>
@@ -174,7 +191,7 @@ export const Cart = ({
             small={true}
             fill={true}
             intent="primary"
-            text="Checkout and Print Invoice"
+            text={t("cart.checkout_with_print_button")}
             onClick={() => {
               setDialogOpen("checkout-print");
             }}
@@ -196,9 +213,9 @@ export const Cart = ({
                     name: item["name"],
                     item_id: item["id"],
                     quantity: item["count"],
-                    price: item["price"]
-                  }
-                })
+                    price: item["price"],
+                  };
+                }),
               });
               await handlePrint();
             }}
@@ -207,9 +224,9 @@ export const Cart = ({
                 return {
                   item_id: item["id"],
                   quantity: item["count"],
-                  price: item["price"]
-                }
-              })
+                  price: item["price"],
+                };
+              }),
             }}
           />
         </Box>
@@ -218,12 +235,15 @@ export const Cart = ({
           company_name={VENDOR_INFORMATION.NAME}
           company_address={VENDOR_INFORMATION.ADDRESS}
           receipt_no={_get(submitted, "receipt_number")}
-          items={_get(submitted, "items") && _get(submitted, "items").map((item) => ({
-            ...item,
-            item: {
-              name: item["name"]
-            }
-          }))}
+          items={
+            _get(submitted, "items") &&
+            _get(submitted, "items").map((item) => ({
+              ...item,
+              item: {
+                name: item["name"],
+              },
+            }))
+          }
           date={_get(submitted, "created_at")}
           subtotal={_get(submitted, "meta.subtotal")}
           tax={_get(submitted, "meta.tax")}
@@ -231,5 +251,5 @@ export const Cart = ({
         />
       </Box>
     </Flex>
-  )
-}
+  );
+};

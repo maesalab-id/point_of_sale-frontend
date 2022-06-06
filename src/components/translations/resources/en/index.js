@@ -1,6 +1,7 @@
 import common from "./common.json";
 import categoriesPage from "./categories-page.json";
 import usersPage from "./users-page.json";
+import cashierHomePage from "./cashier-home-page.json";
 import customersPage from "./customers-page.json";
 import ordersPage from "./orders-page.json";
 import receiptsPage from "./receipts-page.json";
@@ -11,6 +12,7 @@ import vouchersPage from "./vouchers-page.json";
 
 const en = {
   common,
+  "cashier-home-page": cashierHomePage,
   "users-page": usersPage,
   "categories-page": categoriesPage,
   "customers-page": customersPage,

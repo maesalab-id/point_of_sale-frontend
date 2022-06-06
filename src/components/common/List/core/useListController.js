@@ -135,6 +135,7 @@ export const useListController = (props = {}) => {
     debouncedFilter: query.debouncedFilter,
     displayedFilter: query.displayedFilter,
     setFilters: queryModifier.setFilters,
+    resetFilters: queryModifier.resetFilter,
     showFilters: queryModifier.showFilter,
     hideFilters: queryModifier.hideFilter,
 

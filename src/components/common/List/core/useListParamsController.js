@@ -113,6 +113,17 @@ export const useListParamsController = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, requestSignature);
 
+  const resetFilter = useCallback(() => {
+    return changeParams({
+      type: SET_FILTER,
+      payload: {
+        filter: filterDefaultValues,
+        displayedFilters: [],
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, requestSignature);
+
   return [
     {
       debouncedFilter,
@@ -123,6 +134,7 @@ export const useListParamsController = (props) => {
       setPage,
       setLimit,
       setFilters,
+      resetFilter,
       showFilter,
       hideFilter,
       changeParams,

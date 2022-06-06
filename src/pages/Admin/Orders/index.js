@@ -6,6 +6,7 @@ import { Header } from "./Header";
 import { List } from "./List";
 import { Toolbar } from "./Toolbar";
 import _get from "lodash.get";
+import { isNumeric } from "components/utils";
 
 export const filterField = ["order_number", "start", "end", "vendor_id"];
 
@@ -18,13 +19,15 @@ export const Orders = (props) => {
       const startDate = moment(filter["start"], "DD-MM-YYYY");
       const endDate = moment(filter["end"], "DD-MM-YYYY");
       try {
-        const query = {
+        let query = {
           $limit: pagination.limit,
           $skip: pagination.skip,
 
           $distinct: true,
           vendor_id: filter["vendor_id"] || undefined,
-          order_number: filter["order_number"] || undefined,
+          order_number: isNumeric(filter["order_number"])
+            ? filter["order_number"]
+            : undefined,
           created_at:
             startDate.isValid() && endDate.isValid()
               ? {
@@ -55,6 +58,7 @@ export const Orders = (props) => {
             },
           ],
         };
+        // query = _omitBy(query, _isNil);
         const res = await client["orders"].find({ query });
         return {
           ...res,
