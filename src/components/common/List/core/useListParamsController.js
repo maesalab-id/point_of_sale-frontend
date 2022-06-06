@@ -1,5 +1,5 @@
 import { useDebounce } from "components/useDebounce";
-import { useCallback, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import removeEmpty from "../utils/removeEmpty";
 import {
   HIDE_FILTER,
@@ -39,6 +39,7 @@ export const useListParamsController = (props) => {
         sort,
         limit,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     requestSignature
   );
 
@@ -52,7 +53,8 @@ export const useListParamsController = (props) => {
     } else {
       tempParams.current = queryReducer(tempParams.current, action);
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, requestSignature);
 
   if (!query.sort) {
     query.sort = sort.field;
@@ -68,14 +70,17 @@ export const useListParamsController = (props) => {
 
   const setSort = useCallback(
     (sort) => changeParams({ type: SET_SORT, payload: sort }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     requestSignature
   );
   const setPage = useCallback(
     (newPage) => changeParams({ type: SET_PAGE, payload: newPage }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     requestSignature
   );
   const setLimit = useCallback(
     (newLimit) => changeParams({ type: SET_LIMIT, payload: newLimit }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     requestSignature
   );
   const setFilters = useCallback((filter, displayedFilters) => {
@@ -86,6 +91,7 @@ export const useListParamsController = (props) => {
         displayedFilters,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, requestSignature);
 
   const showFilter = useCallback((filterName, defaultValue) => {
@@ -96,6 +102,7 @@ export const useListParamsController = (props) => {
         defaultValue,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, requestSignature);
 
   const hideFilter = useCallback((filterName) => {
@@ -103,6 +110,7 @@ export const useListParamsController = (props) => {
       type: HIDE_FILTER,
       payload: filterName,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, requestSignature);
 
   return [

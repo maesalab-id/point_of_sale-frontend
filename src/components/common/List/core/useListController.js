@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useQuery } from "react-query";
 import { SORT_ASC } from "./queryReducer";
 import { useListParamsController } from "./useListParamsController";
@@ -112,6 +112,7 @@ export const useListController = (props = {}) => {
       }
       await queryRefetch(rest);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [queryRefetch, queryModifier.setFilters]
   );
 
