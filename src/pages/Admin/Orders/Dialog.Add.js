@@ -6,7 +6,7 @@ import { toaster } from "components/toaster";
 import { FieldArray, Formik } from "formik";
 import * as Yup from "yup";
 import _get from "lodash.get";
-import { DialogAdd as VendorDialogAdd } from "../../Admin/Vendors/Dialog.Add";
+import { DialogAdd as VendorDialogAdd } from "../Vendors/Dialog.Add";
 
 const Schema = Yup.object().shape({
   "vendor_id": Yup.string().required(),

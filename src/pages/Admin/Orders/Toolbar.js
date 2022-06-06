@@ -1,4 +1,4 @@
-import { ControlGroup, InputGroup, Tag, Icon } from "@blueprintjs/core";
+import { ControlGroup, InputGroup, Tag, Icon, Button } from "@blueprintjs/core";
 import {
   Box,
   DateRangePicker,
@@ -12,12 +12,20 @@ import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { useListContext } from "components/common/List";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { DialogAdd } from "./Dialog.Add";
 
-export const Toolbar = () => {
+export const Toolbar = (props) => {
+  const { enableAdd = false } = props;
   const { t } = useTranslation("orders-page");
   const client = useClient();
-  const { setFilters, filter, displayedFilter = {} } = useListContext();
+  const [dialogOpen, setDialogOpen] = useState(null);
+  const {
+    setFilters,
+    filter,
+    refetch,
+    displayedFilter = {},
+  } = useListContext();
 
   const { values, handleChange, setFieldValue } = useFormik({
     initialValues: filter,
@@ -85,6 +93,7 @@ export const Toolbar = () => {
         <Box sx={{ mr: 2 }}>
           <FetchAndSelect
             loaded={true}
+            clearable={true}
             service={client["vendors"]}
             placeholder={t("common:form.select_vendor.label")}
             id="f-vendor_id"
@@ -114,6 +123,28 @@ export const Toolbar = () => {
             }}
           />
         </Box>
+        <Box sx={{ flexGrow: 1 }} />
+        {enableAdd && (
+          <Box>
+            <Button
+              intent="primary"
+              text="Make Order"
+              onClick={() => {
+                setDialogOpen("add");
+              }}
+            />
+            <DialogAdd
+              isOpen={dialogOpen === "add"}
+              onClose={() => {
+                setDialogOpen(null);
+              }}
+              onSubmitted={async () => {
+                await setFilters({});
+                await refetch();
+              }}
+            />
+          </Box>
+        )}
       </Flex>
     </Flex>
   );

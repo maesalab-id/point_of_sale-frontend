@@ -9,7 +9,8 @@ import _get from "lodash.get";
 
 export const filterField = ["order_number", "start", "end", "vendor_id"];
 
-export const Orders = () => {
+export const Orders = (props) => {
+  const { enableAdd } = props;
   const client = useClient();
 
   const fetch = useCallback(
@@ -86,7 +87,7 @@ export const Orders = () => {
         </Box>
         <Divider />
         <Box sx={{ mt: 3, px: 3, mb: 3 }}>
-          <Toolbar />
+          <Toolbar enableAdd={enableAdd} />
         </Box>
         <Box sx={{ mb: 4 }}>
           <List />
