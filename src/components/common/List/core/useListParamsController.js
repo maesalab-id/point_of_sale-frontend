@@ -62,7 +62,6 @@ export const useListParamsController = (props) => {
   }
 
   if (query.limit === 0) {
-    console.log(query.limit, limit);
     query.limit = limit;
   }
 

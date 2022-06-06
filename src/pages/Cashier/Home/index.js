@@ -10,7 +10,6 @@ export const Home = () => {
 
   const fetch = useCallback(
     async ({ filter, pagination }) => {
-      console.log(filter);
       try {
         const query = {
           $distinct: true,

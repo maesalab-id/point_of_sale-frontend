@@ -21,7 +21,6 @@ export const Toolbar = () => {
   });
 
   useEffect(() => {
-    console.log(filter, values);
     if (filter !== values) setFilters(values, displayedFilter);
   }, [values]); // eslint-disable-line react-hooks/exhaustive-deps
 
