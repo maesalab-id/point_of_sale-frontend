@@ -1,5 +1,18 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup } from "@blueprintjs/core";
-import { Box, FetchAndSelect, Flex, ListGroup, State, useClient } from "components";
+import {
+  Button,
+  Classes,
+  Dialog,
+  FormGroup,
+  InputGroup,
+} from "@blueprintjs/core";
+import {
+  Box,
+  FetchAndSelect,
+  Flex,
+  ListGroup,
+  State,
+  useClient,
+} from "components";
 import ListGroupHeader from "components/ListGroup.Header";
 import ListGroupItem from "components/ListGroup.Item";
 import { toaster } from "components/toaster";
@@ -7,41 +20,49 @@ import { FieldArray, Formik } from "formik";
 import * as Yup from "yup";
 import _get from "lodash.get";
 import { DialogAdd as VendorDialogAdd } from "../Vendors/Dialog.Add";
+import { useTranslation } from "react-i18next";
 
 const Schema = Yup.object().shape({
-  "vendor_id": Yup.string().required(),
-  "orders": Yup.array().of(Yup.object().shape({
-    "item_id": Yup.number().required(),
-    "price": Yup.number().required(),
-    "quantity": Yup.number().min(1).required(),
-  }))
+  vendor_id: Yup.string().required(),
+  orders: Yup.array()
+    .of(
+      Yup.object().shape({
+        item_id: Yup.number().required(),
+        price: Yup.number().required(),
+        quantity: Yup.number().min(1).required(),
+      })
+    )
     .required("Add item to order")
-    .min(1, "Minimum of 1 item")
+    .min(1, "Minimum of 1 item"),
 });
 
-
 const initialValues = {
-  "vendor_id": undefined,
-  "orders": [{
-    "item_id": undefined,
-    "price": 0,
-    "quantity": 1,
-  }]
-}
+  vendor_id: undefined,
+  orders: [
+    {
+      item_id: undefined,
+      price: 0,
+      quantity: 1,
+    },
+  ],
+};
 
 export const DialogAdd = ({
   isOpen,
-  onClose = () => { },
-  onSubmitted = () => { }
+  onClose = () => {},
+  onSubmitted = () => {},
 }) => {
   const client = useClient();
+  const { t } = useTranslation("orders-page");
 
   return (
     <Dialog
       enforceFocus={false}
       isOpen={isOpen}
-      onClose={() => { onClose() }}
-      title="Make new Order"
+      onClose={() => {
+        onClose();
+      }}
+      title={t("dialog_create.titles")}
     >
       <Formik
         validationSchema={Schema}
@@ -50,7 +71,7 @@ export const DialogAdd = ({
           try {
             const res = await client["orders"].create({
               vendor_id: values["vendor_id"],
-              orders: values["orders"]
+              orders: values["orders"],
             });
             onClose();
             onSubmitted(res);
@@ -59,85 +80,94 @@ export const DialogAdd = ({
             setSubmitting(false);
             toaster.show({
               intent: "danger",
-              message: err.message
-            })
+              message: err.message,
+            });
           }
         }}
       >
-        {({ values, errors, isSubmitting, setFieldValue, handleSubmit, handleChange }) =>
+        {({
+          values,
+          errors,
+          isSubmitting,
+          setFieldValue,
+          handleSubmit,
+          handleChange,
+        }) => (
           <form onSubmit={handleSubmit}>
             <div className={Classes.DIALOG_BODY}>
               <State
                 initialValue={{
                   isOpen: false,
-                  query: ""
+                  query: "",
                 }}
               >
-                {([state, setState]) => <>
-                  <FormGroup
-                    label="Vendor"
-                    labelFor="f-vendor_id"
-                    helperText={errors["vendor_id"]}
-                    intent={"danger"}
-                  >
-                    <FetchAndSelect
-                      allowCreateItem={true}
-                      service={client["vendors"]}
-                      id="f-vendor_id"
-                      name="vendor_id"
-                      value={values["vendor_id"]}
-                      intent={errors["vendor_id"] ? "danger" : "none"}
-                      onChange={async ({ value }) => {
-                        await setFieldValue("vendor_id", value);
-                      }}
-                      onCreateNew={(query) => {
-                        setState({
-                          isOpen: true,
-                          query
-                        })
-                      }}
-                      onPreFetch={(q, query) => {
-                        return {
-                          ...query,
-                          "name": q ? {
-                            $iLike: `%${q}%`
-                          } : undefined,
-                          $select: ["id", "name"]
-                        }
-                      }}
-                      onFetched={(items) => {
-                        return items.map((item) => {
+                {([state, setState]) => (
+                  <>
+                    <FormGroup
+                      label="Vendor"
+                      labelFor="f-vendor_id"
+                      helperText={errors["vendor_id"]}
+                      intent={"danger"}
+                    >
+                      <FetchAndSelect
+                        allowCreateItem={true}
+                        service={client["vendors"]}
+                        id="f-vendor_id"
+                        name="vendor_id"
+                        value={values["vendor_id"]}
+                        intent={errors["vendor_id"] ? "danger" : "none"}
+                        onChange={async ({ value }) => {
+                          await setFieldValue("vendor_id", value);
+                        }}
+                        onCreateNew={(query) => {
+                          setState({
+                            isOpen: true,
+                            query,
+                          });
+                        }}
+                        onPreFetch={(q, query) => {
                           return {
-                            label: item["name"],
-                            value: `${item["id"]}`,
-                          }
-                        })
+                            ...query,
+                            name: q
+                              ? {
+                                  $iLike: `%${q}%`,
+                                }
+                              : undefined,
+                            $select: ["id", "name"],
+                          };
+                        }}
+                        onFetched={(items) => {
+                          return items.map((item) => {
+                            return {
+                              label: item["name"],
+                              value: `${item["id"]}`,
+                            };
+                          });
+                        }}
+                      />
+                    </FormGroup>
+                    <VendorDialogAdd
+                      isOpen={state.isOpen}
+                      initialValue={{
+                        name: state.query,
+                      }}
+                      onClose={() => {
+                        setState((s) => ({ ...s, isOpen: false }));
+                      }}
+                      onSubmitted={() => {
+                        toaster.show({
+                          intent: "success",
+                          message: "Vendor created",
+                        });
                       }}
                     />
-                  </FormGroup>
-                  <VendorDialogAdd
-                    isOpen={state.isOpen}
-                    initialValue={{
-                      name: state.query
-                    }}
-                    onClose={() => {
-                      setState(s => ({ ...s, isOpen: false }));
-                    }}
-                    onSubmitted={() => {
-                      toaster.show({
-                        intent: "success",
-                        message: "Vendor created"
-                      });
-                    }}
-                  />
-                </>}
+                  </>
+                )}
               </State>
-              <FormGroup
-                label="Items"
-              >
+              <FormGroup label="Items">
                 <FieldArray
                   name="orders"
-                  render={arr => (
+                  render={(arr) => (
                     <ListGroup>
                       <ListGroupHeader>
                         <Flex sx={{ alignItems: "center" }}>
@@ -149,9 +179,9 @@ export const DialogAdd = ({
                               text="Add item"
                               onClick={() => {
                                 arr.push({
-                                  "item_id": undefined,
-                                  "price": 0,
-                                  "quantity": 1,
+                                  item_id: undefined,
+                                  price: 0,
+                                  quantity: 1,
                                 });
                               }}
                             />
@@ -175,70 +205,106 @@ export const DialogAdd = ({
                                     id="f-item_id"
                                     name={`orders[${index}].item_id`}
                                     value={_get(value, "item_id")}
-                                    intent={_get(errors, `orders[${index}].item_id`) ? "danger" : "none"}
+                                    intent={
+                                      _get(errors, `orders[${index}].item_id`)
+                                        ? "danger"
+                                        : "none"
+                                    }
                                     onChange={async ({ value }) => {
-                                      await setFieldValue(`orders[${index}].item_id`, value);
+                                      await setFieldValue(
+                                        `orders[${index}].item_id`,
+                                        value
+                                      );
                                     }}
                                     onPreFetch={(q, query) => {
-                                      let selectedItems = _get(values, `orders`).filter((_, i) => i !== index).map((order) => {
-                                        return order["item_id"];
-                                      }).reduce((p, c) => {
-                                        if (typeof c === "undefined") return p;
-                                        return [...p, c];
-                                      }, []);
+                                      let selectedItems = _get(values, `orders`)
+                                        .filter((_, i) => i !== index)
+                                        .map((order) => {
+                                          return order["item_id"];
+                                        })
+                                        .reduce((p, c) => {
+                                          if (typeof c === "undefined")
+                                            return p;
+                                          return [...p, c];
+                                        }, []);
                                       return {
                                         ...query,
-                                        "name": q ? {
-                                          $iLike: `%${q}%`
-                                        } : undefined,
-                                        "id": selectedItems.length > 0 ? {
-                                          "$nin": selectedItems
-                                        } : undefined,
-                                        $select: ["id", "name"]
-                                      }
+                                        name: q
+                                          ? {
+                                              $iLike: `%${q}%`,
+                                            }
+                                          : undefined,
+                                        id:
+                                          selectedItems.length > 0
+                                            ? {
+                                                $nin: selectedItems,
+                                              }
+                                            : undefined,
+                                        $select: ["id", "name"],
+                                      };
                                     }}
                                     onFetched={(items) => {
                                       return items.map((item) => {
                                         return {
                                           label: item["name"],
                                           value: `${item["id"]}`,
-                                        }
-                                      })
+                                        };
+                                      });
                                     }}
                                   />
                                 </FormGroup>
                               </Box>
                               <Box sx={{ px: 2, width: `${100 / 4}%` }}>
                                 <FormGroup
-                                  label="Price"
+                                  label={t("dialog_create.labels.price")}
                                   labelFor="f-price"
-                                  helperText={_get(errors, `orders[${index}].price`)}
+                                  helperText={_get(
+                                    errors,
+                                    `orders[${index}].price`
+                                  )}
                                   intent={"danger"}
                                 >
                                   <InputGroup
                                     fill={true}
                                     id="f-price"
                                     name={`orders[${index}].price`}
-                                    value={_get(values, `orders[${index}].price`)}
+                                    value={_get(
+                                      values,
+                                      `orders[${index}].price`
+                                    )}
                                     onChange={handleChange}
-                                    intent={_get(errors, `orders[${index}].price`) ? "danger" : "none"}
+                                    intent={
+                                      _get(errors, `orders[${index}].price`)
+                                        ? "danger"
+                                        : "none"
+                                    }
                                   />
                                 </FormGroup>
                               </Box>
                               <Box sx={{ px: 2, width: `${100 / 4}%` }}>
                                 <FormGroup
-                                  label="Quantity"
+                                  label={t("dialog_create.labels.quantity")}
                                   labelFor="f-quantity"
-                                  helperText={_get(errors, `orders[${index}].quantity`)}
+                                  helperText={_get(
+                                    errors,
+                                    `orders[${index}].quantity`
+                                  )}
                                   intent={"danger"}
                                 >
                                   <InputGroup
                                     fill={true}
                                     id="f-quantity"
                                     name={`orders[${index}].quantity`}
-                                    value={_get(values, `orders[${index}].quantity`)}
+                                    value={_get(
+                                      values,
+                                      `orders[${index}].quantity`
+                                    )}
                                     onChange={handleChange}
-                                    intent={_get(errors, `orders[${index}].quantity`) ? "danger" : "none"}
+                                    intent={
+                                      _get(errors, `orders[${index}].quantity`)
+                                        ? "danger"
+                                        : "none"
+                                    }
                                   />
                                 </FormGroup>
                               </Box>
@@ -264,22 +330,18 @@ export const DialogAdd = ({
             </div>
             <div className={Classes.DIALOG_FOOTER}>
               <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                <Button
-                  minimal={true}
-                  onClick={() => onClose()}
-                  text="Close"
-                />
+                <Button minimal={true} onClick={() => onClose()} text={t("dialog_create.labels.cancel")} />
                 <Button
                   loading={isSubmitting}
                   type="submit"
                   intent="primary"
-                  text="Simpan"
+                  text={t("dialog_create.labels.confirm")}
                 />
               </div>
             </div>
           </form>
-        }
+        )}
       </Formik>
     </Dialog>
-  )
-}
+  );
+};

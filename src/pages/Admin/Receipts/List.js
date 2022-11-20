@@ -1,5 +1,5 @@
 import { ListBodyItem, ListView, useListContext } from "components/common/List";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import _get from "lodash.get";
 import _isNil from "lodash.isnil";
 import { MenuDivider, MenuItem } from "@blueprintjs/core";
@@ -8,12 +8,27 @@ import { CURRENCY_OPTIONS } from "components/constants";
 import currency from "currency.js";
 import { DialogDetails } from "./Dialog.Details";
 import { DialogRemove } from "components/common";
+import { useTranslation } from "react-i18next";
+import DialogReturn from "./Dialog.Return";
 
 export const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
+  const { t } = useTranslation("receipts-page");
 
   const { refetch, clearSelection } = useListContext();
+
+  useEffect(() => {
+    let timeout;
+    if (dialogOpen === null) {
+      timeout = setTimeout(() => {
+        setSelectedData(null);
+      }, 350);
+    }
+    return () => {
+      typeof timeout !== "undefined" && clearTimeout(timeout);
+    };
+  }, [dialogOpen]);
 
   return (
     <>
@@ -57,6 +72,15 @@ export const List = () => {
                   setSelectedData(data);
                 }}
               />,
+              <MenuItem
+                icon="undo"
+                intent="warning"
+                text={t("toolbar.return")}
+                onClick={() => {
+                  setDialogOpen("return");
+                  setSelectedData(data);
+                }}
+              />,
             ];
             if (process.env.NODE_ENV === "development") {
               list = [
@@ -96,6 +120,16 @@ export const List = () => {
             isOpen={dialogOpen === "details"}
             onClose={() => {
               setDialogOpen(null);
+            }}
+          />
+          <DialogReturn
+            isOpen={dialogOpen === "return"}
+            onClose={() => {
+              setDialogOpen(null);
+            }}
+            data={selectedData}
+            onConfirm={() => {
+              refetch();
             }}
           />
         </>

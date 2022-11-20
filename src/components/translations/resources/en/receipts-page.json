@@ -5,7 +5,8 @@
       "search": {
         "placeholder": "Filter by Receipt Number"
       }
-    }
+    },
+    "return": "Item Return"
   },
   "dialog_detail": {
     "title": "Detail Receipt #{{receipt_number}}",
@@ -15,6 +16,20 @@
       "subtotal": "Subtotal",
       "tax": "Tax",
       "total": "Total"
+    }
+  },
+  "return_dialog": {
+    "labels": {
+      "cancel": "Cancel",
+      "confirm": "Return",
+      "reason": "Return cause",
+      "reasons": {
+        "error": "Error",
+        "damaged": "Damaged"
+      },
+      "errors": {
+        "type": "Please choose return cause"
+      }
     }
   }
 }

@@ -128,7 +128,7 @@ export const Toolbar = (props) => {
           <Box>
             <Button
               intent="primary"
-              text="Make Order"
+              text={t("toolbar.make_order")}
               onClick={() => {
                 setDialogOpen("add");
               }}

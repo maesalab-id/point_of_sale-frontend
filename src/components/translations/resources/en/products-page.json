@@ -12,6 +12,14 @@
     },
     "add_button": "Add Product"
   },
+  "table": {
+    "code": "Code",
+    "name": "Name",
+    "price": "Price",
+    "stock": "Stock",
+    "bad_stock": "Bad Stock",
+    "category": "Category"
+  },
   "dialog_form": {
     "title_1": "Product Information",
     "title_2": "Product Discount",

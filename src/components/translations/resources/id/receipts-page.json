@@ -5,7 +5,8 @@
       "search": {
         "placeholder": "Filter by Receipt Number"
       }
-    }
+    },
+    "return": "Pengembalian Item"
   },
   "dialog_detail": {
     "title": "Detail Receipt #{{receipt_number}}",
@@ -15,6 +16,20 @@
       "subtotal": "Subtotal",
       "tax": "Tax",
       "total": "Total"
+    }
+  },
+  "return_dialog": {
+    "labels": {
+      "cancel": "Batal",
+      "confirm": "Pengembalian",
+      "reason": "Alasan Pengembalian",
+      "reasons": {
+        "error": "Salah Pesan",
+        "damaged": "Rusak"
+      },
+      "errors": {
+        "type": "Pilih alasan pengembalian"
+      }
     }
   }
 }

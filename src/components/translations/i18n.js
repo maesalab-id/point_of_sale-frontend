@@ -11,8 +11,8 @@ i18n
   .use(initReactI18next)
   .init({
     // debug: isDev,
-    lng: window.localStorage.getItem("lang") || "en",
-    fallbackLng: isDev ? undefined : "en",
+    lng: window.localStorage.getItem("lang") || "id",
+    fallbackLng: isDev ? undefined : "id",
     interpolation: {
       escapeValue: false,
     },

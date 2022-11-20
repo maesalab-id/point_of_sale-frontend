@@ -12,6 +12,14 @@
     },
     "add_button": "Tambah Produk"
   },
+  "table": {
+    "code": "Kode Barang",
+    "name": "Nama",
+    "price": "Harga",
+    "stock": "Stock",
+    "bad_stock": "Bad Stock",
+    "category": "Kategori"
+  },
   "dialog_form": {
     "title_1": "Informasi Produk",
     "title_2": "Diskon",

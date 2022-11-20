@@ -5,6 +5,17 @@
       "search": {
         "placeholder": "Filter by Order Number"
       }
+    },
+    "make_order": "Make Order"
+  },
+  "dialog_create": {
+    "title": "Create New Order",
+    "labels": {
+      "confirm": "Create",
+      "cancel": "Cancel",
+      "price": "Price",
+      "quantity": "Quantity",
+      "item": "Item"
     }
   },
   "dialog_detail": {
@@ -15,6 +26,22 @@
       "subtotal": "Subtotal",
       "tax": "Tax",
       "total": "Total"
+    }
+  },
+  "received_dialog": {
+    "title": "Receiving #{{order_number}}",
+    "labels": {
+      "confirm_text": "Are you sure order number #{{order_number}} has been received?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    }
+  },
+  "list_order": {
+    "labels": {
+      "details": "Details",
+      "received": "Received",
+      "delete": "Delete",
+      "not_received": "Not Received"
     }
   }
 }

@@ -28,7 +28,7 @@ export const Products = () => {
                 },
               }
             : undefined,
-          $select: ["id", "name", "discount", "code", "price", "quantity"],
+          $select: ["id", "name", "discount", "code", "price", "quantity", "bad_quantity"],
           $sort: {
             id: -1,
           },

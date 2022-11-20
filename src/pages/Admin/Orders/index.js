@@ -37,7 +37,14 @@ export const Orders = (props) => {
                   $lte: endDate.isValid() ? endDate.toISOString() : undefined,
                 }
               : undefined,
-          $select: ["id", "order_number", "tax", "vendor_id"],
+          $select: [
+            "id",
+            "order_number",
+            "tax",
+            "vendor_id",
+            "received",
+            "created_at",
+          ],
           $sort: {
             id: -1,
           },

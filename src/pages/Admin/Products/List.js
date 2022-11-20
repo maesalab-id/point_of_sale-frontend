@@ -9,10 +9,12 @@ import { Box } from "components";
 import { CURRENCY_OPTIONS } from "components/constants";
 import currency from "currency.js";
 import { DialogDetails } from "./Dialog.Details";
+import { useTranslation } from "react-i18next";
 
 export const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
+  const { t } = useTranslation("products-page");
 
   const { refetch, clearSelection, selectedIds } = useListContext();
 
@@ -61,18 +63,18 @@ export const List = () => {
 
             return [
               {
-                label: "Code",
+                label: t('table.code'),
                 value: `${_get(data, "code")}`,
               },
               {
-                label: "Name",
+                label: t('table.name'),
                 value: `${_get(data, "name")}`,
               },
               {
                 label: (
                   <Box>
                     <Box as="span" sx={{ mr: 1 }}>
-                      Price
+                      {t('table.price')}
                     </Box>
                     {extras.isDiscounted && (
                       <Tag intent="warning">{`-${_get(
@@ -106,7 +108,11 @@ export const List = () => {
                 value: `${_get(data, "quantity")} unit`,
               },
               {
-                label: "Category",
+                label: "Bad Stock",
+                value: `${_get(data, "bad_quantity") ?? 0} unit`,
+              },
+              {
+                label: t('table.category'),
                 value: `${_get(data, "category.name")}`,
               },
             ];

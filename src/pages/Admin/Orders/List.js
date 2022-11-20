@@ -2,16 +2,19 @@ import { ListBodyItem, ListView, useListContext } from "components/common/List";
 import { useState } from "react";
 import _get from "lodash.get";
 import _isNil from "lodash.isnil";
-import { MenuDivider, MenuItem } from "@blueprintjs/core";
+import { MenuDivider, MenuItem, Tag } from "@blueprintjs/core";
 import moment from "moment";
 import { CURRENCY_OPTIONS } from "components/constants";
 import currency from "currency.js";
 import { DialogDetails } from "./Dialog.Details";
 import { DialogRemove } from "components/common";
+import { useTranslation } from "react-i18next";
+import { DialogReceived } from "./Dialog.Received";
 
 export const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
+  const { t } = useTranslation("orders-page");
 
   const { refetch, clearSelection } = useListContext();
 
@@ -39,6 +42,16 @@ export const List = () => {
               )} item`,
             },
             {
+              label: "Status",
+              value: _get(data, "received") ? (
+                <Tag intent="success">{t("list_order.labels.received")}</Tag>
+              ) : (
+                <Tag intent="primary">
+                  {t("list_order.labels.not_received")}
+                </Tag>
+              ),
+            },
+            {
               label: "Date",
               value: `${moment(_get(data, "created_at")).format("DD/MM/YYYY")}`,
             },
@@ -51,9 +64,19 @@ export const List = () => {
             let list = [
               <MenuItem
                 icon="info-sign"
-                text="Details"
+                text={t("list_order.labels.details")}
                 onClick={() => {
                   setDialogOpen("details");
+                  setSelectedData(data);
+                }}
+              />,
+              <MenuItem
+                icon="saved"
+                intent="success"
+                disabled={data.received}
+                text={t("list_order.labels.received")}
+                onClick={() => {
+                  setDialogOpen("received");
                   setSelectedData(data);
                 }}
               />,
@@ -97,6 +120,18 @@ export const List = () => {
             onClose={() => {
               setDialogOpen(null);
             }}
+          />
+          <DialogReceived
+            isOpen={dialogOpen === "received"}
+            onClose={() => {
+              setDialogOpen(null);
+            }}
+            onConfirm={async () => {
+              setDialogOpen(null);
+              setSelectedData(null);
+              await refetch();
+            }}
+            data={selectedData}
           />
         </>
       )}

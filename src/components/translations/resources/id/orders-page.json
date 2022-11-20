@@ -5,16 +5,43 @@
       "search": {
         "placeholder": "Filter berdasarkan Nama"
       }
+    },
+    "make_order": "Buat Order"
+  },
+  "dialog_create": {
+    "title": "Buat Order Baru",
+    "labels": {
+      "confirm": "Buat",
+      "cancel": "Batal",
+      "price": "Harga",
+      "quantity": "Kuantitas",
+      "item": "Item"
     }
   },
   "dialog_detail": {
     "title": "Detail Order #{{order_number}}",
     "labels": {
       "vendor": "Vendor",
-      "date": "Date",
+      "date": "Tanggal",
       "subtotal": "Subtotal",
-      "tax": "Tax",
+      "tax": "Pajak",
       "total": "Total"
+    }
+  },
+  "received_dialog": {
+    "title": "Menerima #{{order_number}}",
+    "labels": {
+      "confirm_text": "Apakah Anda yakin order #{{order_number}} sudah diterima?",
+      "confirm": "Terima",
+      "cancel": "Batal"
+    }
+  },
+  "list_order": {
+    "labels": {
+      "details": "Detail",
+      "received": "Diterima",
+      "delete": "Hapus",
+      "not_received": "Belum Diterima"
     }
   }
 }
