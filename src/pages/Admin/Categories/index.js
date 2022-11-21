@@ -1,5 +1,6 @@
 import { Box, Divider, useClient } from "components";
 import { ListContextProvider } from "components/common/List";
+import { isDev } from "components/constants";
 import { useCallback } from "react";
 import { Header } from "./Header";
 import { List } from "./List";
@@ -19,7 +20,7 @@ export const Categories = () => {
           $skip: pagination.skip,
           name: filter["name"]
             ? {
-                $iLike: `%${filter["name"]}%`,
+                [isDev ? "$iLike" : "$like"]: `%${filter["name"]}%`,
               }
             : undefined,
           $select: ["id", "name"],

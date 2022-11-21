@@ -8,6 +8,17 @@
     },
     "make_order": "Buat Order"
   },
+  "print":{
+    "title": "Nota Pesanan",
+    "table": {
+      "name": "Nama",
+      "qty": "Jlh",
+      "price": "Harga",
+      "total": "Total"
+    },
+    "date": "Tanggal",
+    "receipt_no": "No. Nota"
+  },
   "dialog_create": {
     "title": "Buat Order Baru",
     "labels": {
@@ -41,7 +52,8 @@
       "details": "Detail",
       "received": "Diterima",
       "delete": "Hapus",
-      "not_received": "Belum Diterima"
+      "not_received": "Belum Diterima",
+      "print": "Print Nota Order"
     }
   }
 }

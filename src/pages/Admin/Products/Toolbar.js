@@ -1,6 +1,7 @@
 import { Button, ControlGroup, InputGroup } from "@blueprintjs/core";
 import { Box, FetchAndSelect, Flex, useClient } from "components";
 import { useListContext } from "components/common/List";
+import { isDev } from "components/constants";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -55,7 +56,7 @@ export const Toolbar = () => {
                 ...query,
                 name: q
                   ? {
-                      $iLike: `%${q}%`,
+                      [isDev ? "$iLike" : "$like"]: `%${q}%`,
                     }
                   : undefined,
                 $select: ["id", "name"],

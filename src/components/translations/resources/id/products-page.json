@@ -20,6 +20,15 @@
     "bad_stock": "Bad Stock",
     "category": "Kategori"
   },
+  "print":{
+    "title": "Nota Pesanan",
+    "table": {
+      "name": "Nama",
+      "qty": "Jlh",
+      "price": "Harga",
+      "total": "Total"
+    }
+  },
   "dialog_form": {
     "title_1": "Informasi Produk",
     "title_2": "Diskon",

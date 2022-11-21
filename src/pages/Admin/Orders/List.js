@@ -1,5 +1,5 @@
 import { ListBodyItem, ListView, useListContext } from "components/common/List";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import _get from "lodash.get";
 import _isNil from "lodash.isnil";
 import { MenuDivider, MenuItem, Tag } from "@blueprintjs/core";
@@ -10,11 +10,37 @@ import { DialogDetails } from "./Dialog.Details";
 import { DialogRemove } from "components/common";
 import { useTranslation } from "react-i18next";
 import { DialogReceived } from "./Dialog.Received";
+import { useReactToPrint } from "react-to-print";
+import { Print } from "./Print";
+import { VENDOR_INFORMATION } from "components/constants";
+
+let timeout;
 
 export const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
   const { t } = useTranslation("orders-page");
+  const printArea = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => printArea.current,
+    documentTitle: `Print receipt`,
+    removeAfterPrint: true,
+    onAfterPrint: () => {
+      setSelectedData(null);
+      timeout && clearTimeout(timeout);
+    },
+  });
+
+  const printPurchaseOrder = useCallback(
+    (data) => {
+      setSelectedData(data);
+      timeout = setTimeout(() => {
+        handlePrint();
+      }, 200);
+    },
+    [handlePrint]
+  );
 
   const { refetch, clearSelection } = useListContext();
 
@@ -80,6 +106,14 @@ export const List = () => {
                   setSelectedData(data);
                 }}
               />,
+              <MenuItem
+                icon="print"
+                intent="primary"
+                text={t("list_order.labels.print")}
+                onClick={() => {
+                  printPurchaseOrder(data);
+                }}
+              />,
             ];
             if (process.env.NODE_ENV === "development") {
               list = [
@@ -135,6 +169,16 @@ export const List = () => {
           />
         </>
       )}
+      <Print
+        ref={printArea}
+        data={selectedData}
+        items={selectedData?.order_lists ?? []}
+        receipt_no={selectedData?.order_number ?? 0}
+        total={selectedData?.price ?? 0}
+        company_name={VENDOR_INFORMATION.NAME}
+        company_address={VENDOR_INFORMATION.ADDRESS}
+        date={selectedData?.created_at}
+      />
     </>
   );
 };

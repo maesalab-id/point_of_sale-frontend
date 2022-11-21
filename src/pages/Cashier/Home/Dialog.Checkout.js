@@ -14,7 +14,7 @@ import {
   State,
   useClient,
 } from "components";
-import { CURRENCY_OPTIONS } from "components/constants";
+import { CURRENCY_OPTIONS, isDev } from "components/constants";
 import { toaster } from "components/toaster";
 import currency from "currency.js";
 import { useFormik } from "formik";
@@ -135,12 +135,12 @@ export const DialogCheckout = ({
                           ? {
                               name: q
                                 ? {
-                                    $iLike: `%${q}%`,
+                                    [isDev ? "$iLike" : "$like"]: `%${q}%`,
                                   }
                                 : undefined,
                               phone_number: q
                                 ? {
-                                    $iLike: `%${q}%`,
+                                    [isDev ? "$iLike" : "$like"]: `%${q}%`,
                                   }
                                 : undefined,
                             }
@@ -206,7 +206,7 @@ export const DialogCheckout = ({
                     ? {
                         name: q
                           ? {
-                              $iLike: `%${q}%`,
+                              [isDev ? "$iLike" : "$like"]: `%${q}%`,
                             }
                           : undefined,
                       }

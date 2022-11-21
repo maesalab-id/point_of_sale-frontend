@@ -1,5 +1,6 @@
 import { Box, Divider, useClient } from "components";
 import { ListContextProvider } from "components/common/List";
+import { isDev } from "components/constants";
 import { useCallback } from "react";
 import { Header } from "./Header";
 import { List } from "./List";
@@ -18,7 +19,7 @@ export const Users = () => {
           type: filter["type"] || undefined,
           name: filter["username"]
             ? {
-                $iLike: `%${filter["username"]}%`,
+                [isDev ? "$iLike" : "$like"]: `%${filter["username"]}%`,
               }
             : undefined,
           $select: ["id", "name", "username", "type"],

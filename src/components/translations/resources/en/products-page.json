@@ -20,6 +20,15 @@
     "bad_stock": "Bad Stock",
     "category": "Category"
   },
+  "print":{
+    "title": "Nota Pesanan",
+    "table": {
+      "name": "Name",
+      "qty": "Qty",
+      "price": "Price",
+      "total": "Total"
+    }
+  },
   "dialog_form": {
     "title_1": "Product Information",
     "title_2": "Product Discount",

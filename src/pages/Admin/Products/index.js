@@ -1,5 +1,6 @@
 import { Box, Divider, useClient } from "components";
 import { ListContextProvider } from "components/common/List";
+import { isDev } from "components/constants";
 import { useCallback } from "react";
 import { Header } from "./Header";
 import { List } from "./List";
@@ -21,14 +22,22 @@ export const Products = () => {
           $or: filter["name"]
             ? {
                 name: {
-                  $iLike: `%${filter["name"]}%`,
+                  [isDev ? "$iLike" : "$like"]: `%${filter["name"]}%`,
                 },
                 code: {
-                  $iLike: `%${filter["name"]}%`,
+                  [isDev ? "$iLike" : "$like"]: `%${filter["name"]}%`,
                 },
               }
             : undefined,
-          $select: ["id", "name", "discount", "code", "price", "quantity", "bad_quantity"],
+          $select: [
+            "id",
+            "name",
+            "discount",
+            "code",
+            "price",
+            "quantity",
+            "bad_quantity",
+          ],
           $sort: {
             id: -1,
           },

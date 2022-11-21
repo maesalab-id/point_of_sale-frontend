@@ -14,6 +14,7 @@ import { useFormik } from "formik";
 import { useListContext } from "components/common/List";
 import { useEffect, useState } from "react";
 import { DialogAdd } from "./Dialog.Add";
+import { isDev } from "components/constants";
 
 export const Toolbar = (props) => {
   const { enableAdd = false } = props;
@@ -107,7 +108,7 @@ export const Toolbar = (props) => {
                 ...query,
                 name: q
                   ? {
-                      $iLike: `%${q}%`,
+                      [isDev ? "$iLike" : "$like"]: `%${q}%`,
                     }
                   : undefined,
                 $select: ["id", "name"],

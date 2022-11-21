@@ -21,6 +21,7 @@ import * as Yup from "yup";
 import _get from "lodash.get";
 import { DialogAdd as VendorDialogAdd } from "../Vendors/Dialog.Add";
 import { useTranslation } from "react-i18next";
+import { isDev } from "components/constants";
 
 const Schema = Yup.object().shape({
   vendor_id: Yup.string().required(),
@@ -130,7 +131,7 @@ export const DialogAdd = ({
                             ...query,
                             name: q
                               ? {
-                                  $iLike: `%${q}%`,
+                                  [isDev ? "$iLike" : "$like"]: `%${q}%`,
                                 }
                               : undefined,
                             $select: ["id", "name"],
@@ -231,7 +232,9 @@ export const DialogAdd = ({
                                         ...query,
                                         name: q
                                           ? {
-                                              $iLike: `%${q}%`,
+                                              [isDev
+                                                ? "$iLike"
+                                                : "$like"]: `%${q}%`,
                                             }
                                           : undefined,
                                         id:
@@ -330,7 +333,11 @@ export const DialogAdd = ({
             </div>
             <div className={Classes.DIALOG_FOOTER}>
               <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                <Button minimal={true} onClick={() => onClose()} text={t("dialog_create.labels.cancel")} />
+                <Button
+                  minimal={true}
+                  onClick={() => onClose()}
+                  text={t("dialog_create.labels.cancel")}
+                />
                 <Button
                   loading={isSubmitting}
                   type="submit"

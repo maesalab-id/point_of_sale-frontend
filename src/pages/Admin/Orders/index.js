@@ -55,7 +55,7 @@ export const Orders = (props) => {
               $include: [
                 {
                   model: "items",
-                  $select: ["id"],
+                  $select: ["id", "name"],
                 },
               ],
             },
@@ -67,6 +67,7 @@ export const Orders = (props) => {
         };
         // query = _omitBy(query, _isNil);
         const res = await client["orders"].find({ query });
+        console.log({ res });
         return {
           ...res,
           data: res.data.map((item) => {

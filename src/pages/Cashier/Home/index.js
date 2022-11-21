@@ -2,6 +2,7 @@ import { Layout } from "./Layout";
 import { ListContextProvider } from "components/common/List";
 import { useClient } from "components";
 import { useCallback } from "react";
+import { isDev } from "components/constants";
 
 export const filterField = ["name", "category_id"];
 
@@ -20,12 +21,12 @@ export const Home = () => {
             ? {
                 name: filter["name"]
                   ? {
-                      $iLike: `%${filter["name"]}%`,
+                      [isDev ? "$iLike" : "$like"]: `%${filter["name"]}%`,
                     }
                   : undefined,
                 code: filter["name"]
                   ? {
-                      $iLike: `%${filter["name"]}%`,
+                      [isDev ? "$iLike" : "$like"]: `%${filter["name"]}%`,
                     }
                   : undefined,
               }

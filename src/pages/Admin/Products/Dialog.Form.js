@@ -5,7 +5,7 @@ import { DialogAdd as CategoryDialogAdd } from "../Categories/Dialog.Add";
 import { FetchAndSelect, State, useClient } from "components";
 import { toaster } from "components/toaster";
 import { useMemo } from "react";
-import { CURRENCY_OPTIONS } from "components/constants";
+import { CURRENCY_OPTIONS, isDev } from "components/constants";
 import currency from "currency.js";
 
 export const DialogForm = () => {
@@ -61,7 +61,7 @@ export const DialogForm = () => {
                     ...query,
                     name: q
                       ? {
-                          $iLike: `%${q}%`,
+                          [isDev ? "$iLike" : "$like"]: `%${q}%`,
                         }
                       : undefined,
                     $select: ["id", "name"],

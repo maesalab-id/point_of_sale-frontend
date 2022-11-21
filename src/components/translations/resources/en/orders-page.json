@@ -8,6 +8,17 @@
     },
     "make_order": "Make Order"
   },
+  "print":{
+    "title": "Nota Pesanan",
+    "table": {
+      "name": "Name",
+      "qty": "Qty",
+      "price": "Price",
+      "total": "Total"
+    },
+    "date": "Date",
+    "receipt_no": "Receipt No."
+  },
   "dialog_create": {
     "title": "Create New Order",
     "labels": {
@@ -41,7 +52,8 @@
       "details": "Details",
       "received": "Received",
       "delete": "Delete",
-      "not_received": "Not Received"
+      "not_received": "Not Received",
+      "print": "Print Purchase Order"
     }
   }
 }
