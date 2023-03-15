@@ -35,15 +35,15 @@ export const DialogDetails = ({ data, isOpen, onClose = () => {} }) => {
     >
       <div className={Classes.DIALOG_BODY}>
         <h6 className={Classes.HEADING}>{t("dialog_form.title_1")}</h6>
-        <FormGroup label="Code" labelFor="f-code">
+        <FormGroup label={t("dialog_form.code.label")} labelFor="f-code">
           <InputGroup
             readOnly={true}
             id="f-code"
-            name="code"
+            name={"code"}
             value={_get(data, "code")}
           />
         </FormGroup>
-        <FormGroup label="Name" labelFor="f-name">
+        <FormGroup label={t("dialog_form.name.label")} labelFor="f-name">
           <InputGroup
             readOnly={true}
             id="f-name"
@@ -51,7 +51,7 @@ export const DialogDetails = ({ data, isOpen, onClose = () => {} }) => {
             value={_get(data, "name")}
           />
         </FormGroup>
-        <FormGroup label="Price" labelFor="f-price">
+        <FormGroup label={t("dialog_form.price.label")} labelFor="f-price">
           <InputGroup
             readOnly={true}
             id="f-price"
@@ -60,7 +60,7 @@ export const DialogDetails = ({ data, isOpen, onClose = () => {} }) => {
           />
         </FormGroup>
         <h6 className={Classes.HEADING}>{t("dialog_form.title_2")}</h6>
-        <FormGroup label="Stock" labelFor="f-stock">
+        <FormGroup label={t("dialog_form.quantity.label")} labelFor="f-stock">
           <InputGroup
             readOnly={true}
             id="f-stock"
@@ -69,7 +69,7 @@ export const DialogDetails = ({ data, isOpen, onClose = () => {} }) => {
             intent={_get(data, "quantity") > 1 ? "none" : "danger"}
           />
         </FormGroup>
-        <FormGroup label="Discount" labelFor="f-discount">
+        <FormGroup label={t("dialog_form.discount.label")} labelFor="f-discount">
           <InputGroup
             readOnly={true}
             id="f-discount"
@@ -78,7 +78,7 @@ export const DialogDetails = ({ data, isOpen, onClose = () => {} }) => {
             rightElement={<Tag minimal={true}>%</Tag>}
           />
         </FormGroup>
-        <FormGroup label="Price Discounted" labelFor="f-price_discounted">
+        <FormGroup label={t("dialog_form.discounted.label")} labelFor="f-price_discounted">
           <InputGroup
             readOnly={true}
             id="f-price_discounted"
@@ -97,7 +97,7 @@ export const DialogDetails = ({ data, isOpen, onClose = () => {} }) => {
             }
           />
         </FormGroup>
-        <FormGroup label="Category" labelFor="f-category">
+        <FormGroup label={t("dialog_form.category.label")} labelFor="f-category">
           <InputGroup
             readOnly={true}
             id="f-category"

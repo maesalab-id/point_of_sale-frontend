@@ -34,19 +34,27 @@
     "title_2": "Diskon",
     "name": {
       "label": "Nama",
-      "error_message": "Silahkan masukan Nama Produk"
+      "error_message": "Silakan masukan Nama Produk"
     },
     "code": {
       "label": "Kode",
-      "error_message": "Silahkan masukan Kode Produk"
+      "error_message": "Silakan masukan Kode Produk"
     },
     "price": {
       "label": "Harga",
-      "error_message": "Silahkan masukan Harga Produk"
+      "error_message": "Silakan masukan Harga Produk"
+    },
+    "quantity": {
+      "label": "Jumlah Produk",
+      "error_message": "Silakan masukan Jumlah Produk"
+    },
+    "image": {
+      "label": "Gambar Produk",
+      "error_message": "Silakan pilih gambar produk"
     },
     "category": {
       "label": "Kategori",
-      "error_message": "Silahkan masukan Kategori Produk"
+      "error_message": "Silakan masukan Kategori Produk"
     },
     "discount": {
       "label": "Diskon"

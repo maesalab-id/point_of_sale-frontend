@@ -44,6 +44,10 @@
       "label": "Price",
       "error_message": "Please enter product Price"
     },
+    "quantity": {
+      "label": "Quantity",
+      "error_message": "Please enter product quantity"
+    },
     "category": {
       "label": "Category",
       "error_message": "Please enter product Category"
@@ -56,6 +60,10 @@
     },
     "stock": {
       "label": "Stock"
+    },
+    "image": {
+      "label": "Product's Image",
+      "error_message": "Please select the product's image"
     },
     "submit_button": "Submit",
     "close_button": "Close"

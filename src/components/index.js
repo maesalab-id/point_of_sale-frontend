@@ -1,4 +1,3 @@
-
 export { useList } from "./list";
 export { useClient } from "./client";
 export * from "./translations";
@@ -16,3 +15,5 @@ export { Navbar } from "./Navbar";
 export { State } from "./State";
 
 export { InputMask } from "./InputMaks";
+
+export { StyledImage } from "./Image";

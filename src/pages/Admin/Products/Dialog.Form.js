@@ -7,6 +7,7 @@ import { toaster } from "components/toaster";
 import { useMemo } from "react";
 import { CURRENCY_OPTIONS, isDev } from "components/constants";
 import currency from "currency.js";
+import FileUpload from "components/FileUpload";
 
 export const DialogForm = () => {
   const client = useClient();
@@ -135,6 +136,37 @@ export const DialogForm = () => {
           value={values["price"] || ""}
           onChange={handleChange}
           intent={errors["price"] ? "danger" : "none"}
+        />
+      </FormGroup>
+      <FormGroup
+        label={t("dialog_form.quantity.label")}
+        labelFor="f-quantity"
+        helperText={errors["quantity"]}
+        intent={"danger"}
+      >
+        <InputGroup
+          id="f-quantity"
+          name="quantity"
+          value={values["quantity"] || ""}
+          onChange={handleChange}
+          intent={errors["quantity"] ? "danger" : "none"}
+          placeholder="Jumlah Produk"
+          rightElement={<Tag minimal={true}>Buah</Tag>}
+        />
+      </FormGroup>
+      <FormGroup
+        label={t("dialog_form.image.label")}
+        labelFor="f-image"
+        helperText={errors["image"]}
+        intent={"danger"}
+      >
+        <FileUpload
+          id="f-image"
+          name="image"
+          value={values["image"] || ""}
+          onChange={(file) => setFieldValue("image", file)}
+          intent={errors["image"] ? "danger" : "none"}
+          accept="image/png, image/jpeg, image/jpg"
         />
       </FormGroup>
       <h6 className={Classes.HEADING}>{t("dialog_form.title_2")}</h6>

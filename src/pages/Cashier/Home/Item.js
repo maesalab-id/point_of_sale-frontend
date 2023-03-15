@@ -1,7 +1,8 @@
 import { Card, Tag } from "@blueprintjs/core";
-import { AspectRatio, Box, Flex } from "components";
+import { AspectRatio, Box, Flex, StyledImage } from "components";
 import currency from "currency.js";
 import _get from "lodash.get";
+import { itemImgUrl } from "pages/Admin/Products/List";
 import { useMemo } from "react";
 
 export const Item = ({ data, onClick = () => {} }) => {
@@ -22,6 +23,7 @@ export const Item = ({ data, onClick = () => {} }) => {
       interactive={data["quantity"] > 0 ? true : false}
       onClick={data["quantity"] > 0 ? onClick : () => {}}
     >
+      <StyledImage src={`${itemImgUrl}/${data.id}/image`} />
       <AspectRatio ratio="4:3">
         <Box
           sx={{

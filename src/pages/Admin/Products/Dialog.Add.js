@@ -35,6 +35,7 @@ export const DialogAdd = ({
         category_id: Yup.number().required(
           t("dialog_form.category.error_message")
         ),
+        image: Yup.string().required(t("dialog_form.image.error_message")),
       }),
     [t]
   );

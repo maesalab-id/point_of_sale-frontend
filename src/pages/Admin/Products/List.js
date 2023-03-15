@@ -11,6 +11,14 @@ import currency from "currency.js";
 import { DialogDetails } from "./Dialog.Details";
 import { useTranslation } from "react-i18next";
 
+const {
+  REACT_APP_SERVER_PROTOCOL,
+  REACT_APP_SERVER_HOST,
+  REACT_APP_SERVER_PORT,
+} = process.env;
+
+export const itemImgUrl = `${REACT_APP_SERVER_PROTOCOL}://${REACT_APP_SERVER_HOST}:${REACT_APP_SERVER_PORT}/cdn/items`;
+
 export const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(null);
@@ -63,18 +71,30 @@ export const List = () => {
 
             return [
               {
-                label: t('table.code'),
+                label: t("table.image"),
+                value: (
+                  <Box>
+                    <img
+                      style={{ width: "100%" }}
+                      src={`${itemImgUrl}/${data.id}/image`}
+                      alt={`pics of ${itemImgUrl}`}
+                    />
+                  </Box>
+                ),
+              },
+              {
+                label: t("table.code"),
                 value: `${_get(data, "code")}`,
               },
               {
-                label: t('table.name'),
+                label: t("table.name"),
                 value: `${_get(data, "name")}`,
               },
               {
                 label: (
                   <Box>
                     <Box as="span" sx={{ mr: 1 }}>
-                      {t('table.price')}
+                      {t("table.price")}
                     </Box>
                     {extras.isDiscounted && (
                       <Tag intent="warning">{`-${_get(
@@ -112,7 +132,7 @@ export const List = () => {
                 value: `${_get(data, "bad_quantity") ?? 0} unit`,
               },
               {
-                label: t('table.category'),
+                label: t("table.category"),
                 value: `${_get(data, "category.name")}`,
               },
             ];
