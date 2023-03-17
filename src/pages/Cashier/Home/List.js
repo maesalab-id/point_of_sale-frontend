@@ -4,11 +4,20 @@ import { Pagination, useListContext } from "components/common/List";
 import { Item } from "./Item";
 
 export const List = ({ onAdd = () => {} }) => {
-  const { items, total, page, limit, setPage, isLoading } =
-    useListContext();
+  const { items, total, page, limit, setPage, isLoading } = useListContext();
   return (
     <>
-      <Flex sx={{ flexGrow: 1, flexWrap: "wrap", px: 2, mb: 2 }}>
+      <Flex
+        sx={{
+          flexGrow: 1,
+          flexWrap: "wrap",
+          px: 2,
+          py: 3,
+          mb: 2,
+          height: "100%",
+          overflow: "auto",
+        }}
+      >
         {isLoading && (
           <Box sx={{ flexGrow: 1, height: "100%" }}>
             <Spinner />
@@ -34,7 +43,7 @@ export const List = ({ onAdd = () => {} }) => {
             </Box>
           ))}
       </Flex>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, mt: 2 }}>
         <Pagination
           loading={items === null}
           total={total}

@@ -18,7 +18,8 @@
     "price": "Price",
     "stock": "Stock",
     "bad_stock": "Bad Stock",
-    "category": "Category"
+    "category": "Category",
+    "image": "Gambar"
   },
   "print":{
     "title": "Nota Pesanan",
@@ -26,7 +27,8 @@
       "name": "Name",
       "qty": "Qty",
       "price": "Price",
-      "total": "Total"
+      "total": "Total",
+      "image": "Gambar"
     }
   },
   "dialog_form": {

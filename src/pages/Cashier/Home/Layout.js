@@ -56,7 +56,7 @@ export const Layout = () => {
   const [cart, dispatchCart] = useReducer(reducerCart, []);
   return (
     <Flex sx={{ height: 615 }}>
-      <Flex sx={{ flexGrow: 1, flexDirection: "column" }}>
+      <Flex sx={{ flexGrow: 1, flexDirection: "column", height: '100%', }}>
         <Topbar />
         <Toolbar />
         <List

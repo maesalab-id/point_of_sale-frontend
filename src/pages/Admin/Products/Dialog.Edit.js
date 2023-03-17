@@ -34,6 +34,9 @@ export const DialogEdit = ({
         category_id: Yup.number().required(
           t("dialog_form.category.error_message")
         ),
+        quantity: Yup.number().required(
+          t("dialog_form.quantity.error_message")
+        ),
       }),
     [t]
   );
@@ -56,6 +59,7 @@ export const DialogEdit = ({
           price: _get(data, "price"),
           category_id: _get(data, "category.id"),
           discount: _get(data, "discount"),
+          quantity: _get(data, "quantity"),
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {

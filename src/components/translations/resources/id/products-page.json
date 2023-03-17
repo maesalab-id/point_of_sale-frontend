@@ -18,7 +18,8 @@
     "price": "Harga",
     "stock": "Stock",
     "bad_stock": "Bad Stock",
-    "category": "Kategori"
+    "category": "Kategori",
+    "image": "Gambar"
   },
   "print":{
     "title": "Nota Pesanan",
@@ -26,7 +27,8 @@
       "name": "Nama",
       "qty": "Jlh",
       "price": "Harga",
-      "total": "Total"
+      "total": "Total",
+      "image": "Gambar"
     }
   },
   "dialog_form": {
